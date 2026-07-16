@@ -572,12 +572,7 @@
         function authenticatePiUser(currentSandboxState) {
             const scopes = ['username', 'payments'];
             
-            Pi.authenticate(scopes, function(payment) {
-                console.log("دفعة معلقة مكتشفة:", payment);
-                if (payment) {
-                    completeIncompletePayment(payment.identifier, payment.transaction.txid);
-                }
-            })
+            Pi.authenticate(scopes, onIncompletePaymentFound)
             .then(function(auth) {
                 currentUser.username = auth.user.username;
                 currentUser.avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${auth.user.username}`;
@@ -591,6 +586,15 @@
                 console.error("فشل تسجيل الدخول لـ Pi:", error);
                 handleAuthError(error, currentSandboxState);
             });
+        }
+
+        function onIncompletePaymentFound(payment) {
+            console.log("تم العثور على دفعة معلقة غير مكتملة:", payment);
+            if (payment && payment.transaction) {
+                completeIncompletePayment(payment.identifier, payment.transaction.txid);
+            } else if (payment) {
+                console.warn("الدفعة المعلقة تفتقد إلى معرف المعاملة (لم يتم توقيعها بعد).");
+            }
         }
 
         function handleAuthError(error, currentSandboxState) {
@@ -932,6 +936,12 @@
             document.getElementById('modal-desc').innerText = `أنت على وشك إرسال دعم مالي حقيقي إلى "${recipientName}" لدعم المحتوى الرقمي الخاص به على شبكة باي إيكو.`;
             document.getElementById('payment-modal').classList.remove('hidden');
             document.getElementById('payment-modal').classList.add('flex');
+            
+            // إعادة تعيين واجهة زر الدفع وحالة التفعيل عند كل فتح للمودال
+            const payBtn = document.querySelector("#payment-modal button[onclick='executePiPayment()']");
+            payBtn.disabled = false;
+            payBtn.innerText = "تأكيد وإرسال عبر Pi SDK";
+            payBtn.className = "w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10";
         }
 
         function closeSupportModal() {
@@ -939,9 +949,11 @@
             document.getElementById('payment-modal').classList.remove('flex');
         }
 
-        // --- دالة الدفع الحقيقية والمعدلة بالكامل للربط بالخادم ومقاومة الـ Timeout ---
+        // --- دالة الدفع مع تحسينات الأمان ومنع انقضاء المهلة (Session Timeout) ---
         function executePiPayment() {
             const amount = parseFloat(document.getElementById('tip-amount').value);
+            const payBtn = document.querySelector("#payment-modal button[onclick='executePiPayment()']");
+
             if (isNaN(amount) || amount <= 0) {
                 alert("الرجاء إدخال قيمة دعم صالحة بـ Pi.");
                 return;
@@ -953,6 +965,11 @@
                 return;
             }
 
+            // تعطيل الزر لتجنب النقرات المتكررة التي تسبب أخطاء ومزامنة خاطئة
+            payBtn.disabled = true;
+            payBtn.innerText = "⏳ جاري إرسال الطلب لـ Pi Network...";
+            payBtn.className = "w-full bg-gray-600 text-gray-300 font-bold py-3 rounded-xl cursor-not-allowed";
+
             const paymentData = {
                 amount: amount,
                 memo: `دعم محتوى إلى ${activeRecipientName} عبر تطبيق باي إيكو`,
@@ -961,77 +978,83 @@
 
             const callbacks = {
                 onReadyForServerApproval: function(paymentId) {
-                    console.log("تمت الموافقة المبدئية، جاري إرسال طلب الموافقة للخادم الخلفي برقم الدفعة:", paymentId);
-                    
-                    // إرسال الطلب فوراً إلى الخادم
+                    console.log("تمت الموافقة المبدئية، جاري توثيق الدفعة مع خادم Vercel:", paymentId);
+                    payBtn.innerText = "⏳ جاري التوثيق والموافقة من الخادم...";
+
                     fetch(`${VERCEL_BACKEND_URL}/approve`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ paymentId: paymentId })
                     })
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error("HTTP error " + response.status);
-                        }
+                        if (!response.ok) throw new Error("استجابة الخادم غير صالحة " + response.status);
                         return response.json();
                     })
                     .then(data => {
                         if (data.success) {
-                            console.log("تمت الموافقة وتوثيق الدفعة بنجاح من جهة خادم Vercel!");
-                            // حاسم جداً: إخبار الـ Pi SDK محلياً بأن الخادم وافق لتستمر عملية الدفع في واجهة الرواد
+                            console.log("وافق الخادم بنجاح! جاري استدعاء الـ SDK للتوقيع...");
+                            payBtn.innerText = "✍️ يرجى توقيع المعاملة في نافذة Pi...";
                             Pi.approvePayment(paymentId);
                         } else {
-                            alert("فشلت موافقة خادم Vercel على الدفعة: " + (data.message || JSON.stringify(data)));
+                            throw new Error(data.message || "فشلت موافقة الخادم.");
                         }
                     })
                     .catch(err => {
-                        console.error("خطأ أثناء الاتصال بخادم Vercel لعملية الـ Approval:", err);
-                        alert("حدث خطأ في الشبكة أثناء محاولة المصادقة مع الخادم.");
+                        console.error("خطأ أثناء الاتصال بالخادم للموافقة:", err);
+                        alert("حدث خطأ في الخادم أثناء المصادقة على الدفعة: " + err.message);
+                        resetPayButton(payBtn);
                     });
                 },
                 onReadyForServerCompletion: function(paymentId, txid) {
-                    console.log("تم التوقيع بنجاح، جاري إتمام المعاملة وإرسال الـ TXID للخادم:", txid);
-                    
+                    console.log("وقع الرواد المعاملة بنجاح، جاري ترحيل الـ TXID للإتمام والربط على البلوكشين:", txid);
+                    payBtn.innerText = "🔗 جاري إرسال المعاملة للبلوكشين...";
+
                     fetch(`${VERCEL_BACKEND_URL}/complete`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ paymentId: paymentId, txid: txid })
                     })
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error("HTTP error " + response.status);
-                        }
+                        if (!response.ok) throw new Error("فشل الخادم الخلفي في استلام التأكيد " + response.status);
                         return response.json();
                     })
                     .then(data => {
                         if (data.success) {
-                            // إعلام الـ SDK المحلي باكتمال العملية بالكامل
                             Pi.completePayment(paymentId);
-                            alert(`ألف مبروك! تم إرسال الدعم وإكمال الدفعة بنجاح. رقم العملية: ${txid}`);
+                            alert(`🎉 ألف مبروك! تم إرسال الدعم بنجاح وإكمال الدورة البرمجية للدفعة.\nرقم المعاملة (TXID):\n${txid}`);
                             closeSupportModal();
                         } else {
-                            alert("حدث خطأ أثناء محاولة إغلاق الدفعة من الخادم: " + (data.message || JSON.stringify(data)));
+                            throw new Error(data.message || "فشل إغلاق المعاملة بالخادم.");
                         }
                     })
                     .catch(err => {
-                        console.error("خطأ أثناء الاتصال بخادم Vercel لعملية الـ Completion:", err);
-                        alert("حدث خطأ في الشبكة أثناء إتمام المعاملة.");
+                        console.error("خطأ أثناء الاتصال بالخادم للإتمام:", err);
+                        alert("تنبيه: تم توقيع المعاملة ولكن فشل الخادم في الإتمام فوراً. سيتم محاولة معالجتها تلقائياً لاحقاً.");
+                        resetPayButton(payBtn);
                     });
                 },
                 onCancel: function(paymentId) {
-                    console.log("تم إلغاء المعاملة من قبل المستخدم:", paymentId);
+                    console.log("ألغى المستخدم المعاملة:", paymentId);
+                    resetPayButton(payBtn);
                 },
                 onError: function(error, payment) {
-                    console.error("حدث خطأ غير متوقع أثناء إتمام الدفع:", error);
-                    alert("عذراً، فشلت عملية الدفع أو انتهت المهلة. يرجى التأكد من رصيدك والاتصال بشبكة Pi.");
+                    console.error("حدث خطأ غير متوقع أثناء الدفع:", error);
+                    alert("انتهت مهلة المعاملة أو فشلت المحاولة. يرجى التأكد من رصيدك في المحفظة، ومن أن خادم Vercel الخلفي نشط ولا يواجه مشاكل.");
+                    resetPayButton(payBtn);
                 }
             };
 
-            // تشغيل الدفع عبر الـ SDK الرسمي
+            // تشغيل محرك الدفع
             Pi.createPayment(paymentData, callbacks);
         }
 
-        // دالة إكمال الدفعات المعلقة السابقة
+        function resetPayButton(button) {
+            button.disabled = false;
+            button.innerText = "تأكيد وإرسال عبر Pi SDK";
+            button.className = "w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10";
+        }
+
+        // إرسال تسوية المعاملات المعلقة للخلفية
         function completeIncompletePayment(paymentId, txid) {
             fetch(`${VERCEL_BACKEND_URL}/complete`, {
                 method: 'POST',
@@ -1041,10 +1064,10 @@
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    console.log("تمت تسوية وإكمال الدفعة المعلقة السابقة بنجاح.");
+                    console.log("تمت تسوية الدفعة القديمة المعلقة بنجاح!");
                 }
             })
-            .catch(err => console.error("فشل إكمال الدفعة المعلقة السابقة:", err));
+            .catch(err => console.error("فشلت تسوية الدفعة المعلقة القديمة:", err));
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
