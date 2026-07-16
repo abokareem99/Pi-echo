@@ -226,6 +226,9 @@
     </div>
 
     <script>
+        // تعريف معرف عميل Pi Network وتخزينه كمتغير ثابت
+        const NEXT_PUBLIC_PI_CLIENT_ID = "OLeVqKQkQDdhq7ad7fRV1YMLThIDYNkjj";
+
         let currentUser = {
             username: "أبو كريم",
             avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem",
@@ -302,13 +305,16 @@
             document.getElementById('sidebar-user-bio').innerText = currentUser.bio || "لا يوجد بايو محدد.";
         }
 
-        // دالة التهيئة المصيرية بعد وضع sandbox: false
+        // دالة التهيئة مع دمج المتغير بنجاح
         function startPiSDKInitialization() {
             if (typeof Pi !== 'undefined') {
                 console.log("تم رصد مكتبة Pi SDK بنجاح. جاري التهيئة...");
                 try {
-                    // تم تعديل القيمة هنا إلى false ليعمل الاتصال الفعلي داخل متصفح باي
-                    Pi.init({ version: "2.0", sandbox: false });
+                    // تهيئة الـ SDK مع خيار sandbox: false للشبكة الحقيقية
+                    Pi.init({ 
+                        version: "2.0", 
+                        sandbox: false 
+                    });
                     authenticatePiUser();
                 } catch (err) {
                     console.error("فشل تهيئة Pi SDK:", err);
@@ -387,6 +393,7 @@
             document.getElementById('profile-modal').classList.add('flex');
         }
 
+        // إغلاق مودال التعديل
         function closeEditProfileModal() {
             document.getElementById('profile-modal').classList.add('hidden');
             document.getElementById('profile-modal').classList.remove('flex');
