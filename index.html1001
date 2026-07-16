@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>باي كونكت | PiConnect</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0d0614;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #150b22;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e5a93b;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex flex-col justify-between">
+
+    <!-- شريط التنقل العلوي -->
+    <header class="sticky top-0 z-40 bg-[#150b22] border-b border-[#e5a93b]/20 shadow-lg px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#5c1f75] to-[#e5a93b] flex items-center justify-center shadow-md">
+                <i class="fa-solid fa-pi text-white text-lg"></i>
+            </div>
+            <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-[#e5a93b] to-yellow-400 bg-clip-text text-transparent">باي <span class="text-purple-400">كونكت</span></span>
+        </div>
+
+        <!-- حقل البحث -->
+        <div class="hidden md:flex items-center bg-[#211434] rounded-full px-4 py-1.5 w-96 border border-purple-900/40 focus-within:border-[#e5a93b] transition-all">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 ml-2"></i>
+            <input type="text" placeholder="ابحث عن منشورات أو رواد..." class="bg-transparent border-none outline-none text-sm w-full text-gray-200 placeholder-gray-500">
+        </div>
+
+        <!-- أزرار التحكم ومؤشر المحفظة -->
+        <div class="flex items-center gap-4">
+            <button class="relative p-2 text-gray-300 hover:text-[#e5a93b] transition-colors">
+                <i class="fa-regular fa-bell text-xl"></i>
+                <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+            </button>
+            <div class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/30 rounded-full py-1 px-3 text-xs md:text-sm cursor-pointer" onclick="openSupportModal(1, 'محفظة باي التجريبية')">
+                <i class="fa-solid fa-wallet text-[#e5a93b]"></i>
+                <span class="text-gray-300 font-semibold">15.45 Pi</span>
+            </div>
+            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-9 h-9 rounded-full border border-[#e5a93b]">
+        </div>
+    </header>
+
+    <!-- الهيكل الرئيسي للموقع -->
+    <div class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+
+        <!-- القائمة الجانبية اليمنى -->
+        <aside class="hidden md:block md:col-span-1 space-y-2">
+            <nav class="sticky top-24 space-y-1 bg-[#150b22] p-4 rounded-2xl border border-purple-950/50">
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
+                    <i class="fa-solid fa-house text-lg"></i>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                    <i class="fa-regular fa-compass text-lg"></i>
+                    <span>استكشف</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                    <i class="fa-regular fa-message text-lg"></i>
+                    <span>الرسائل</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                    <span>المعاملات والتبرعات</span>
+                </a>
+                <hr class="border-purple-950/60 my-3">
+                <button onclick="openSupportModal(0, 'نظام الدعوات')" class="w-full bg-gradient-to-r from-[#5c1f75] to-[#7b2c9e] text-white font-semibold py-2.5 px-4 rounded-xl shadow-md hover:from-[#6b2588] hover:to-[#8c35b3] transition-all text-sm">
+                    <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
+                </button>
+            </nav>
+        </aside>
+
+        <!-- منطقة التغذية الإخبارية (Feed) -->
+        <main class="col-span-1 md:col-span-2 space-y-6">
+            
+            <!-- صندوق إنشاء منشور جديد -->
+            <div class="bg-[#150b22] border border-purple-950/50 rounded-2xl p-4 shadow-md">
+                <div class="flex gap-3">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="User Avatar" class="w-10 h-10 rounded-full border border-[#e5a93b]/40">
+                    <div class="flex-1">
+                        <textarea id="post-input" placeholder="ماذا يدور في ذهنك اليوم يا رائد؟" rows="3" class="w-full bg-[#1b0e2b] rounded-xl p-3 text-sm text-gray-200 placeholder-gray-500 border border-purple-950/30 focus:border-[#e5a93b]/50 focus:outline-none resize-none transition-all"></textarea>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-purple-950/50">
+                    <div class="flex gap-2 text-gray-400">
+                        <button class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
+                            <i class="fa-regular fa-image text-lg"></i>
+                        </button>
+                        <button class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة رمز تعبيري">
+                            <i class="fa-regular fa-face-smile text-lg"></i>
+                        </button>
+                    </div>
+                    <button onclick="createNewPost()" class="bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
+                        نشر المنشور
+                    </button>
+                </div>
+            </div>
+
+            <!-- حاوية المنشورات الديناميكية -->
+            <div id="feed-container" class="space-y-6">
+                <!-- سيتم ملء المنشورات هنا بواسطة JavaScript -->
+            </div>
+
+        </main>
+
+        <!-- القائمة الجانبية اليسرى -->
+        <aside class="hidden md:block md:col-span-1 space-y-6">
+            <div class="bg-[#150b22] border border-purple-950/50 p-4 rounded-2xl space-y-4">
+                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-purple-950/60 pb-2">
+                    <i class="fa-solid fa-circle-nodes ml-2"></i>أخبار الشبكة المفتوحة
+                </h3>
+                <div class="space-y-3">
+                    <div class="p-2.5 bg-[#1d102f] rounded-xl hover:bg-[#25153a] transition-all cursor-pointer">
+                        <h4 class="text-xs font-bold text-gray-200">الاستعداد للمرحلة القادمة</h4>
+                        <p class="text-[10px] text-gray-500 mt-1">تحديثات هامة لبروتوكول الـ SDK والمطورين لعام 2026...</p>
+                    </div>
+                    <div class="p-2.5 bg-[#1d102f] rounded-xl hover:bg-[#25153a] transition-all cursor-pointer">
+                        <h4 class="text-xs font-bold text-gray-200">توثيق الهوية المتسارع (KYC)</h4>
+                        <p class="text-[10px] text-gray-500 mt-1">آليات ذكاء اصطناعي جديدة لتسهيل التحقق والتوثيق للرواد...</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- شريط التنقل السفلي للهواتف الذكية -->
+    <footer class="md:hidden sticky bottom-0 bg-[#150b22] border-t border-[#e5a93b]/20 py-2.5 px-6 flex justify-around items-center text-gray-400 text-xl z-40">
+        <a href="#" class="text-[#e5a93b]"><i class="fa-solid fa-house"></i></a>
+        <a href="#" class="hover:text-purple-400"><i class="fa-regular fa-compass"></i></a>
+        <a href="#" class="hover:text-[#e5a93b]"><i class="fa-regular fa-bell"></i></a>
+        <a href="#" class="hover:text-[#e5a93b]"><i class="fa-regular fa-message"></i></a>
+    </footer>
+
+    <!-- النافذة المنبثقة (Modal) لمحاكاة الدفع بالباي وتفاعلات الـ SDK المستقبيلة -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#150b22] border border-[#e5a93b]/40 rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-2xl relative">
+            <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-16 h-16 bg-gradient-to-tr from-[#5c1f75] to-[#e5a93b] rounded-full flex items-center justify-center mx-auto shadow-md">
+                <i class="fa-solid fa-pi text-white text-3xl animate-pulse"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-[#e5a93b]">بوابة دفع Pi Network</h3>
+                <p id="modal-desc" class="text-xs text-gray-400 mt-2 leading-relaxed">
+                    سيتم معالجة هذا الإجراء عبر واجهة SDK الرسمية داخل متصفح Pi.
+                </p>
+            </div>
+            <!-- حقل إدخال قيمة الدعم -->
+            <div id="amount-container" class="space-y-2">
+                <label class="text-xs text-gray-400 block">حدد قيمة الدعم بـ Pi:</label>
+                <input type="number" id="tip-amount" value="1.0" min="0.1" step="0.1" class="bg-[#211434] border border-purple-950/60 rounded-xl px-4 py-2 text-center text-[#e5a93b] font-bold text-lg focus:outline-none focus:border-[#e5a93b] w-32">
+            </div>
+            <div class="bg-[#211434] p-3 rounded-xl border border-purple-950/40 text-[11px] text-purple-300 leading-relaxed">
+                💡 <strong>محاكاة المرحلة الثانية:</strong> عند اكتمال التطبيق في المرحلة الثالثة، سيقوم هذا الإجراء باستدعاء الدالة <code class="text-yellow-400 font-mono">Pi.createPayment()</code> لفتح نافذة تأمين المعاملة الرسمية.
+            </div>
+            <button onclick="simulatePaymentSuccess()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">
+                تأكيد وإرسال المعاملة (تجريبي)
+            </button>
+        </div>
+    </div>
+
+    <!-- جافا سكريبت التفاعلية -->
+    <script>
+        // هيكل قاعدة البيانات المحلية (Local Storage) للمنشورات
+        let posts = [];
+        let activePostIdForTip = null;
+
+        // منشورات تجريبية أولية تظهر عند أول زيارة للتطبيق
+        const defaultPosts = [
+            {
+                id: 1,
+                author: "أحمد السوداني",
+                badge: "موثق KYC",
+                badgeColor: "bg-[#e5a93b]/10 text-[#e5a93b]",
+                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer1",
+                content: "متحمس جداً لمستقبل شبكة باي وتطبيقات المرافق الخدمية. آمل أن نرى دعماً حقيقياً ومشاريع محلية تساهم في نمو المنظومة في السودان والشرق الأوسط! 🚀⚡",
+                timestamp: "منذ ساعتين",
+                likes: 24,
+                likedByMe: false,
+                comments: [
+                    { author: "أبو كريم", content: "بالتأكيد يا رائد، العمل مستمر على قدم وساق!" }
+                ]
+            },
+            {
+                id: 2,
+                author: "سارة محمد",
+                badge: "مطور باي",
+                badgeColor: "bg-purple-900/30 text-purple-300",
+                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer2",
+                content: "نعمل حالياً على واجهة مستخدم مخصصة لمنصة الخدمات المصغرة على متصفح Pi Browser. التصاميم تبدو واعدة!",
+                timestamp: "منذ 5 ساعات",
+                likes: 42,
+                likedByMe: false,
+                comments: []
+            }
+        ];
+
+        // تهيئة وتحميل المنشورات
+        function initApp() {
+            const savedPosts = localStorage.getItem('piconnect_posts_v2');
+            if (savedPosts) {
+                posts = JSON.parse(savedPosts);
+            } else {
+                posts = defaultPosts;
+                saveToLocalStorage();
+            }
+            renderPosts();
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('piconnect_posts_v2', JSON.stringify(posts));
+        }
+
+        // دالة عرض المنشورات ديناميكياً
+        function renderPosts() {
+            const container = document.getElementById('feed-container');
+            container.innerHTML = '';
+
+            posts.forEach(post => {
+                // توليد قسم التعليقات لكل منشور
+                let commentsHTML = '';
+                post.comments.forEach(comment => {
+                    commentsHTML += `
+                        <div class="flex gap-2 bg-[#1b0e2b] p-2 rounded-xl text-xs">
+                            <span class="font-bold text-[#e5a93b]">${comment.author}:</span>
+                            <span class="text-gray-300">${comment.content}</span>
+                        </div>
+                    `;
+                });
+
+                const postHTML = `
+                    <div class="bg-[#150b22] border border-purple-950/50 rounded-2xl p-5 shadow-md space-y-4 transition-all hover:border-purple-900/50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <img src="${post.avatar}" alt="Avatar" class="w-10 h-10 rounded-full border border-purple-800">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
+                                        <span class="${post.badgeColor} text-[10px] px-2 py-0.5 rounded-full font-semibold">${post.badge}</span>
+                                    </div>
+                                    <span class="text-[11px] text-gray-500">${post.timestamp}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-300 text-sm leading-relaxed">${post.content}</p>
+
+                        <!-- أزرار التفاعل والمكافأة -->
+                        <div class="flex items-center justify-between pt-3 border-t border-purple-950/40 text-gray-400 text-sm">
+                            <button onclick="toggleLike(${post.id})" class="flex items-center gap-2 transition-colors ${post.likedByMe ? 'text-[#e5a93b]' : 'hover:text-[#e5a93b]'}">
+                                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                                <span>${post.likes}</span>
+                            </button>
+                            <button onclick="toggleCommentBox(${post.id})" class="flex items-center gap-2 hover:text-purple-400 transition-colors">
+                                <i class="fa-regular fa-comment"></i>
+                                <span>${post.comments.length} تعليقات</span>
+                            </button>
+                            <!-- زر الدعم بالعملة -->
+                            <button onclick="openSupportModal(${post.id}, '${post.author}')" class="flex items-center gap-1.5 bg-[#e5a93b]/10 text-[#e5a93b] px-3 py-1 rounded-full hover:bg-[#e5a93b]/20 transition-all font-semibold text-xs border border-[#e5a93b]/20">
+                                <i class="fa-solid fa-gift"></i>
+                                <span>دعم بـ Pi</span>
+                            </button>
+                        </div>
+
+                        <!-- صندوق التعليقات الفرعي للمنشور -->
+                        <div id="comment-box-${post.id}" class="hidden space-y-3 pt-3 border-t border-purple-950/30">
+                            <div class="space-y-2" id="comments-list-${post.id}">
+                                ${commentsHTML}
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقك هنا..." class="flex-1 bg-[#1b0e2b] border border-purple-950/50 rounded-xl px-3 py-1.5 text-xs text-gray-200 outline-none focus:border-[#e5a93b]/50">
+                                <button onclick="addComment(${post.id})" class="bg-purple-900 text-purple-200 hover:bg-purple-800 text-xs px-3 py-1.5 rounded-xl font-bold transition-all">إرسال</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += postHTML;
+            });
+        }
+
+        // دالة إنشاء منشور جديد (باسمك وباسم التطبيق)
+        function createNewPost() {
+            const input = document.getElementById('post-input');
+            const text = input.value.trim();
+
+            if (!text) {
+                alert("الرجاء كتابة شيء ما أولاً!");
+                return;
+            }
+
+            const newPost = {
+                id: Date.now(),
+                author: "أبو كريم",
+                badge: "مطور باي",
+                badgeColor: "bg-gradient-to-r from-[#5c1f75]/40 to-[#e5a93b]/20 text-[#e5a93b] border border-[#e5a93b]/30",
+                avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem", // صورتك الرمزية المخصصة كمطور التطبيق
+                content: text,
+                timestamp: "الآن",
+                likes: 0,
+                likedByMe: false,
+                comments: []
+            };
+
+            posts.unshift(newPost);
+            saveToLocalStorage();
+            renderPosts();
+            input.value = '';
+        }
+
+        // تفعيل وإلغاء الإعجاب
+        function toggleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                if (post.likedByMe) {
+                    post.likes--;
+                    post.likedByMe = false;
+                } else {
+                    post.likes++;
+                    post.likedByMe = true;
+                }
+                saveToLocalStorage();
+                renderPosts();
+            }
+        }
+
+        // إظهار/إخفاء صندوق التعليقات
+        function toggleCommentBox(postId) {
+            const box = document.getElementById(`comment-box-${postId}`);
+            box.classList.toggle('hidden');
+        }
+
+        // إضافة تعليق جديد للمنشور
+        function addComment(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.comments.push({
+                    author: "أبو كريم",
+                    content: text
+                });
+                saveToLocalStorage();
+                renderPosts();
+                document.getElementById(`comment-box-${postId}`).classList.remove('hidden');
+            }
+        }
+
+        // دوال التحكم بنظام محاكاة الدفع والدعم
+        function openSupportModal(postId, authorName) {
+            activePostIdForTip = postId;
+            const modal = document.getElementById('payment-modal');
+            const desc = document.getElementById('modal-desc');
+            const amountContainer = document.getElementById('amount-container');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            if (postId === 1) {
+                // محاكاة محفظة عامة
+                desc.innerText = `أنت بصدد استكشاف رصيد محفظتك الافتراضية. في المرحلة الثالثة، سنقوم بربط محفظة شبكة باي الحقيقية للمطورين والرواد لمعالجة رصيد الويب 3 الخاص بك.`;
+                amountContainer.classList.add('hidden');
+            } else if (postId === 0) {
+                desc.innerText = `سيقوم نظام الدعوات في المرحلة القادمة بتوليد رابط دعوة خاص بك مشفّر ومقترن بـ Pi SDK لمكافأتك بنقاط داخل التطبيق عند انضمام رواد جدد.`;
+                amountContainer.classList.add('hidden');
+            } else {
+                desc.innerText = `أنت بصدد إرسال تبرع/دعم مالي مباشر بالـ Pi إلى حساب الرائد: (${authorName}) تقديراً لجهوده ونتاجه الرقمي.`;
+                amountContainer.classList.remove('hidden');
+            }
+        }
+
+        function closeSupportModal() {
+            const modal = document.getElementById('payment-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            activePostIdForTip = null;
+        }
+
+        function simulatePaymentSuccess() {
+            if (activePostIdForTip && activePostIdForTip !== 1 && activePostIdForTip !== 0) {
+                const amount = document.getElementById('tip-amount').value;
+                alert(`🎉 نجحت المعاملة التجريبية!\nتم دعم الرائد بمبلغ ${amount} Pi بنجاح من رصيدك الافتراضي.`);
+            } else {
+                alert("تم اختبار الاتصال بالبوابة الافتراضية بنجاح! جاهز للتطوير في المرحلة القادمة.");
+            }
+            closeSupportModal();
+        }
+
+        // بدء تشغيل التطبيق فور تحميل الصفحة
+        window.onload = initApp;
+    </script>
+</body>
+</html>
