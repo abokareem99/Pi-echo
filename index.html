@@ -939,7 +939,7 @@
             document.getElementById('payment-modal').classList.remove('flex');
         }
 
-        // --- دالة الدفع الحقيقية والمعدلة بالكامل للربط بالخادم ---
+        // --- دالة الدفع الحقيقية والمعدلة بالكامل للربط بالخادم ومقاومة الـ Timeout ---
         function executePiPayment() {
             const amount = parseFloat(document.getElementById('tip-amount').value);
             if (isNaN(amount) || amount <= 0) {
@@ -963,21 +963,30 @@
                 onReadyForServerApproval: function(paymentId) {
                     console.log("تمت الموافقة المبدئية، جاري إرسال طلب الموافقة للخادم الخلفي برقم الدفعة:", paymentId);
                     
+                    // إرسال الطلب فوراً إلى الخادم
                     fetch(`${VERCEL_BACKEND_URL}/approve`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ paymentId: paymentId })
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("HTTP error " + response.status);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
-                        if(data.success) {
+                        if (data.success) {
                             console.log("تمت الموافقة وتوثيق الدفعة بنجاح من جهة خادم Vercel!");
+                            // حاسم جداً: إخبار الـ Pi SDK محلياً بأن الخادم وافق لتستمر عملية الدفع في واجهة الرواد
+                            Pi.approvePayment(paymentId);
                         } else {
                             alert("فشلت موافقة خادم Vercel على الدفعة: " + (data.message || JSON.stringify(data)));
                         }
                     })
                     .catch(err => {
                         console.error("خطأ أثناء الاتصال بخادم Vercel لعملية الـ Approval:", err);
+                        alert("حدث خطأ في الشبكة أثناء محاولة المصادقة مع الخادم.");
                     });
                 },
                 onReadyForServerCompletion: function(paymentId, txid) {
@@ -988,9 +997,16 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ paymentId: paymentId, txid: txid })
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("HTTP error " + response.status);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
-                        if(data.success) {
+                        if (data.success) {
+                            // إعلام الـ SDK المحلي باكتمال العملية بالكامل
+                            Pi.completePayment(paymentId);
                             alert(`ألف مبروك! تم إرسال الدعم وإكمال الدفعة بنجاح. رقم العملية: ${txid}`);
                             closeSupportModal();
                         } else {
@@ -999,6 +1015,7 @@
                     })
                     .catch(err => {
                         console.error("خطأ أثناء الاتصال بخادم Vercel لعملية الـ Completion:", err);
+                        alert("حدث خطأ في الشبكة أثناء إتمام المعاملة.");
                     });
                 },
                 onCancel: function(paymentId) {
@@ -1006,10 +1023,11 @@
                 },
                 onError: function(error, payment) {
                     console.error("حدث خطأ غير متوقع أثناء إتمام الدفع:", error);
-                    alert("عذراً، فشلت عملية الدفع. يرجى التأكد من رصيدك ومن الاتصال بشبكة Pi بشكل صحيح.");
+                    alert("عذراً، فشلت عملية الدفع أو انتهت المهلة. يرجى التأكد من رصيدك والاتصال بشبكة Pi.");
                 }
             };
 
+            // تشغيل الدفع عبر الـ SDK الرسمي
             Pi.createPayment(paymentData, callbacks);
         }
 
