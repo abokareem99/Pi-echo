@@ -53,21 +53,49 @@
                 <i class="fa-regular fa-bell text-xl"></i>
                 <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
             </button>
-            <div class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/30 rounded-full py-1 px-3 text-xs md:text-sm cursor-pointer" onclick="openSupportModal(1, 'محفظة باي')">
+            <div class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/30 rounded-full py-1.5 px-3 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b]" onclick="checkPiConnectionStatus()">
                 <i class="fa-solid fa-wallet text-[#e5a93b]"></i>
-                <span id="user-pi-balance" class="text-gray-300 font-semibold">جاري الاتصال...</span>
+                <span id="user-pi-balance" class="text-gray-300 font-semibold">جاري فحص الاتصال...</span>
             </div>
             <!-- الصورة الرمزية للمستخدم الحالي -->
-            <img id="navbar-user-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-9 h-9 rounded-full border border-[#e5a93b]">
+            <img id="navbar-user-avatar" onclick="openEditProfileModal()" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-9 h-9 rounded-full border border-[#e5a93b] cursor-pointer hover:scale-105 transition-transform">
         </div>
     </header>
 
     <!-- الهيكل الرئيسي للموقع -->
     <div class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 grid grid-cols-1 md:grid-cols-4 gap-6">
 
-        <!-- القائمة الجانبية اليمنى -->
-        <aside class="hidden md:block md:col-span-1 space-y-2">
-            <nav class="sticky top-24 space-y-1 bg-[#150b22] p-4 rounded-2xl border border-purple-950/50">
+        <!-- القائمة الجانبية اليمنى (الملف الشخصي والقائمة) -->
+        <aside class="hidden md:block md:col-span-1 space-y-4">
+            <!-- بطاقة الملف الشخصي الفاخرة -->
+            <div class="bg-[#150b22] p-5 rounded-2xl border border-purple-950/50 space-y-4">
+                <div class="flex flex-col items-center text-center">
+                    <div class="relative group">
+                        <img id="sidebar-user-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-20 h-20 rounded-full border-2 border-[#e5a93b] shadow-md object-cover">
+                        <button onclick="openEditProfileModal()" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0d0614] rounded-full p-2 text-xs hover:bg-yellow-500 transition-all shadow-md">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                    </div>
+                    <h3 id="sidebar-user-name" class="font-bold text-lg text-gray-100 mt-3">أبو كريم</h3>
+                    <p id="sidebar-user-bio" class="text-xs text-gray-400 mt-2 px-2 italic line-clamp-3">
+                        مهتم بتطوير مشاريع الويب 3 ودعم مجتمع باي في الوطن العربي.
+                    </p>
+                </div>
+                <div class="pt-3 border-t border-purple-950/50 flex justify-around text-center text-xs text-gray-400">
+                    <div>
+                        <span class="block font-bold text-gray-100 text-sm">١.٢ ألف</span>
+                        <span>متابع</span>
+                    </div>
+                    <div class="border-l border-purple-950/50"></div>
+                    <div>
+                        <span class="block font-bold text-gray-100 text-sm">٣٤٠</span>
+                        <span>يتابع</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- قائمة التصفح -->
+            <nav class="space-y-1 bg-[#150b22] p-4 rounded-2xl border border-purple-950/50">
                 <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
                     <i class="fa-solid fa-house text-lg"></i>
                     <span>الرئيسية</span>
@@ -97,9 +125,17 @@
             <!-- صندوق إنشاء منشور جديد -->
             <div class="bg-[#150b22] border border-purple-950/50 rounded-2xl p-4 shadow-md">
                 <div class="flex gap-3">
-                    <img id="feed-post-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="User Avatar" class="w-10 h-10 rounded-full border border-[#e5a93b]/40">
+                    <img id="feed-post-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="User Avatar" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
                     <div class="flex-1">
                         <textarea id="post-input" placeholder="ماذا يدور في ذهنك اليوم يا رائد؟" rows="3" class="w-full bg-[#1b0e2b] rounded-xl p-3 text-sm text-gray-200 placeholder-gray-500 border border-purple-950/30 focus:border-[#e5a93b]/50 focus:outline-none resize-none transition-all"></textarea>
+                        
+                        <!-- معاينة الفيديو المختار قبل النشر -->
+                        <div id="video-preview-container" class="hidden relative mt-3 rounded-xl overflow-hidden border border-purple-950/60 bg-black max-h-60 flex justify-center items-center">
+                            <video id="video-preview" class="max-h-60 w-full" controls></video>
+                            <button onclick="removeVideoSelection()" class="absolute top-2 left-2 bg-red-600/90 text-white hover:bg-red-700 transition-colors w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center justify-between mt-3 pt-3 border-t border-purple-950/50">
@@ -107,6 +143,12 @@
                         <button class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
                             <i class="fa-regular fa-image text-lg"></i>
                         </button>
+                        <!-- زر رفع الفيديو المعدل -->
+                        <button onclick="triggerVideoUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة فيديو">
+                            <i class="fa-solid fa-video text-lg"></i>
+                        </button>
+                        <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="previewSelectedVideo(event)">
+                        
                         <button class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة رمز تعبيري">
                             <i class="fa-regular fa-face-smile text-lg"></i>
                         </button>
@@ -149,9 +191,44 @@
     <footer class="md:hidden sticky bottom-0 bg-[#150b22] border-t border-[#e5a93b]/20 py-2.5 px-6 flex justify-around items-center text-gray-400 text-xl z-40">
         <a href="#" class="text-[#e5a93b]"><i class="fa-solid fa-house"></i></a>
         <a href="#" class="hover:text-purple-400"><i class="fa-regular fa-compass"></i></a>
-        <a href="#" class="hover:text-[#e5a93b]"><i class="fa-regular fa-bell"></i></a>
+        <a href="#" class="hover:text-[#e5a93b]" onclick="openEditProfileModal()"><i class="fa-regular fa-user"></i></a>
         <a href="#" class="hover:text-[#e5a93b]"><i class="fa-regular fa-message"></i></a>
     </footer>
+
+    <!-- النافذة المنبثقة (Modal) لتعديل الملف الشخصي -->
+    <div id="profile-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#150b22] border border-[#e5a93b]/40 rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl relative">
+            <button onclick="closeEditProfileModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-xl font-bold text-[#e5a93b] text-center"><i class="fa-solid fa-user-gear ml-2"></i>تعديل الملف الشخصي</h3>
+            
+            <div class="space-y-4">
+                <!-- رفع الصورة وتعديلها -->
+                <div class="flex flex-col items-center">
+                    <img id="modal-avatar-preview" src="" class="w-24 h-24 rounded-full border-2 border-[#e5a93b] object-cover mb-3">
+                    <label class="bg-[#211434] hover:bg-[#2c1b45] text-[#e5a93b] border border-[#e5a93b]/30 px-4 py-1.5 rounded-xl text-xs cursor-pointer font-semibold transition-all">
+                        <i class="fa-solid fa-camera ml-1"></i> اختر صورة جديدة
+                        <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="previewAvatarChange(event)">
+                    </label>
+                </div>
+                <!-- تعديل الاسم -->
+                <div class="space-y-1">
+                    <label class="text-xs text-gray-400 block">الاسم الشخصي (الرائد)</label>
+                    <input type="text" id="edit-username" class="w-full bg-[#211434] border border-purple-950/60 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b]">
+                </div>
+                <!-- تعديل البايو -->
+                <div class="space-y-1">
+                    <label class="text-xs text-gray-400 block">الوصف الشخصي (البايو)</label>
+                    <textarea id="edit-bio" rows="3" class="w-full bg-[#211434] border border-purple-950/60 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b] resize-none"></textarea>
+                </div>
+            </div>
+
+            <button onclick="saveUserProfile()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">
+                حفظ التغييرات
+            </button>
+        </div>
+    </div>
 
     <!-- النافذة المنبثقة (Modal) لمحاكاة الدفع بالباي وتفاعلات الـ SDK الحقيقية -->
     <div id="payment-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
@@ -182,28 +259,52 @@
         </div>
     </div>
 
+    <!-- نافذة إرشادات فتح متصفح Pi -->
+    <div id="pi-guide-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#150b22] border border-red-500/40 rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-2xl relative">
+            <button onclick="closePiGuideModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-16 h-16 bg-red-900/30 rounded-full flex items-center justify-center mx-auto text-red-500 border border-red-500/30">
+                <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-red-400">تنبيه اتصال Pi Network</h3>
+                <p class="text-xs text-gray-300 mt-3 leading-relaxed">
+                    يبدو أنك تستخدم متصفحاً عادياً (مثل Chrome أو Safari). 
+                    بروتوكول الويب 3 الخاص بالـ SDK يعمل <strong>حصراً</strong> داخل متصفح الباي الرسمي.
+                </p>
+            </div>
+            <div class="text-right text-xs bg-[#211434] p-4 rounded-xl border border-purple-950/40 space-y-2 text-gray-300">
+                <p class="font-bold text-[#e5a93b]">للاتصال بالبلوكتشين بنجاح:</p>
+                <ol class="list-decimal list-inside space-y-1.5 text-gray-400">
+                    <li>قم بتحميل وتثبيت تطبيق <strong>Pi Browser</strong> من المتجر.</li>
+                    <li>قم بالدخول إلى حسابك في شبكة باي.</li>
+                    <li>افتح هذا التطبيق عن طريق إدخال رابطه الخاص في شريط البحث العلوي داخل متصفح الباي.</li>
+                </ol>
+            </div>
+            <button onclick="closePiGuideModal()" class="w-full bg-gradient-to-r from-purple-800 to-purple-950 hover:from-purple-700 text-white font-bold py-2.5 rounded-xl transition-all">
+                متابعة في وضع المعاينة
+            </button>
+        </div>
+    </div>
+
     <!-- جافا سكريبت التفاعلية وربط الـ Pi SDK -->
     <script>
-        // إعدادات وبيانات المستخدم الافتراضية (قبل تسجيل الدخول من الباي)
+        // إعدادات وبيانات المستخدم الافتراضية
         let currentUser = {
             username: "أبو كريم",
             avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem",
+            bio: "مهتم بتطوير مشاريع الويب 3 ودعم مجتمع باي في الوطن العربي.",
             isPiAuthenticated: false
         };
 
         let posts = [];
         let activePostIdForTip = null;
         let activeRecipientName = null;
+        let selectedVideoDataUrl = null; // يحفظ رابط الفيديو المؤقت لإنشاء المنشور
 
-        // تهيئة الـ SDK في بيئة الـ Sandbox (الشبكة التجريبية) للتطوير والاختبار
-        try {
-            Pi.init({ version: "2.0", sandbox: true });
-            console.log("تم تهيئة Pi SDK بنجاح.");
-        } catch (err) {
-            console.error("خطأ أثناء تهيئة SDK:", err);
-        }
-
-        // منشورات تجريبية أولية
+        // منشورات تجريبية أولية (تحتوي على فيديو وصور لعرض المحاكمة الفورية)
         const defaultPosts = [
             {
                 id: 1,
@@ -212,6 +313,7 @@
                 badgeColor: "bg-[#e5a93b]/10 text-[#e5a93b]",
                 avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer1",
                 content: "متحمس جداً لمستقبل شبكة باي وتطبيقات المرافق الخدمية. آمل أن نرى دعماً حقيقياً ومشاريع محلية تساهم في نمو المنظومة في السودان والشرق الأوسط! 🚀⚡",
+                video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4", // فيديو تجريبي افتراضي
                 timestamp: "منذ ساعتين",
                 likes: 24,
                 likedByMe: false,
@@ -225,7 +327,8 @@
                 badge: "مطور باي",
                 badgeColor: "bg-purple-900/30 text-purple-300",
                 avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer2",
-                content: "نعمل حالياً على واجهة مستخدم مخصصة لمنصة الخدمات المصغرة على متصفح Pi Browser. التصاميم تبدو واعدة!",
+                content: "نعمل حالياً على واجهة مستخدم مخصصة لمنصة الخدمات المصغرة على متصفح Pi Browser. التصاميم تبدو واعدة جداً!",
+                video: null,
                 timestamp: "منذ 5 ساعات",
                 likes: 42,
                 likedByMe: false,
@@ -235,54 +338,179 @@
 
         // تهيئة التطبيق عند فتح الصفحة
         function initApp() {
-            const savedPosts = localStorage.getItem('piconnect_posts_v2');
+            // تحميل بيانات المستخدم من الذاكرة المحلية إن وجدت
+            const savedUser = localStorage.getItem('piecho_user_v2');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+            }
+            updateUserProfileDOM();
+
+            // تحميل المنشورات
+            const savedPosts = localStorage.getItem('piconnect_posts_v3');
             if (savedPosts) {
                 posts = JSON.parse(savedPosts);
             } else {
                 posts = defaultPosts;
-                saveToLocalStorage();
+                savePostsToLocalStorage();
             }
             renderPosts();
-            authenticatePiUser(); // استدعاء تسجيل الدخول تلقائياً
+            authenticatePiUser(); // محاولة تسجيل الدخول والاتصال بالـ SDK
         }
 
-        // حفظ البيانات في الذاكرة المحلية للمتصفح
-        function saveToLocalStorage() {
-            localStorage.setItem('piconnect_posts_v2', JSON.stringify(posts));
+        // حفظ بيانات المنشورات
+        function savePostsToLocalStorage() {
+            localStorage.setItem('piconnect_posts_v3', JSON.stringify(posts));
         }
 
-        // دالة تسجيل الدخول عبر Pi Auth
+        // تحديث بيانات الملف الشخصي في الواجهة
+        function updateUserProfileDOM() {
+            document.getElementById('navbar-user-avatar').src = currentUser.avatar;
+            document.getElementById('feed-post-avatar').src = currentUser.avatar;
+            document.getElementById('sidebar-user-avatar').src = currentUser.avatar;
+            document.getElementById('sidebar-user-name').innerText = currentUser.username;
+            document.getElementById('sidebar-user-bio').innerText = currentUser.bio || "لا يوجد بايو محدد.";
+        }
+
+        // دالة تسجيل الدخول والاتصال عبر Pi SDK
         function authenticatePiUser() {
+            // التحقق من وجود كائن Pi (ما إذا كان التطبيق مفتوحاً داخل متصفح Pi)
+            if (typeof Pi === 'undefined' || !window.Pi) {
+                console.warn("Pi SDK غير متاح. يتم التشغيل في وضع المعاينة وتصفح خارجي.");
+                document.getElementById('user-pi-balance').innerHTML = `
+                    <span class="text-red-400 font-bold text-xs"><i class="fa-solid fa-triangle-exclamation ml-1"></i> تصفح خارجي</span>
+                `;
+                return;
+            }
+
+            // تهيئة الـ SDK للويب ٣
+            try {
+                Pi.init({ version: "2.0", sandbox: true });
+                console.log("تم تهيئة Pi SDK بنجاح.");
+            } catch (err) {
+                console.error("خطأ أثناء تهيئة SDK:", err);
+            }
+
             const scopes = ['username', 'payments'];
 
             Pi.authenticate(scopes, onIncompletePaymentFound)
                 .then(function(auth) {
-                    console.log("تم التحقق بنجاح من حساب الرائد:", auth.user.username);
+                    console.log("تم الاتصال بالباي والتحقق بنجاح:", auth.user.username);
                     
-                    // تحديث بيانات المستخدم النشط
                     currentUser.username = auth.user.username;
                     currentUser.avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${auth.user.username}`;
                     currentUser.isPiAuthenticated = true;
 
-                    // تحديث الواجهة الرسومية بهوية المستخدم الحقيقية
-                    document.getElementById('navbar-user-avatar').src = currentUser.avatar;
-                    document.getElementById('feed-post-avatar').src = currentUser.avatar;
-                    document.getElementById('user-pi-balance').innerText = "متصل بـ Pi";
-                    
-                    // إعادة بناء التعليقات والمنشورات لتحديث الأسماء إن تطلب الأمر
+                    localStorage.setItem('piecho_user_v2', JSON.stringify(currentUser));
+                    updateUserProfileDOM();
+
+                    document.getElementById('user-pi-balance').innerHTML = `
+                        <span class="text-green-400 font-bold"><i class="fa-solid fa-circle-check ml-1"></i> متصل بـ Pi</span>
+                    `;
                     renderPosts();
                 })
                 .catch(function(error) {
                     console.error("فشل تسجيل الدخول عبر Pi Auth:", error);
-                    document.getElementById('user-pi-balance').innerText = "تصفح خارجي (تجريبي)";
+                    document.getElementById('user-pi-balance').innerHTML = `
+                        <span class="text-red-400 font-bold"><i class="fa-solid fa-triangle-exclamation ml-1"></i> خطأ بالاتصال</span>
+                    `;
                 });
         }
 
-        // دالة تفرضها شبكة باي لمعالجة العمليات المعلقة وتجنب خسارة الأرصدة
         function onIncompletePaymentFound(payment) {
-            console.log("تم اكتشاف معاملة سابقة غير مكتملة:", payment);
-            // لتبسيط التطبيق بدون خادم خلفي: نرسل الموافقة للشبكة مباشرة لتكملة العملية أو إلغائها
-            // في التطبيق الإنتاجي الكامل، يجب التحقق من المعاملة عبر خادم الـ Node/Supabase الخاص بك
+            console.log("تم العثور على عملية دفع معلقة غير مكتملة:", payment);
+            // في التطبيق الحقيقي تقوم بإرسال معرف الدفع لخادمك لإغلاق المعاملة وحفظ الأرصدة
+        }
+
+        // فحص حالة الاتصال وعرض إرشادات في حال فشل الاتصال بالبلوكتشين
+        function checkPiConnectionStatus() {
+            if (typeof Pi === 'undefined' || !currentUser.isPiAuthenticated) {
+                document.getElementById('pi-guide-modal').classList.remove('hidden');
+                document.getElementById('pi-guide-modal').classList.add('flex');
+            } else {
+                alert(`أنت متصل حالياً بنجاح كعضو رسمي: @${currentUser.username}`);
+            }
+        }
+
+        function closePiGuideModal() {
+            document.getElementById('pi-guide-modal').classList.add('hidden');
+            document.getElementById('pi-guide-modal').classList.remove('flex');
+        }
+
+        // فتح وإغلاق تعديل الملف الشخصي
+        function openEditProfileModal() {
+            document.getElementById('edit-username').value = currentUser.username;
+            document.getElementById('edit-bio').value = currentUser.bio || "";
+            document.getElementById('modal-avatar-preview').src = currentUser.avatar;
+
+            document.getElementById('profile-modal').classList.remove('hidden');
+            document.getElementById('profile-modal').classList.add('flex');
+        }
+
+        function closeEditProfileModal() {
+            document.getElementById('profile-modal').classList.add('hidden');
+            document.getElementById('profile-modal').classList.remove('flex');
+        }
+
+        // معاينة تغيير الصورة الشخصية
+        function previewAvatarChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('modal-avatar-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // حفظ بيانات الملف الشخصي وتحديثها في الذاكرة المحلية والواجهة
+        function saveUserProfile() {
+            const username = document.getElementById('edit-username').value.trim();
+            const bio = document.getElementById('edit-bio').value.trim();
+            const avatarSrc = document.getElementById('modal-avatar-preview').src;
+
+            if (!username) {
+                alert("الرجاء تحديد الاسم الشخصي!");
+                return;
+            }
+
+            currentUser.username = username;
+            currentUser.bio = bio;
+            currentUser.avatar = avatarSrc;
+
+            localStorage.setItem('piecho_user_v2', JSON.stringify(currentUser));
+            updateUserProfileDOM();
+            closeEditProfileModal();
+            renderPosts(); // لتحديث اسم المعلق أو الناشر إن قمت بتعديله
+        }
+
+        // تفعيل اختيار ملف الفيديو
+        function triggerVideoUpload() {
+            document.getElementById('post-video-file').click();
+        }
+
+        // معاينة الفيديو الذي تم اختياره قبل النشر
+        function previewSelectedVideo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // التأكد من حجم الملف لحفظ الأداء
+                if (file.size > 80 * 1024 * 1024) { // حد 80 ميجا
+                    alert("عذراً، حجم الفيديو كبير جداً. يرجى اختيار ملف أصغر.");
+                    return;
+                }
+                selectedVideoDataUrl = URL.createObjectURL(file);
+                
+                document.getElementById('video-preview').src = selectedVideoDataUrl;
+                document.getElementById('video-preview-container').classList.remove('hidden');
+            }
+        }
+
+        // إلغاء تحديد الفيديو المختار
+        function removeVideoSelection() {
+            selectedVideoDataUrl = null;
+            document.getElementById('post-video-file').value = "";
+            document.getElementById('video-preview-container').classList.add('hidden');
+            document.getElementById('video-preview').src = "";
         }
 
         // عرض المنشورات ديناميكياً
@@ -294,18 +522,28 @@
                 let commentsHTML = '';
                 post.comments.forEach(comment => {
                     commentsHTML += `
-                        <div class="flex gap-2 bg-[#1b0e2b] p-2 rounded-xl text-xs">
+                        <div class="flex gap-2 bg-[#1b0e2b] p-2.5 rounded-xl text-xs">
                             <span class="font-bold text-[#e5a93b]">${comment.author}:</span>
                             <span class="text-gray-300">${comment.content}</span>
                         </div>
                     `;
                 });
 
+                // دمج الفيديو إذا كان متوفراً بالمنشور
+                let videoElementHTML = '';
+                if (post.video) {
+                    videoElementHTML = `
+                        <div class="mt-3 rounded-xl overflow-hidden border border-purple-950/40 bg-black max-h-96 flex justify-center items-center">
+                            <video src="${post.video}" controls class="w-full max-h-96" preload="metadata"></video>
+                        </div>
+                    `;
+                }
+
                 const postHTML = `
                     <div class="bg-[#150b22] border border-purple-950/50 rounded-2xl p-5 shadow-md space-y-4 transition-all hover:border-purple-900/50">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <img src="${post.avatar}" alt="Avatar" class="w-10 h-10 rounded-full border border-purple-800">
+                                <img src="${post.avatar}" alt="Avatar" class="w-10 h-10 rounded-full border border-purple-800 object-cover">
                                 <div>
                                     <div class="flex items-center gap-2">
                                         <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
@@ -318,6 +556,8 @@
                         
                         <p class="text-gray-300 text-sm leading-relaxed">${post.content}</p>
 
+                        ${videoElementHTML}
+
                         <!-- أزرار التفاعل والمكافأة -->
                         <div class="flex items-center justify-between pt-3 border-t border-purple-950/40 text-gray-400 text-sm">
                             <button onclick="toggleLike(${post.id})" class="flex items-center gap-2 transition-colors ${post.likedByMe ? 'text-[#e5a93b]' : 'hover:text-[#e5a93b]'}">
@@ -328,7 +568,7 @@
                                 <i class="fa-regular fa-comment"></i>
                                 <span>${post.comments.length} تعليقات</span>
                             </button>
-                            <!-- زر الدعم بالعملة الحقيقي -->
+                            <!-- زر الدعم بالعملة -->
                             <button onclick="openSupportModal(${post.id}, '${post.author}')" class="flex items-center gap-1.5 bg-[#e5a93b]/10 text-[#e5a93b] px-3 py-1 rounded-full hover:bg-[#e5a93b]/20 transition-all font-semibold text-xs border border-[#e5a93b]/20">
                                 <i class="fa-solid fa-gift"></i>
                                 <span>دعم بـ Pi</span>
@@ -356,18 +596,19 @@
             const input = document.getElementById('post-input');
             const text = input.value.trim();
 
-            if (!text) {
-                alert("الرجاء كتابة شيء ما أولاً!");
+            if (!text && !selectedVideoDataUrl) {
+                alert("الرجاء كتابة شيء ما أو اختيار فيديو أولاً!");
                 return;
             }
 
             const newPost = {
                 id: Date.now(),
                 author: currentUser.username,
-                badge: currentUser.isPiAuthenticated ? "عضو رسمي" : "مطور باي",
+                badge: currentUser.isPiAuthenticated ? "عضو رسمي" : "رائد نشط",
                 badgeColor: "bg-gradient-to-r from-[#5c1f75]/40 to-[#e5a93b]/20 text-[#e5a93b] border border-[#e5a93b]/30",
                 avatar: currentUser.avatar,
                 content: text,
+                video: selectedVideoDataUrl, // ربط الفيديو المرفوع بالمنشور
                 timestamp: "الآن",
                 likes: 0,
                 likedByMe: false,
@@ -375,9 +616,12 @@
             };
 
             posts.unshift(newPost);
-            saveToLocalStorage();
+            savePostsToLocalStorage();
             renderPosts();
+            
+            // تصفير الحقول والمعاينات
             input.value = '';
+            removeVideoSelection();
         }
 
         // تفاعل الإعجاب
@@ -391,7 +635,7 @@
                     post.likes++;
                     post.likedByMe = true;
                 }
-                saveToLocalStorage();
+                savePostsToLocalStorage();
                 renderPosts();
             }
         }
@@ -415,7 +659,7 @@
                     author: currentUser.username,
                     content: text
                 });
-                saveToLocalStorage();
+                savePostsToLocalStorage();
                 renderPosts();
                 document.getElementById(`comment-box-${postId}`).classList.remove('hidden');
             }
@@ -455,6 +699,11 @@
 
         // دالة معالجة الدفع الحقيقي باستخدام Pi SDK
         function executePiPayment() {
+            if (typeof Pi === 'undefined') {
+                alert("عذراً، لا يمكن معالجة عمليات الدفع عبر متصفح عادي. يرجى فتح التطبيق من متصفح Pi Browser لإتمام الدفع الآمن.");
+                return;
+            }
+
             if (!activePostIdForTip || activePostIdForTip === 1 || activePostIdForTip === 0) {
                 alert("تم اختبار الاتصال الآمن مع بروتوكول SDK بنجاح!");
                 closeSupportModal();
@@ -481,7 +730,6 @@
             const paymentCallbacks = {
                 onReadyForServerApproval: function(paymentId) {
                     console.log("المعاملة جاهزة للموافقة من السيرفر. معرف الدفع:", paymentId);
-                    // تنبيه فوري يوضح رقم المعاملة للمستخدم
                     alert(`تنبيه SDK: تم إنشاء طلب دفع برقم: \n${paymentId}\n(سيتم تمريره للمطابقة والتحقق التلقائي)`);
                 },
                 onReadyForServerCompletion: function(paymentId, txid) {
