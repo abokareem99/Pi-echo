@@ -305,15 +305,15 @@
             document.getElementById('sidebar-user-bio').innerText = currentUser.bio || "لا يوجد بايو محدد.";
         }
 
-        // دالة التهيئة مع دمج المتغير بنجاح
+        // دالة التهيئة مع دمج المتغير بنجاح وتنشيط Sandbox
         function startPiSDKInitialization() {
             if (typeof Pi !== 'undefined') {
-                console.log("تم رصد مكتبة Pi SDK بنجاح. جاري التهيئة...");
+                console.log("تم رصد مكتبة Pi SDK بنجاح. جاري التهيئة للتجربة...");
                 try {
-                    // تهيئة الـ SDK مع خيار sandbox: false للشبكة الحقيقية
+                    // تم تعديل sandbox إلى true لتفعيل المحفظة التجريبية بنجاح
                     Pi.init({ 
                         version: "2.0", 
-                        sandbox: false 
+                        sandbox: true 
                     });
                     authenticatePiUser();
                 } catch (err) {
@@ -333,67 +333,64 @@
             }
         }
 
+        // إكمال دالة المصادقة التي انقطعت
         function authenticatePiUser() {
             const scopes = ['username', 'payments'];
+            
+            // دالة استدعاء عند العثور على دفعات سابقة معلقة لم تكتمل
+            function onIncompletePaymentFound(payment) {
+                console.log("تم العثور على دفعة معلقة غير مكتملة:", payment);
+                // يمكنك إرسال رقم المعرف لخادمك أو إتمامها تجريبياً
+                alert(`هناك دفعة معلقة برقم: ${payment.identifier}، يجب تسويتها.`);
+            }
 
             Pi.authenticate(scopes, onIncompletePaymentFound)
                 .then(function(auth) {
-                    console.log("تم الاتصال بمصادقة باي بنجاح للرائد:", auth.user.username);
-                    
+                    console.log("تم تسجيل الدخول بنجاح عبر Pi:", auth);
                     currentUser.username = auth.user.username;
                     currentUser.avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${auth.user.username}`;
                     currentUser.isPiAuthenticated = true;
-
-                    localStorage.setItem('piecho_user_v2', JSON.stringify(currentUser));
+                    
                     updateUserProfileDOM();
-
-                    document.getElementById('user-pi-balance').innerHTML = `
-                        <span class="text-green-400 font-bold"><i class="fa-solid fa-circle-check ml-1"></i> متصل بـ Pi</span>
-                    `;
-                    renderPosts();
+                    
+                    const balanceElement = document.getElementById('user-pi-balance');
+                    balanceElement.innerText = "🟢 متصل بـ Pi (Sandbox)";
+                    balanceElement.className = "text-green-400 font-semibold text-xs md:text-sm";
+                    
+                    localStorage.setItem('piecho_user_v2', JSON.stringify(currentUser));
                 })
                 .catch(function(error) {
-                    console.error("فشل تسجيل الدخول عبر Pi Auth:", error);
+                    console.error("فشل تسجيل الدخول لـ Pi:", error);
                     lastPiError = error.message || JSON.stringify(error);
                     setConnectionStatusError();
                 });
         }
 
-        function onIncompletePaymentFound(payment) {
-            console.log("تم العثور على معاملة سابقة معلقة:", payment);
-        }
-
         function setConnectionStatusError() {
-            document.getElementById('user-pi-balance').innerHTML = `
-                <span class="text-red-400 font-bold text-xs"><i class="fa-solid fa-triangle-exclamation ml-1"></i> خطأ بالاتصال</span>
-            `;
+            const balanceElement = document.getElementById('user-pi-balance');
+            balanceElement.innerText = "❌ خطأ اتصال الـ SDK";
+            balanceElement.className = "text-red-400 font-semibold text-xs md:text-sm";
         }
 
         function setExternalBrowserStatus() {
-            document.getElementById('user-pi-balance').innerHTML = `
-                <span class="text-yellow-400 font-bold text-[10px]"><i class="fa-solid fa-globe ml-1"></i> تصفح خارجي</span>
-            `;
-            lastPiError = "تم فتح الرابط من متصفح عادي. يرجى نسخه وفتحه حصراً داخل تطبيق Pi Browser الرسمي.";
+            const balanceElement = document.getElementById('user-pi-balance');
+            balanceElement.innerText = "🌐 متصفح خارجي (سجل عبر Pi)";
+            balanceElement.className = "text-yellow-500 font-semibold text-xs md:text-sm";
         }
 
         function showDetailedPiError() {
-            if (currentUser.isPiAuthenticated) {
-                alert(`أنت متصل بالبلوكتشين بنجاح كعضو رسمي: @${currentUser.username}`);
-            } else {
-                alert(`[تفاصيل حالة الاتصال بالشبكة]:\n\n${lastPiError}\n\n💡 نصيحة: تأكد من تفعيل الـ VPN في السودان عند فتح متصفح باي لضمان استجابة خوادم البلوكشين وتوليد المحفظة.`);
-            }
+            alert(`تفاصيل الاتصال بالـ SDK:\n\n${lastPiError}\n\nتأكد دائماً من تفعيل الـ VPN وفتح الموقع من داخل تطبيق Pi Browser الرسمي.`);
         }
 
+        // التحكم في الملف الشخصي
         function openEditProfileModal() {
+            document.getElementById('modal-avatar-preview').src = currentUser.avatar;
             document.getElementById('edit-username').value = currentUser.username;
             document.getElementById('edit-bio').value = currentUser.bio || "";
-            document.getElementById('modal-avatar-preview').src = currentUser.avatar;
-
             document.getElementById('profile-modal').classList.remove('hidden');
             document.getElementById('profile-modal').classList.add('flex');
         }
 
-        // إغلاق مودال التعديل
         function closeEditProfileModal() {
             document.getElementById('profile-modal').classList.add('hidden');
             document.getElementById('profile-modal').classList.remove('flex');
@@ -411,25 +408,24 @@
         }
 
         function saveUserProfile() {
-            const username = document.getElementById('edit-username').value.trim();
-            const bio = document.getElementById('edit-bio').value.trim();
-            const avatarSrc = document.getElementById('modal-avatar-preview').src;
-
-            if (!username) {
-                alert("الرجاء تحديد الاسم الشخصي!");
-                return;
+            const newName = document.getElementById('edit-username').value.trim();
+            const newBio = document.getElementById('edit-bio').value.trim();
+            const newAvatar = document.getElementById('modal-avatar-preview').src;
+            
+            if (newName) {
+                currentUser.username = newName;
+                currentUser.bio = newBio;
+                currentUser.avatar = newAvatar;
+                
+                updateUserProfileDOM();
+                localStorage.setItem('piecho_user_v2', JSON.stringify(currentUser));
+                closeEditProfileModal();
+            } else {
+                alert("يرجى إدخال اسم مستخدم صالح.");
             }
-
-            currentUser.username = username;
-            currentUser.bio = bio;
-            currentUser.avatar = avatarSrc;
-
-            localStorage.setItem('piecho_user_v2', JSON.stringify(currentUser));
-            updateUserProfileDOM();
-            closeEditProfileModal();
-            renderPosts(); 
         }
 
+        // إدارة الفيديوهات والمنشورات
         function triggerVideoUpload() {
             document.getElementById('post-video-file').click();
         }
@@ -437,113 +433,38 @@
         function previewSelectedVideo(event) {
             const file = event.target.files[0];
             if (file) {
-                if (file.size > 80 * 1024 * 1024) { 
-                    alert("عذراً، حجم الفيديو كبير جداً. يرجى اختيار ملف أصغر.");
-                    return;
-                }
-                selectedVideoDataUrl = URL.createObjectURL(file);
-                document.getElementById('video-preview').src = selectedVideoDataUrl;
-                document.getElementById('video-preview-container').classList.remove('hidden');
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedVideoDataUrl = e.target.result;
+                    document.getElementById('video-preview').src = selectedVideoDataUrl;
+                    document.getElementById('video-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
             }
         }
 
         function removeVideoSelection() {
             selectedVideoDataUrl = null;
             document.getElementById('post-video-file').value = "";
-            document.getElementById('video-preview-container').classList.add('hidden');
             document.getElementById('video-preview').src = "";
-        }
-
-        function renderPosts() {
-            const container = document.getElementById('feed-container');
-            container.innerHTML = '';
-
-            posts.forEach(post => {
-                let commentsHTML = '';
-                post.comments.forEach(comment => {
-                    commentsHTML += `
-                        <div class="flex gap-2 bg-[#1b0e2b] p-2.5 rounded-xl text-xs">
-                            <span class="font-bold text-[#e5a93b]">${comment.author}:</span>
-                            <span class="text-gray-300">${comment.content}</span>
-                        </div>
-                    `;
-                });
-
-                let videoElementHTML = '';
-                if (post.video) {
-                    videoElementHTML = `
-                        <div class="mt-3 rounded-xl overflow-hidden border border-purple-950/40 bg-black max-h-96 flex justify-center items-center">
-                            <video src="${post.video}" controls class="w-full max-h-96" preload="metadata"></video>
-                        </div>
-                    `;
-                }
-
-                const postHTML = `
-                    <div class="bg-[#150b22] border border-purple-950/50 rounded-2xl p-5 shadow-md space-y-4 transition-all hover:border-purple-900/50">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <img src="${post.avatar}" alt="Avatar" class="w-10 h-10 rounded-full border border-purple-800 object-cover">
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
-                                        <span class="${post.badgeColor} text-[10px] px-2 py-0.5 rounded-full font-semibold">${post.badge}</span>
-                                    </div>
-                                    <span class="text-[11px] text-gray-500">${post.timestamp}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <p class="text-gray-300 text-sm leading-relaxed">${post.content}</p>
-
-                        ${videoElementHTML}
-
-                        <div class="flex items-center justify-between pt-3 border-t border-purple-950/40 text-gray-400 text-sm">
-                            <button onclick="toggleLike(${post.id})" class="flex items-center gap-2 transition-colors ${post.likedByMe ? 'text-[#e5a93b]' : 'hover:text-[#e5a93b]'}">
-                                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                                <span>${post.likes}</span>
-                            </button>
-                            <button onclick="toggleCommentBox(${post.id})" class="flex items-center gap-2 hover:text-purple-400 transition-colors">
-                                <i class="fa-regular fa-comment"></i>
-                                <span>${post.comments.length} تعليقات</span>
-                            </button>
-                            <button onclick="openSupportModal(${post.id}, '${post.author}')" class="flex items-center gap-1.5 bg-[#e5a93b]/10 text-[#e5a93b] px-3 py-1 rounded-full hover:bg-[#e5a93b]/20 transition-all font-semibold text-xs border border-[#e5a93b]/20">
-                                <i class="fa-solid fa-gift"></i>
-                                <span>دعم بـ Pi</span>
-                            </button>
-                        </div>
-
-                        <div id="comment-box-${post.id}" class="hidden space-y-3 pt-3 border-t border-purple-950/30">
-                            <div class="space-y-2" id="comments-list-${post.id}">
-                                ${commentsHTML}
-                            </div>
-                            <div class="flex gap-2">
-                                <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقك هنا..." class="flex-1 bg-[#1b0e2b] border border-purple-950/50 rounded-xl px-3 py-1.5 text-xs text-gray-200 outline-none focus:border-[#e5a93b]/50">
-                                <button onclick="addComment(${post.id})" class="bg-purple-900 text-purple-200 hover:bg-purple-800 text-xs px-3 py-1.5 rounded-xl font-bold transition-all">إرسال</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += postHTML;
-            });
+            document.getElementById('video-preview-container').classList.add('hidden');
         }
 
         function createNewPost() {
-            const input = document.getElementById('post-input');
-            const text = input.value.trim();
-
-            if (!text && !selectedVideoDataUrl) {
-                alert("الرجاء كتابة شيء ما أو اختيار فيديو أولاً!");
+            const textContent = document.getElementById('post-input').value.trim();
+            if (!textContent && !selectedVideoDataUrl) {
+                alert("من فضلك، اكتب نصاً أو ارفع فيديو أولاً لنشر المحتوى.");
                 return;
             }
 
             const newPost = {
-                id: Date.now(),
+                id: posts.length + 1,
                 author: currentUser.username,
-                badge: currentUser.isPiAuthenticated ? "عضو رسمي" : "رائد نشط",
-                badgeColor: "bg-gradient-to-r from-[#5c1f75]/40 to-[#e5a93b]/20 text-[#e5a93b] border border-[#e5a93b]/30",
+                badge: "رائد وباني",
+                badgeColor: "bg-green-500/10 text-green-400",
                 avatar: currentUser.avatar,
-                content: text,
-                video: selectedVideoDataUrl, 
+                content: textContent,
+                video: selectedVideoDataUrl,
                 timestamp: "الآن",
                 likes: 0,
                 likedByMe: false,
@@ -553,8 +474,8 @@
             posts.unshift(newPost);
             savePostsToLocalStorage();
             renderPosts();
-            
-            input.value = '';
+
+            document.getElementById('post-input').value = "";
             removeVideoSelection();
         }
 
@@ -573,115 +494,154 @@
             }
         }
 
-        function toggleCommentBox(postId) {
-            const box = document.getElementById(`comment-box-${postId}`);
-            box.classList.toggle('hidden');
-        }
-
-        function addComment(postId) {
-            const input = document.getElementById(`comment-input-${postId}`);
-            const text = input.value.trim();
-
+        function submitComment(postId) {
+            const inputElement = document.getElementById(`comment-input-${postId}`);
+            const text = inputElement.value.trim();
             if (!text) return;
 
             const post = posts.find(p => p.id === postId);
             if (post) {
+                if (!post.comments) post.comments = [];
                 post.comments.push({
                     author: currentUser.username,
                     content: text
                 });
                 savePostsToLocalStorage();
                 renderPosts();
-                document.getElementById(`comment-box-${postId}`).classList.remove('hidden');
             }
+            inputElement.value = "";
         }
 
-        function openSupportModal(postId, authorName) {
-            activePostIdForTip = postId;
-            activeRecipientName = authorName;
+        function renderPosts() {
+            const container = document.getElementById('feed-container');
+            container.innerHTML = "";
             
-            const modal = document.getElementById('payment-modal');
-            const desc = document.getElementById('modal-desc');
-            const amountContainer = document.getElementById('amount-container');
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            posts.forEach(post => {
+                const videoHTML = post.video ? `
+                    <div class="mt-3 rounded-xl overflow-hidden border border-purple-950/60 bg-black max-h-80 flex justify-center items-center">
+                        <video class="w-full max-h-80" controls src="${post.video}"></video>
+                    </div>
+                ` : '';
+                
+                let commentsHTML = '';
+                if (post.comments && post.comments.length > 0) {
+                    commentsHTML = `
+                        <div class="mt-3 pt-3 border-t border-purple-950/40 space-y-2">
+                            ${post.comments.map(c => `
+                                <div class="bg-[#1d102f] p-2.5 rounded-xl text-xs flex gap-2">
+                                    <span class="font-bold text-[#e5a93b]">${c.author}:</span>
+                                    <span class="text-gray-300">${c.content}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
 
-            if (postId === 1) {
-                desc.innerText = `حالة الاتصال: متصل عبر Pi Web3 حقيقي. عند تشغيل VPN، ستعمل المحفظة لربط وسحب نقاط الدعم بسلاسة.`;
-                amountContainer.classList.add('hidden');
-            } else if (postId === 0) {
-                desc.innerText = `سيقوم نظام الدعوات والـ SDK بالتحقق من الروابط الفرعية ومكافأة حسابك تلقائياً بنقاط الدعم عند توثيق الرواد الجدد لـ KYC.`;
-                amountContainer.classList.add('hidden');
-            } else {
-                desc.innerText = `أنت بصدد إرسال تبرع / دعم مباشر بعملة Pi الحقيقية إلى حساب الرائد: (${authorName})`;
-                amountContainer.classList.remove('hidden');
-            }
+                const postHTML = `
+                    <div class="bg-[#150b22] border border-purple-950/50 rounded-2xl p-5 shadow-md space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <img src="${post.avatar}" alt="${post.author}" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
+                                        ${post.badge ? `<span class="text-[9px] px-2 py-0.5 rounded-full ${post.badgeColor} font-semibold">${post.badge}</span>` : ''}
+                                    </div>
+                                    <span class="text-[10px] text-gray-500">${post.timestamp}</span>
+                                </div>
+                            </div>
+                            <button onclick="openSupportModal(${post.id}, '${post.author}')" class="flex items-center gap-1 bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0d0614] transition-all px-3 py-1.5 rounded-xl text-xs font-semibold">
+                                <i class="fa-solid fa-heart-circle-bolt"></i>
+                                <span>أرسل Pi</span>
+                            </button>
+                        </div>
+                        
+                        <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">${post.content}</p>
+                        
+                        ${videoHTML}
+                        
+                        <div class="flex items-center gap-6 pt-3 border-t border-purple-950/40 text-xs text-gray-400">
+                            <button onclick="toggleLike(${post.id})" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${post.likedByMe ? 'text-red-500' : ''}">
+                                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
+                                <span>${post.likes}</span>
+                            </button>
+                            <div class="flex items-center gap-1.5 cursor-pointer hover:text-purple-400">
+                                <i class="fa-regular fa-comment text-sm"></i>
+                                <span>${post.comments ? post.comments.length : 0}</span>
+                            </div>
+                        </div>
+
+                        ${commentsHTML}
+
+                        <div class="flex gap-2 mt-3 pt-2">
+                            <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#1d102f] text-xs text-gray-200 border border-purple-950/60 rounded-xl px-3 py-2 outline-none focus:border-[#e5a93b]/50">
+                            <button onclick="submitComment(${post.id})" class="bg-[#211434] hover:bg-[#e5a93b] hover:text-[#0d0614] text-[#e5a93b] text-xs font-bold px-3 py-2 rounded-xl transition-all">إرسال</button>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', postHTML);
+            });
+        }
+
+        // إدارة المدفوعات وبوابة الدفع
+        function openSupportModal(postId, recipientName) {
+            activePostIdForTip = postId;
+            activeRecipientName = recipientName;
+            document.getElementById('modal-desc').innerText = `أنت على وشك إرسال دعم مالي تجريبي إلى "${recipientName}" لدعم المحتوى الرقمي الخاص به على شبكة باي إيكو.`;
+            document.getElementById('payment-modal').classList.remove('hidden');
+            document.getElementById('payment-modal').classList.add('flex');
         }
 
         function closeSupportModal() {
-            const modal = document.getElementById('payment-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            activePostIdForTip = null;
-            activeRecipientName = null;
+            document.getElementById('payment-modal').classList.add('hidden');
+            document.getElementById('payment-modal').classList.remove('flex');
         }
 
         function executePiPayment() {
-            if (typeof Pi === 'undefined' || !currentUser.isPiAuthenticated) {
-                alert("عذراً، لا يمكن معالجة عمليات الدفع حالياً لعدم اكتمال المصادقة مع البلوكشين.");
+            const amount = parseFloat(document.getElementById('tip-amount').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert("الرجاء إدخال قيمة دعم صالحة بـ Pi.");
                 return;
             }
 
-            if (!activePostIdForTip || activePostIdForTip === 1 || activePostIdForTip === 0) {
-                alert("تم اختبار الاتصال الآمن بنجاح!");
-                closeSupportModal();
+            if (!currentUser.isPiAuthenticated) {
+                alert("عذراً، يجب أن تقوم بتسجيل الدخول كعضو موثق عبر Pi Browser أولاً لتتمكن من استخدام المحفظة.");
                 return;
             }
 
-            const tipAmount = parseFloat(document.getElementById('tip-amount').value);
-            if (isNaN(tipAmount) || tipAmount <= 0) {
-                alert("الرجاء تحديد قيمة صالحة لعملة Pi");
-                return;
-            }
-
+            // إنشاء بيانات معاملة دفع Pi
             const paymentData = {
-                amount: tipAmount,
-                memo: `دعم وتبرع للرائد ${activeRecipientName} على Pi Echo`,
-                metadata: { 
-                    postId: activePostIdForTip, 
-                    recipient: activeRecipientName 
-                }
+                amount: amount,
+                memo: `دعم محتوى إلى ${activeRecipientName} عبر تطبيق باي إيكو (تجريبي)`,
+                metadata: { postId: activePostIdForTip, recipient: activeRecipientName }
             };
 
-            const paymentCallbacks = {
+            const callbacks = {
                 onReadyForServerApproval: function(paymentId) {
-                    console.log("المعاملة جاهزة للموافقة من السيرفر. معرف الدفع:", paymentId);
-                    alert(`تنبيه SDK: تم إنشاء طلب دفع برقم: \n${paymentId}`);
+                    console.log("الدفعة جاهزة لموافقة الخادم الخلفي (Approval)، الرقم التعريفي للدفعة:", paymentId);
+                    // في بيئة التجربة الكاملة، تحتاج إلى إرسال هذا الرقم لخادمك (API) للاتفاق مع خوادم Pi.
+                    // للمحاكاة هنا:
+                    alert(`تم إنشاء المعاملة بنجاح برقم: ${paymentId}. للتفعيل الفعلي، ستحتاج لربط خادم لإكمال الدورة المستندية.`);
                 },
                 onReadyForServerCompletion: function(paymentId, txid) {
-                    console.log("اكتملت المعاملة على بلوكتشين باي بنجاح! الهاش:", txid);
-                    alert(`🎉 شكراً لك! تم إرسال الدعم بنجاح.\nالقيمة: ${tipAmount} Pi\nمعرف المعاملة (TxID): ${txid}`);
+                    console.log("المعاملة جاهزة للإكمال النهائي (Completion)، رقم العملية للبلوكشين:", txid);
+                    alert(`ألف مبروك! تم إرسال الدعم بنجاح. رقم العملية: ${txid}`);
                     closeSupportModal();
                 },
                 onCancel: function(paymentId) {
-                    console.log("تم إلغاء عملية الدفع من قبل الرائد.", paymentId);
-                    alert("تم إلغاء المعاملة بطلب من المستخدم.");
+                    console.log("تم إلغاء المعاملة من قِبل المستخدم:", paymentId);
                 },
                 onError: function(error, payment) {
-                    console.error("حدث خطأ أثناء معالجة الدفع:", error);
-                    alert("عذراً، لم نتمكن من إتمام عملية الدفع. يرجى المحاولة لاحقاً داخل Pi Browser.");
+                    console.error("حدث خطأ غير متوقع أثناء إتمام الدفع:", error);
+                    alert("عذراً، فشلت عملية الدفع. تأكد من تفعيل بيئة الـ Testnet بالمحفظة.");
                 }
             };
 
-            try {
-                Pi.createPayment(paymentData, paymentCallbacks);
-            } catch (err) {
-                console.error("فشل استدعاء Pi.createPayment:", err);
-                alert("فشل في استدعاء واجهة محفظة باي.");
-            }
+            // إرسال طلب الدفع للـ SDK الرسمي
+            Pi.createPayment(paymentData, callbacks);
         }
 
+        // تشغيل التطبيق بالكامل عند تحميل الصفحة
         window.onload = initApp;
     </script>
 </body>
