@@ -26,17 +26,41 @@
             background: #e5a93b;
             border-radius: 10px;
         }
+        /* تأثير النبض للموجات الصوتية */
+        .voice-wave {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 30px;
+        }
+        .voice-bar {
+            width: 4px;
+            height: 100%;
+            background-color: #e5a93b;
+            border-radius: 10px;
+            animation: bounce 0.8s ease-in-out infinite alternate;
+        }
+        .voice-bar:nth-child(2) { animation-delay: 0.2s; height: 60%; }
+        .voice-bar:nth-child(3) { animation-delay: 0.4s; height: 30%; }
+        .voice-bar:nth-child(4) { animation-delay: 0.1s; height: 80%; }
+        .voice-bar:nth-child(5) { animation-delay: 0.3s; height: 50%; }
+
+        @keyframes bounce {
+            0% { transform: scaleY(0.3); }
+            100% { transform: scaleY(1.1); }
+        }
     </style>
 </head>
 <body class="text-gray-100 min-h-screen flex flex-col justify-between">
 
-    <header class="sticky top-0 z-40 bg-[#150b22] border-b border-[#e5a93b]/20 shadow-lg px-4 lg:px-8 py-3 flex items-center justify-between">
+    <!-- الهيدر الرئيسي -->
+    <header class="sticky top-0 z-40 bg-[#150b22] border-b-2 border-[#e5a93b] shadow-[0_4px_20px_rgba(229,169,59,0.15)] px-4 lg:px-8 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <img src="eagle-logo.png" alt="شعار باي إيكو" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover shadow-md">
             <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-[#e5a93b] to-yellow-400 bg-clip-text text-transparent">باي <span class="text-purple-400">إيكو</span></span>
         </div>
 
-        <div class="hidden md:flex items-center bg-[#211434] rounded-full px-4 py-1.5 w-96 border border-purple-900/40 focus-within:border-[#e5a93b] transition-all">
+        <div class="hidden md:flex items-center bg-[#211434] rounded-full px-4 py-1.5 w-96 border border-[#e5a93b]/30 focus-within:border-[#e5a93b] transition-all">
             <i class="fa-solid fa-magnifying-glass text-gray-400 ml-2"></i>
             <input type="text" placeholder="ابحث عن منشورات أو رواد..." class="bg-transparent border-none outline-none text-sm w-full text-gray-200 placeholder-gray-500">
         </div>
@@ -46,7 +70,7 @@
                 <i class="fa-regular fa-bell text-xl"></i>
                 <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
             </button>
-            <div id="pi-status-container" class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/30 rounded-full py-1.5 px-3 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b]" onclick="handleStatusClick()">
+            <div id="pi-status-container" class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/50 rounded-full py-1.5 px-3 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b]" onclick="handleStatusClick()">
                 <i id="pi-status-icon" class="fa-solid fa-wallet text-[#e5a93b]"></i>
                 <span id="user-pi-balance" class="text-gray-300 font-semibold">جاري تهيئة SDK...</span>
             </div>
@@ -56,8 +80,10 @@
 
     <div class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 grid grid-cols-1 md:grid-cols-4 gap-6">
 
+        <!-- القائمة الجانبية اليمنى -->
         <aside class="hidden md:block md:col-span-1 space-y-4">
-            <div class="bg-[#150b22] p-5 rounded-2xl border border-purple-950/50 space-y-4">
+            <!-- الحاوية الذهبية لملف المستخدم -->
+            <div class="bg-[#150b22] p-5 rounded-2xl border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)] space-y-4">
                 <div class="flex flex-col items-center text-center">
                     <div class="relative group">
                         <img id="sidebar-user-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-20 h-20 rounded-full border-2 border-[#e5a93b] shadow-md object-cover">
@@ -70,12 +96,12 @@
                         مهتم بتطوير مشاريع الويب 3 ودعم مجتمع باي في الوطن العربي.
                     </p>
                 </div>
-                <div class="pt-3 border-t border-purple-950/50 flex justify-around text-center text-xs text-gray-400">
+                <div class="pt-3 border-t border-[#e5a93b]/30 flex justify-around text-center text-xs text-gray-400">
                     <div>
                         <span class="block font-bold text-gray-100 text-sm">١.٢ ألف</span>
                         <span>متابع</span>
                     </div>
-                    <div class="border-l border-purple-950/50"></div>
+                    <div class="border-l border-[#e5a93b]/30"></div>
                     <div>
                         <span class="block font-bold text-gray-100 text-sm">٣٤٠</span>
                         <span>يتابع</span>
@@ -83,7 +109,8 @@
                 </div>
             </div>
 
-            <nav class="space-y-1 bg-[#150b22] p-4 rounded-2xl border border-purple-950/50">
+            <!-- الحاوية الذهبية للتنقل والموقع -->
+            <nav class="space-y-1 bg-[#150b22] p-4 rounded-2xl border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)]">
                 <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
                     <i class="fa-solid fa-house text-lg"></i>
                     <span>الرئيسية</span>
@@ -96,28 +123,35 @@
                     <i class="fa-regular fa-message text-lg"></i>
                     <span>الرسائل</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
-                    <i class="fa-solid fa-chart-line text-lg"></i>
-                    <span>المعاملات والتبرعات</span>
-                </a>
-                <hr class="border-purple-950/60 my-3">
-                <button onclick="openSupportModal(0, 'نظام الدعوات')" class="w-full bg-gradient-to-r from-[#5c1f75] to-[#7b2c9e] text-white font-semibold py-2.5 px-4 rounded-xl shadow-md hover:from-[#6b2588] hover:to-[#8c35b3] transition-all text-sm mb-3">
+                <hr class="border-[#e5a93b]/30 my-3">
+                <button onclick="openSupportModal(0, 'نظام الدعوات')" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-3">
                     <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
                 </button>
-                <div class="text-center text-[11px] text-gray-500 pt-3 border-t border-purple-950/40">
+                <div class="text-center text-[11px] text-gray-500 pt-3 border-t border-[#e5a93b]/20">
                     تصميم وتطوير أبو كريم © 2026
                 </div>
             </nav>
         </aside>
 
+        <!-- القسم الأوسط (المنشورات والتفاعل) -->
         <main class="col-span-1 md:col-span-2 space-y-6">
-            <div class="bg-[#150b22] border border-purple-950/50 rounded-2xl p-4 shadow-md">
+            <!-- الحاوية الذهبية لإنشاء منشور -->
+            <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-4">
                 <div class="flex gap-3">
                     <img id="feed-post-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="User Avatar" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
                     <div class="flex-1">
-                        <textarea id="post-input" placeholder="ماذا يدور في ذهنك اليوم يا رائد؟" rows="3" class="w-full bg-[#1b0e2b] rounded-xl p-3 text-sm text-gray-200 placeholder-gray-500 border border-purple-950/30 focus:border-[#e5a93b]/50 focus:outline-none resize-none transition-all"></textarea>
+                        <textarea id="post-input" placeholder="ماذا يدور في ذهنك اليوم يا رائد؟" rows="3" class="w-full bg-[#1b0e2b] rounded-xl p-3 text-sm text-gray-200 placeholder-gray-500 border border-[#e5a93b]/30 focus:border-[#e5a93b] focus:outline-none resize-none transition-all"></textarea>
                         
-                        <div id="video-preview-container" class="hidden relative mt-3 rounded-xl overflow-hidden border border-purple-950/60 bg-black max-h-60 flex justify-center items-center">
+                        <!-- معاينة الصورة المحددة -->
+                        <div id="image-preview-container" class="hidden relative mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-60 flex justify-center items-center">
+                            <img id="image-preview" class="max-h-60 w-full object-cover" src="">
+                            <button onclick="removeImageSelection()" class="absolute top-2 left-2 bg-red-600/90 text-white hover:bg-red-700 transition-colors w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- معاينة الفيديو المحدد -->
+                        <div id="video-preview-container" class="hidden relative mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-60 flex justify-center items-center">
                             <video id="video-preview" class="max-h-60 w-full" controls></video>
                             <button onclick="removeVideoSelection()" class="absolute top-2 left-2 bg-red-600/90 text-white hover:bg-red-700 transition-colors w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
                                 <i class="fa-solid fa-trash text-xs"></i>
@@ -125,15 +159,20 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center justify-between mt-3 pt-3 border-t border-purple-950/50">
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-[#e5a93b]/20">
                     <div class="flex gap-2 text-gray-400">
-                        <button class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
+                        <!-- زر رفع الصور -->
+                        <button onclick="triggerImageUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
                             <i class="fa-regular fa-image text-lg"></i>
                         </button>
+                        <input type="file" id="post-image-file" accept="image/*" class="hidden" onchange="previewSelectedImage(event)">
+
+                        <!-- زر رفع الفيديوهات -->
                         <button onclick="triggerVideoUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة فيديو">
                             <i class="fa-solid fa-video text-lg"></i>
                         </button>
                         <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="previewSelectedVideo(event)">
+                        
                         <button class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة رمز تعبيري">
                             <i class="fa-regular fa-face-smile text-lg"></i>
                         </button>
@@ -144,12 +183,32 @@
                 </div>
             </div>
 
+            <!-- حاوية عرض المنشورات الفيد -->
             <div id="feed-container" class="space-y-6"></div>
         </main>
 
+        <!-- القائمة الجانبية اليسرى -->
         <aside class="hidden md:block md:col-span-1 space-y-6">
-            <div class="bg-[#150b22] border border-purple-950/50 p-4 rounded-2xl space-y-4">
-                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-purple-950/60 pb-2">
+            <!-- حاوية الدردشة الصوتية الجديدة (ذهبية) -->
+            <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] p-4 rounded-2xl space-y-4">
+                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2">
+                    <i class="fa-solid fa-microphone-lines ml-2 animate-pulse"></i>الدردشة الصوتية المباشرة
+                </h3>
+                <div class="p-3 bg-[#1d102f] rounded-xl border border-[#e5a93b]/30 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-300 font-bold">روم رواد باي العرب 🎙️</span>
+                        <span class="text-[10px] bg-red-600/20 text-red-400 px-2 py-0.5 rounded-full">نشط</span>
+                    </div>
+                    <p class="text-[10px] text-gray-400 leading-relaxed">انضم الآن وناقش آخر مستجدات الشبكة المفتوحة والتجارة مع الرواد بالصوت مباشر!</p>
+                    <button onclick="openVoiceChatModal()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-2 rounded-lg text-xs transition-all shadow-md">
+                        <i class="fa-solid fa-headset ml-1"></i> انضمام للروم الصوتي
+                    </button>
+                </div>
+            </div>
+
+            <!-- الحاوية الذهبية للأخبار -->
+            <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] p-4 rounded-2xl space-y-4">
+                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2">
                     <i class="fa-solid fa-circle-nodes ml-2"></i>أخبار الشبكة المفتوحة
                 </h3>
                 <div class="space-y-3">
@@ -166,15 +225,75 @@
         </aside>
     </div>
 
-    <footer class="md:hidden sticky bottom-0 bg-[#150b22] border-t border-[#e5a93b]/20 py-2.5 px-6 flex justify-around items-center text-gray-400 text-xl z-40">
+    <!-- الفوتر للهواتف المحمولة -->
+    <footer class="md:hidden sticky bottom-0 bg-[#150b22] border-t-2 border-[#e5a93b] py-2.5 px-6 flex justify-around items-center text-gray-400 text-xl z-40">
         <a href="#" class="text-[#e5a93b]"><i class="fa-solid fa-house"></i></a>
-        <a href="#" class="hover:text-purple-400"><i class="fa-regular fa-compass"></i></a>
+        <a href="#" onclick="openVoiceChatModal()" class="hover:text-[#e5a93b]"><i class="fa-solid fa-microphone-lines"></i></a>
         <a href="#" class="hover:text-[#e5a93b]" onclick="openEditProfileModal()"><i class="fa-regular fa-user"></i></a>
         <a href="#" class="hover:text-[#e5a93b]"><i class="fa-regular fa-message"></i></a>
     </footer>
 
+    <!-- البوب-أب الجديد للدردشة الصوتية (الروم الصوتي) -->
+    <div id="voice-chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-[0_0_30px_rgba(229,169,59,0.3)] relative">
+            <button onclick="closeVoiceChatModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-16 h-16 bg-gradient-to-tr from-[#e5a93b] to-yellow-500 rounded-full flex items-center justify-center mx-auto shadow-md">
+                <i class="fa-solid fa-microphone text-[#0d0614] text-3xl animate-bounce"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-[#e5a93b]">روم رواد باي العرب 🎙️</h3>
+                <span id="voice-connection-status" class="text-xs text-green-400 font-semibold block mt-1">🟡 جاري الاتصال بالروم...</span>
+            </div>
+
+            <!-- حركة موجات الصوت -->
+            <div class="flex justify-center items-center py-4">
+                <div id="voice-bars-container" class="voice-wave hidden">
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                    <div class="voice-bar"></div>
+                </div>
+            </div>
+
+            <!-- الرواد الموجودين داخل الغرفة حالياً -->
+            <div class="space-y-2">
+                <h4 class="text-xs text-gray-400 text-right">الرواد النشطين بالصوت (3):</h4>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-[#1d102f] p-2 rounded-xl border border-purple-950 flex flex-col items-center">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" class="w-8 h-8 rounded-full border border-[#e5a93b]">
+                        <span class="text-[9px] text-gray-300 mt-1 truncate w-full">أبو كريم (أنت)</span>
+                    </div>
+                    <div class="bg-[#1d102f] p-2 rounded-xl border border-purple-950 flex flex-col items-center relative">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed" class="w-8 h-8 rounded-full">
+                        <span class="text-[9px] text-gray-300 mt-1 truncate w-full">أحمد السوداني</span>
+                        <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-black"></span>
+                    </div>
+                    <div class="bg-[#1d102f] p-2 rounded-xl border border-purple-950 flex flex-col items-center relative">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" class="w-8 h-8 rounded-full">
+                        <span class="text-[9px] text-gray-300 mt-1 truncate w-full">سارة محمد</span>
+                        <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-black"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أزرار التحكم بالصوت -->
+            <div class="flex justify-center gap-4 pt-4 border-t border-[#e5a93b]/20">
+                <button id="toggle-mic-btn" onclick="toggleMicrophone()" class="bg-[#211434] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md">
+                    <i id="mic-icon" class="fa-solid fa-microphone-slash text-lg"></i>
+                </button>
+                <button onclick="closeVoiceChatModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-full text-sm transition-all shadow-md">
+                    مغادرة الغرفة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- بوب-أب تعديل الملف الشخصي -->
     <div id="profile-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-[#150b22] border border-[#e5a93b]/40 rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl relative">
+        <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl relative">
             <button onclick="closeEditProfileModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -190,11 +309,11 @@
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs text-gray-400 block">الاسم الشخصي (الرائد)</label>
-                    <input type="text" id="edit-username" class="w-full bg-[#211434] border border-purple-950/60 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b]">
+                    <input type="text" id="edit-username" class="w-full bg-[#211434] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b]">
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs text-gray-400 block">الوصف الشخصي (البايو)</label>
-                    <textarea id="edit-bio" rows="3" class="w-full bg-[#211434] border border-purple-950/60 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b] resize-none"></textarea>
+                    <textarea id="edit-bio" rows="3" class="w-full bg-[#211434] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b] resize-none"></textarea>
                 </div>
             </div>
             <button onclick="saveUserProfile()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">
@@ -203,8 +322,9 @@
         </div>
     </div>
 
+    <!-- بوب-أب دفع الباي (ساندبوكس/رسمي) -->
     <div id="payment-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-[#150b22] border border-[#e5a93b]/40 rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-2xl relative">
+        <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-2xl relative">
             <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -217,9 +337,9 @@
             </div>
             <div id="amount-container" class="space-y-2">
                 <label class="text-xs text-gray-400 block">حدد قيمة الدعم بـ Pi:</label>
-                <input type="number" id="tip-amount" value="1.0" min="0.1" step="0.1" class="bg-[#211434] border border-purple-950/60 rounded-xl px-4 py-2 text-center text-[#e5a93b] font-bold text-lg focus:outline-none focus:border-[#e5a93b] w-32">
+                <input type="number" id="tip-amount" value="1.0" min="0.1" step="0.1" class="bg-[#211434] border border-[#e5a93b]/30 rounded-xl px-4 py-2 text-center text-[#e5a93b] font-bold text-lg focus:outline-none focus:border-[#e5a93b] w-32">
             </div>
-            <div class="bg-[#211434] p-3 rounded-xl border border-purple-950/40 text-[11px] text-purple-300 leading-relaxed">
+            <div class="bg-[#211434] p-3 rounded-xl border border-[#e5a93b]/20 text-[11px] text-purple-300 leading-relaxed">
                 💡 <strong>اتصال الويب 3 نشط:</strong> هذه العملية ستستدعي دالة الدفع الآمنة لتوقيع المعاملة ببصمة إصبعك أو عبارة المرور عبر تطبيق المحفظة الرسمي.
             </div>
             <button onclick="executePiPayment()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">
@@ -240,9 +360,12 @@
         let activePostIdForTip = null;
         let activeRecipientName = null;
         let selectedVideoDataUrl = null; 
+        let selectedImageDataUrl = null; 
         let piInitAttempts = 0;
         let isBypassActive = false;
         let lastPiError = "يرجى التأكد من فتح التطبيق من داخل متصفح Pi Browser أو تفعيل الـ Sandbox.";
+        let isMicMuted = true;
+        let isConnectingVoice = false;
 
         const defaultPosts = [
             {
@@ -252,6 +375,7 @@
                 badgeColor: "bg-[#e5a93b]/10 text-[#e5a93b]",
                 avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer1",
                 content: "متحمس جداً لمستقبل شبكة باي وتطبيقات المرافق الخدمية. آمل أن نرى دعماً حقيقياً ومشاريع محلية تساهم في نمو المنظومة في السودان والشرق الأوسط! 🚀⚡",
+                image: null,
                 video: "https://www.w3schools.com/html/mov_bbb.mp4", 
                 timestamp: "منذ ساعتين",
                 likes: 24,
@@ -266,7 +390,8 @@
                 badge: "مطور باي",
                 badgeColor: "bg-purple-900/30 text-purple-300",
                 avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer2",
-                content: "نعمل حالياً على واجهة مستخدم مخصصة لمنصة الخدمات المصغرة على متصفح Pi Browser. التصاميم تبدو واعدة جداً!",
+                content: "نعمل حالياً على واجهة مستخدم مخصصة لمنصة الخدمات المصغرة على متصفح Pi Browser. التصاميم تبدو واعدة جداً وتأثير الإطارات الذهبية مدهش!",
+                image: null,
                 video: null,
                 timestamp: "منذ 5 ساعات",
                 likes: 42,
@@ -322,12 +447,10 @@
             }
         }
 
-        // الكود المطور والآمن للكشف الذكي عن الساندبوكس وربطه
         function startPiSDKInitialization() {
             const urlParams = new URLSearchParams(window.location.search);
             let useSandbox = false;
 
-            // كشف تلقائي دقيق: إذا كنا داخل Iframe (وهي طريقة عمل الساندبوكس) فسنفعل وضع الساندبوكس فوراً
             const isInsideIframe = window.self !== window.top;
             const isPiBrowser = navigator.userAgent.includes("Pi") || navigator.userAgent.includes("PiBrowser");
 
@@ -336,9 +459,9 @@
             } else if (isInsideIframe) {
                 useSandbox = true; 
             } else if (!isPiBrowser) {
-                useSandbox = true; // للتجربة المباشرة في المتصفحات العادية (كروم/سافاري)
+                useSandbox = true; 
             } else {
-                useSandbox = false; // تشغيل مباشر في المتصفح الرسمي بدون ساندبوكس
+                useSandbox = false; 
             }
 
             const modeText = useSandbox ? 'Sandbox' : 'رسمي';
@@ -385,15 +508,13 @@
             });
         }
 
-        // دالة آمنة ومستقرة تماماً لمعالجة أخطاء تسجيل الدخول دون التسبب في انهيار التطبيق
         function handleAuthError(error, currentSandboxState) {
             lastPiError = error.message || JSON.stringify(error);
             updateSDKStatus("⚠️ فشل الربط (اضغط للتخطي التجريبي)", "text-red-400 hover:text-red-300");
             
-            // تنبيه المستخدم بطريقة مرئية أن بإمكانه النقر لتفعيل وضع التخطي التجريبي
             const container = document.getElementById('pi-status-container');
             if (container) {
-                container.className = "flex items-center gap-2 bg-red-950/40 border border-red-500/50 rounded-full py-1.5 px-3 text-xs cursor-pointer animate-bounce hover:border-red-400";
+                container.className = "flex items-center gap-2 bg-red-950/40 border-2 border-red-500/50 rounded-full py-1.5 px-3 text-xs cursor-pointer animate-bounce hover:border-red-400";
             }
             const icon = document.getElementById('pi-status-icon');
             if (icon) {
@@ -424,7 +545,7 @@
             
             const container = document.getElementById('pi-status-container');
             if (container) {
-                container.className = "flex items-center gap-2 bg-yellow-950/30 border border-yellow-500/30 rounded-full py-1.5 px-3 text-xs cursor-pointer hover:border-yellow-400";
+                container.className = "flex items-center gap-2 bg-yellow-950/30 border-2 border-yellow-500/30 rounded-full py-1.5 px-3 text-xs cursor-pointer hover:border-yellow-400";
             }
             const icon = document.getElementById('pi-status-icon');
             if (icon) {
@@ -432,6 +553,256 @@
             }
             
             alert("تم تفعيل الوضع التجريبي بنجاح! يمكنك الآن تجربة جميع مزايا المنصة ونشر الفيديوهات والتعليق بكامل حريتك.");
+        }
+
+        // عمليات فتح وإغلاق بوب-أب الروم الصوتي (الدردشة الصوتية)
+        function openVoiceChatModal() {
+            document.getElementById('voice-chat-modal').classList.remove('hidden');
+            document.getElementById('voice-chat-modal').classList.add('flex');
+            
+            // محاكاة بدء الاتصال
+            isConnectingVoice = true;
+            document.getElementById('voice-connection-status').innerText = "🟡 جاري الاتصال بالروم...";
+            document.getElementById('voice-connection-status').className = "text-xs text-yellow-400 font-semibold block mt-1 animate-pulse";
+            document.getElementById('voice-bars-container').classList.add('hidden');
+
+            setTimeout(() => {
+                if(isConnectingVoice) {
+                    document.getElementById('voice-connection-status').innerText = "🟢 متصل الآن بالصوت";
+                    document.getElementById('voice-connection-status').className = "text-xs text-green-400 font-semibold block mt-1";
+                    document.getElementById('voice-bars-container').classList.remove('hidden');
+                }
+            }, 2500);
+        }
+
+        function closeVoiceChatModal() {
+            isConnectingVoice = false;
+            document.getElementById('voice-chat-modal').classList.add('hidden');
+            document.getElementById('voice-chat-modal').classList.remove('flex');
+            
+            // إعادة ضبط زر المايك
+            isMicMuted = true;
+            const micIcon = document.getElementById('mic-icon');
+            const micBtn = document.getElementById('toggle-mic-btn');
+            micIcon.className = "fa-solid fa-microphone-slash text-lg";
+            micBtn.className = "bg-[#211434] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md";
+        }
+
+        // تفعيل وكتم المايك بالروم الصوتي
+        function toggleMicrophone() {
+            isMicMuted = !isMicMuted;
+            const micIcon = document.getElementById('mic-icon');
+            const micBtn = document.getElementById('toggle-mic-btn');
+
+            if (isMicMuted) {
+                micIcon.className = "fa-solid fa-microphone-slash text-lg";
+                micBtn.className = "bg-[#211434] border border-[#e5a93b]/40 text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all";
+                document.getElementById('voice-connection-status').innerText = "🟢 متصل الآن بالصوت (المايك مكتوم)";
+            } else {
+                micIcon.className = "fa-solid fa-microphone text-lg";
+                micBtn.className = "bg-[#e5a93b] text-[#0d0614] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-lg shadow-[#e5a93b]/30 animate-pulse";
+                document.getElementById('voice-connection-status').innerText = "🟢 التحدث نشط الآن... المايك مفتوح";
+            }
+        }
+
+        // رفع الصور وإدارتها
+        function triggerImageUpload() {
+            document.getElementById('post-image-file').click();
+        }
+
+        function previewSelectedImage(event) {
+            removeVideoSelection(); // يمنع خلط الملفات
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImageDataUrl = e.target.result;
+                    document.getElementById('image-preview').src = selectedImageDataUrl;
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImageSelection() {
+            selectedImageDataUrl = null;
+            document.getElementById('post-image-file').value = "";
+            document.getElementById('image-preview').src = "";
+            document.getElementById('image-preview-container').classList.add('hidden');
+        }
+
+        // رفع الفيديوهات وإدارتها
+        function triggerVideoUpload() {
+            document.getElementById('post-video-file').click();
+        }
+
+        function previewSelectedVideo(event) {
+            removeImageSelection(); // يمنع خلط الملفات
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedVideoDataUrl = e.target.result;
+                    document.getElementById('video-preview').src = selectedVideoDataUrl;
+                    document.getElementById('video-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeVideoSelection() {
+            selectedVideoDataUrl = null;
+            document.getElementById('post-video-file').value = "";
+            document.getElementById('video-preview').src = "";
+            document.getElementById('video-preview-container').classList.add('hidden');
+        }
+
+        // النشر الجديد ودعم الوسائط بالكامل
+        function createNewPost() {
+            const textContent = document.getElementById('post-input').value.trim();
+            if (!textContent && !selectedVideoDataUrl && !selectedImageDataUrl) {
+                alert("من فضلك، اكتب نصاً أو ارفع صورة/فيديو أولاً لنشر المحتوى.");
+                return;
+            }
+
+            const newPost = {
+                id: posts.length + 1,
+                author: currentUser.username,
+                badge: isBypassActive ? "وضع تجريبي" : "رائد وباني",
+                badgeColor: isBypassActive ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
+                avatar: currentUser.avatar,
+                content: textContent,
+                image: selectedImageDataUrl,
+                video: selectedVideoDataUrl,
+                timestamp: "الآن",
+                likes: 0,
+                likedByMe: false,
+                comments: []
+            };
+
+            posts.unshift(newPost);
+            savePostsToLocalStorage();
+            renderPosts();
+
+            document.getElementById('post-input').value = "";
+            removeVideoSelection();
+            removeImageSelection();
+        }
+
+        function toggleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                if (post.likedByMe) {
+                    post.likes--;
+                    post.likedByMe = false;
+                } else {
+                    post.likes++;
+                    post.likedByMe = true;
+                }
+                savePostsToLocalStorage();
+                renderPosts();
+            }
+        }
+
+        function submitComment(postId) {
+            const inputElement = document.getElementById(`comment-input-${postId}`);
+            const text = inputElement.value.trim();
+            if (!text) return;
+
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                if (!post.comments) post.comments = [];
+                post.comments.push({
+                    author: currentUser.username,
+                    content: text
+                });
+                savePostsToLocalStorage();
+                renderPosts();
+            }
+            inputElement.value = "";
+        }
+
+        // الرسم المتكامل للمنشورات مع الإطارات الذهبية الحصرية
+        function renderPosts() {
+            const container = document.getElementById('feed-container');
+            container.innerHTML = "";
+            
+            posts.forEach(post => {
+                // تصفية الوسائط (صور أو فيديوهات)
+                let mediaHTML = '';
+                if (post.video) {
+                    mediaHTML = `
+                        <div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
+                            <video class="w-full max-h-80" controls src="${post.video}"></video>
+                        </div>
+                    `;
+                } else if (post.image) {
+                    mediaHTML = `
+                        <div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
+                            <img class="w-full max-h-80 object-cover" src="${post.image}">
+                        </div>
+                    `;
+                }
+                
+                let commentsHTML = '';
+                if (post.comments && post.comments.length > 0) {
+                    commentsHTML = `
+                        <div class="mt-3 pt-3 border-t border-[#e5a93b]/20 space-y-2">
+                            ${post.comments.map(c => `
+                                <div class="bg-[#1d102f] p-2.5 rounded-xl text-xs flex gap-2 border border-[#e5a93b]/10">
+                                    <span class="font-bold text-[#e5a93b]">${c.author}:</span>
+                                    <span class="text-gray-300">${c.content}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+
+                // دمج وتثبيت حدود الذهب الفخمة (border-2 border-[#e5a93b]) مع الظل الذهبي المضيء
+                const postHTML = `
+                    <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <img src="${post.avatar}" alt="${post.author}" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
+                                        ${post.badge ? `<span class="text-[9px] px-2 py-0.5 rounded-full ${post.badgeColor} font-semibold">${post.badge}</span>` : ''}
+                                    </div>
+                                    <span class="text-[10px] text-gray-500">${post.timestamp}</span>
+                                </div>
+                            </div>
+                            <button onclick="openSupportModal(${post.id}, '${post.author}')" class="flex items-center gap-1 bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0d0614] transition-all px-3 py-1.5 rounded-xl text-xs font-semibold">
+                                <i class="fa-solid fa-heart-circle-bolt"></i>
+                                <span>أرسل Pi</span>
+                            </button>
+                        </div>
+                        
+                        <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">${post.content}</p>
+                        
+                        ${mediaHTML}
+                        
+                        <div class="flex items-center gap-6 pt-3 border-t border-[#e5a93b]/20 text-xs text-gray-400">
+                            <button onclick="toggleLike(${post.id})" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${post.likedByMe ? 'text-red-500' : ''}">
+                                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
+                                <span>${post.likes}</span>
+                            </button>
+                            <div class="flex items-center gap-1.5 cursor-pointer hover:text-purple-400">
+                                <i class="fa-regular fa-comment text-sm"></i>
+                                <span>${post.comments ? post.comments.length : 0}</span>
+                            </div>
+                        </div>
+
+                        ${commentsHTML}
+
+                        <div class="flex gap-2 mt-3 pt-2">
+                            <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#1d102f] text-xs text-gray-200 border border-[#e5a93b]/20 rounded-xl px-3 py-2 outline-none focus:border-[#e5a93b]">
+                            <button onclick="submitComment(${post.id})" class="bg-[#211434] hover:bg-[#e5a93b] hover:text-[#0d0614] text-[#e5a93b] text-xs font-bold px-3 py-2 rounded-xl transition-all border border-[#e5a93b]/30">إرسال</button>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', postHTML);
+            });
         }
 
         function openEditProfileModal() {
@@ -476,163 +847,6 @@
             }
         }
 
-        function triggerVideoUpload() {
-            document.getElementById('post-video-file').click();
-        }
-
-        function previewSelectedVideo(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    selectedVideoDataUrl = e.target.result;
-                    document.getElementById('video-preview').src = selectedVideoDataUrl;
-                    document.getElementById('video-preview-container').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function removeVideoSelection() {
-            selectedVideoDataUrl = null;
-            document.getElementById('post-video-file').value = "";
-            document.getElementById('video-preview').src = "";
-            document.getElementById('video-preview-container').classList.add('hidden');
-        }
-
-        function createNewPost() {
-            const textContent = document.getElementById('post-input').value.trim();
-            if (!textContent && !selectedVideoDataUrl) {
-                alert("من فضلك، اكتب نصاً أو ارفع فيديو أولاً لنشر المحتوى.");
-                return;
-            }
-
-            const newPost = {
-                id: posts.length + 1,
-                author: currentUser.username,
-                badge: isBypassActive ? "وضع تجريبي" : "رائد وباني",
-                badgeColor: isBypassActive ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
-                avatar: currentUser.avatar,
-                content: textContent,
-                video: selectedVideoDataUrl,
-                timestamp: "الآن",
-                likes: 0,
-                likedByMe: false,
-                comments: []
-            };
-
-            posts.unshift(newPost);
-            savePostsToLocalStorage();
-            renderPosts();
-
-            document.getElementById('post-input').value = "";
-            removeVideoSelection();
-        }
-
-        function toggleLike(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (post) {
-                if (post.likedByMe) {
-                    post.likes--;
-                    post.likedByMe = false;
-                } else {
-                    post.likes++;
-                    post.likedByMe = true;
-                }
-                savePostsToLocalStorage();
-                renderPosts();
-            }
-        }
-
-        function submitComment(postId) {
-            const inputElement = document.getElementById(`comment-input-${postId}`);
-            const text = inputElement.value.trim();
-            if (!text) return;
-
-            const post = posts.find(p => p.id === postId);
-            if (post) {
-                if (!post.comments) post.comments = [];
-                post.comments.push({
-                    author: currentUser.username,
-                    content: text
-                });
-                savePostsToLocalStorage();
-                renderPosts();
-            }
-            inputElement.value = "";
-        }
-
-        function renderPosts() {
-            const container = document.getElementById('feed-container');
-            container.innerHTML = "";
-            
-            posts.forEach(post => {
-                const videoHTML = post.video ? `
-                    <div class="mt-3 rounded-xl overflow-hidden border border-purple-950/60 bg-black max-h-80 flex justify-center items-center">
-                        <video class="w-full max-h-80" controls src="${post.video}"></video>
-                    </div>
-                ` : '';
-                
-                let commentsHTML = '';
-                if (post.comments && post.comments.length > 0) {
-                    commentsHTML = `
-                        <div class="mt-3 pt-3 border-t border-purple-950/40 space-y-2">
-                            ${post.comments.map(c => `
-                                <div class="bg-[#1d102f] p-2.5 rounded-xl text-xs flex gap-2">
-                                    <span class="font-bold text-[#e5a93b]">${c.author}:</span>
-                                    <span class="text-gray-300">${c.content}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                }
-
-                const postHTML = `
-                    <div class="bg-[#150b22] border border-purple-950/50 rounded-2xl p-5 shadow-md space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <img src="${post.avatar}" alt="${post.author}" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
-                                        ${post.badge ? `<span class="text-[9px] px-2 py-0.5 rounded-full ${post.badgeColor} font-semibold">${post.badge}</span>` : ''}
-                                    </div>
-                                    <span class="text-[10px] text-gray-500">${post.timestamp}</span>
-                                </div>
-                            </div>
-                            <button onclick="openSupportModal(${post.id}, '${post.author}')" class="flex items-center gap-1 bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0d0614] transition-all px-3 py-1.5 rounded-xl text-xs font-semibold">
-                                <i class="fa-solid fa-heart-circle-bolt"></i>
-                                <span>أرسل Pi</span>
-                            </button>
-                        </div>
-                        
-                        <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">${post.content}</p>
-                        
-                        ${videoHTML}
-                        
-                        <div class="flex items-center gap-6 pt-3 border-t border-purple-950/40 text-xs text-gray-400">
-                            <button onclick="toggleLike(${post.id})" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${post.likedByMe ? 'text-red-500' : ''}">
-                                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
-                                <span>${post.likes}</span>
-                            </button>
-                            <div class="flex items-center gap-1.5 cursor-pointer hover:text-purple-400">
-                                <i class="fa-regular fa-comment text-sm"></i>
-                                <span>${post.comments ? post.comments.length : 0}</span>
-                            </div>
-                        </div>
-
-                        ${commentsHTML}
-
-                        <div class="flex gap-2 mt-3 pt-2">
-                            <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#1d102f] text-xs text-gray-200 border border-purple-950/60 rounded-xl px-3 py-2 outline-none focus:border-[#e5a93b]/50">
-                            <button onclick="submitComment(${post.id})" class="bg-[#211434] hover:bg-[#e5a93b] hover:text-[#0d0614] text-[#e5a93b] text-xs font-bold px-3 py-2 rounded-xl transition-all">إرسال</button>
-                        </div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', postHTML);
-            });
-        }
-
         function openSupportModal(postId, recipientName) {
             if (!currentUser.isPiAuthenticated) {
                 alert("يرجى تفعيل الاتصال أو اختيار وضع التخطي أولاً لإرسال المعاملات.");
@@ -675,7 +889,7 @@
                     alert(`تم إنشاء المعاملة بنجاح برقم: ${paymentId}. للتفعيل الفعلي، ستحتاج لربط خادم لإكمال الدورة المستندية.`);
                 },
                 onReadyForServerCompletion: function(paymentId, txid) {
-                    console.log("المعاملة جاهزة للإكمال النهائي (Completion)، رقم العملية للبلوكشين:", txid);
+                    console.log("المعاملة جاهزة للإكمال النهائي (Completion)، رقم عملية البلوكشين:", txid);
                     alert(`ألف مبروك! تم إرسال الدعم بنجاح. رقم العملية: ${txid}`);
                     closeSupportModal();
                 },
