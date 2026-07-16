@@ -400,6 +400,10 @@
     </div>
 
     <script>
+        // --- رابط خادم Vercel الخلفي ---
+        // استبدله بالرابط الفعلي لمشروعك الخلفي بعد رفعه وتجهيزه
+        const VERCEL_BACKEND_URL = "https://your-vercel-project-name.vercel.app/api";
+
         let currentUser = {
             username: "أبو كريم",
             avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem",
@@ -489,7 +493,6 @@
             document.getElementById('sidebar-user-name').innerText = currentUser.username;
             document.getElementById('sidebar-user-bio').innerText = currentUser.bio || "لا يوجد بايو محدد.";
             
-            // تحديث القائمة الجانبية للهاتف أيضاً لمنع تضارب البيانات
             const mobAvatar = document.getElementById('mobile-sidebar-avatar');
             const mobName = document.getElementById('mobile-sidebar-username');
             const mobBio = document.getElementById('mobile-sidebar-bio');
@@ -498,7 +501,6 @@
             if (mobBio) mobBio.innerText = currentUser.bio || "لا يوجد بايو محدد.";
         }
 
-        // فتح وإغلاق القائمة الجانبية للهاتف بنعومة وسلاسة
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('mobile-sidebar');
             const overlay = document.getElementById('mobile-sidebar-overlay');
@@ -572,6 +574,9 @@
             
             Pi.authenticate(scopes, function(payment) {
                 console.log("دفعة معلقة مكتشفة:", payment);
+                if (payment) {
+                    completeIncompletePayment(payment.identifier, payment.transaction.txid);
+                }
             })
             .then(function(auth) {
                 currentUser.username = auth.user.username;
@@ -924,7 +929,7 @@
             }
             activePostIdForTip = postId;
             activeRecipientName = recipientName;
-            document.getElementById('modal-desc').innerText = `أنت على وشك إرسال دعم مالي تجريبي إلى "${recipientName}" لدعم المحتوى الرقمي الخاص به على شبكة باي إيكو.`;
+            document.getElementById('modal-desc').innerText = `أنت على وشك إرسال دعم مالي حقيقي إلى "${recipientName}" لدعم المحتوى الرقمي الخاص به على شبكة باي إيكو.`;
             document.getElementById('payment-modal').classList.remove('hidden');
             document.getElementById('payment-modal').classList.add('flex');
         }
@@ -934,6 +939,7 @@
             document.getElementById('payment-modal').classList.remove('flex');
         }
 
+        // --- دالة الدفع الحقيقية والمعدلة بالكامل للربط بالخادم ---
         function executePiPayment() {
             const amount = parseFloat(document.getElementById('tip-amount').value);
             if (isNaN(amount) || amount <= 0) {
@@ -949,30 +955,78 @@
 
             const paymentData = {
                 amount: amount,
-                memo: `دعم محتوى إلى ${activeRecipientName} عبر تطبيق باي إيكو (تجريبي)`,
+                memo: `دعم محتوى إلى ${activeRecipientName} عبر تطبيق باي إيكو`,
                 metadata: { postId: activePostIdForTip, recipient: activeRecipientName }
             };
 
             const callbacks = {
                 onReadyForServerApproval: function(paymentId) {
-                    console.log("الدفعة جاهزة لموافقة الخادم الخلفي (Approval)، الرقم التعريفي للدفعة:", paymentId);
-                    alert(`تم إنشاء المعاملة بنجاح برقم: ${paymentId}. للتفعيل الفعلي، ستحتاج لربط خادم لإكمال الدورة المستندية.`);
+                    console.log("تمت الموافقة المبدئية، جاري إرسال طلب الموافقة للخادم الخلفي برقم الدفعة:", paymentId);
+                    
+                    fetch(`${VERCEL_BACKEND_URL}/approve`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: paymentId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            console.log("تمت الموافقة وتوثيق الدفعة بنجاح من جهة خادم Vercel!");
+                        } else {
+                            alert("فشلت موافقة خادم Vercel على الدفعة: " + (data.message || JSON.stringify(data)));
+                        }
+                    })
+                    .catch(err => {
+                        console.error("خطأ أثناء الاتصال بخادم Vercel لعملية الـ Approval:", err);
+                    });
                 },
                 onReadyForServerCompletion: function(paymentId, txid) {
-                    console.log("المعاملة جاهزة للإكمال النهائي (Completion)، رقم عملية البلوكشين:", txid);
-                    alert(`ألف مبروك! تم إرسال الدعم بنجاح. رقم العملية: ${txid}`);
-                    closeSupportModal();
+                    console.log("تم التوقيع بنجاح، جاري إتمام المعاملة وإرسال الـ TXID للخادم:", txid);
+                    
+                    fetch(`${VERCEL_BACKEND_URL}/complete`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: paymentId, txid: txid })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            alert(`ألف مبروك! تم إرسال الدعم وإكمال الدفعة بنجاح. رقم العملية: ${txid}`);
+                            closeSupportModal();
+                        } else {
+                            alert("حدث خطأ أثناء محاولة إغلاق الدفعة من الخادم: " + (data.message || JSON.stringify(data)));
+                        }
+                    })
+                    .catch(err => {
+                        console.error("خطأ أثناء الاتصال بخادم Vercel لعملية الـ Completion:", err);
+                    });
                 },
                 onCancel: function(paymentId) {
-                    console.log("تم إلغاء المعاملة من قِبل المستخدم:", paymentId);
+                    console.log("تم إلغاء المعاملة من قبل المستخدم:", paymentId);
                 },
                 onError: function(error, payment) {
                     console.error("حدث خطأ غير متوقع أثناء إتمام الدفع:", error);
-                    alert("عذراً، فشلت عملية الدفع. تأكد من تفعيل بيئة الـ Testnet بالمحفظة.");
+                    alert("عذراً، فشلت عملية الدفع. يرجى التأكد من رصيدك ومن الاتصال بشبكة Pi بشكل صحيح.");
                 }
             };
 
             Pi.createPayment(paymentData, callbacks);
+        }
+
+        // دالة إكمال الدفعات المعلقة السابقة
+        function completeIncompletePayment(paymentId, txid) {
+            fetch(`${VERCEL_BACKEND_URL}/complete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentId: paymentId, txid: txid })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    console.log("تمت تسوية وإكمال الدفعة المعلقة السابقة بنجاح.");
+                }
+            })
+            .catch(err => console.error("فشل إكمال الدفعة المعلقة السابقة:", err));
         }
 
         window.addEventListener('DOMContentLoaded', initApp);
