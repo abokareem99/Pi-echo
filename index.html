@@ -101,9 +101,12 @@
                     <span>المعاملات والتبرعات</span>
                 </a>
                 <hr class="border-purple-950/60 my-3">
-                <button onclick="openSupportModal(0, 'نظام الدعوات')" class="w-full bg-gradient-to-r from-[#5c1f75] to-[#7b2c9e] text-white font-semibold py-2.5 px-4 rounded-xl shadow-md hover:from-[#6b2588] hover:to-[#8c35b3] transition-all text-sm">
+                <button onclick="openSupportModal(0, 'نظام الدعوات')" class="w-full bg-gradient-to-r from-[#5c1f75] to-[#7b2c9e] text-white font-semibold py-2.5 px-4 rounded-xl shadow-md hover:from-[#6b2588] hover:to-[#8c35b3] transition-all text-sm mb-3">
                     <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
                 </button>
+                <div class="text-center text-[11px] text-gray-500 pt-3 border-t border-purple-950/40">
+                    تصميم وتطوير أبو كريم © 2026
+                </div>
             </nav>
         </aside>
 
@@ -239,7 +242,7 @@
         let selectedVideoDataUrl = null; 
         let piInitAttempts = 0;
         let isBypassActive = false;
-        let lastPiError = "يرجى التأكد من تشغيل VPN قوي وفتح التطبيق من داخل متصفح Pi Browser.";
+        let lastPiError = "يرجى التأكد من فتح التطبيق من داخل متصفح Pi Browser أو تفعيل الـ Sandbox.";
 
         const defaultPosts = [
             {
@@ -319,20 +322,27 @@
             }
         }
 
-        // الكود المطور لتسجيل الدخول التفاعلي الذاتي
+        // الكود المطور والآمن للكشف الذكي عن الساندبوكس وربطه
         function startPiSDKInitialization() {
             const urlParams = new URLSearchParams(window.location.search);
             let useSandbox = false;
 
-            // إذا كان الرابط يحتوي على معيار الساندبوكس أو كنا نختبر خارج المتصفح
+            // كشف تلقائي دقيق: إذا كنا داخل Iframe (وهي طريقة عمل الساندبوكس) فسنفعل وضع الساندبوكس فوراً
+            const isInsideIframe = window.self !== window.top;
+            const isPiBrowser = navigator.userAgent.includes("Pi") || navigator.userAgent.includes("PiBrowser");
+
             if (urlParams.has('sandbox')) {
                 useSandbox = urlParams.get('sandbox') === 'true';
+            } else if (isInsideIframe) {
+                useSandbox = true; 
+            } else if (!isPiBrowser) {
+                useSandbox = true; // للتجربة المباشرة في المتصفحات العادية (كروم/سافاري)
             } else {
-                const isPiBrowser = navigator.userAgent.includes("Pi") || window.location.href.includes("sandbox");
-                useSandbox = !isPiBrowser;
+                useSandbox = false; // تشغيل مباشر في المتصفح الرسمي بدون ساندبوكس
             }
 
-            updateSDKStatus(`⚙️ تهيئة (${useSandbox ? 'Sandbox' : 'رسمي'})...`, "text-yellow-500 animate-pulse");
+            const modeText = useSandbox ? 'Sandbox' : 'رسمي';
+            updateSDKStatus(`⚙️ تهيئة (${modeText})...`, "text-yellow-500 animate-pulse");
             
             if (typeof Pi !== 'undefined') {
                 try {
@@ -375,26 +385,22 @@
             });
         }
 
-        // دالة معالجة الأخطاء الذكية وإعادة المحاولة التلقائية
+        // دالة آمنة ومستقرة تماماً لمعالجة أخطاء تسجيل الدخول دون التسبب في انهيار التطبيق
         function handleAuthError(error, currentSandboxState) {
-            const urlParams = new URLSearchParams(window.location.search);
+            lastPiError = error.message || JSON.stringify(error);
+            updateSDKStatus("⚠️ فشل الربط (اضغط للتخطي التجريبي)", "text-red-400 hover:text-red-300");
             
-            // إذا فشل الاتصال الرسمي ولم نقم بإعادة المحاولة مسبقاً، نجرب تحويله تلقائياً لـ Sandbox كحل بديل
-            if (!currentSandboxState && !urlParams.has('retry')) {
-                console.log("فشل الربط الرسمي. جاري التحويل لوضع الساندبوكس تلقائياً...");
-                window.location.href = window.location.pathname + "?sandbox=true&retry=true";
-            } else {
-                lastPiError = error.message || JSON.stringify(error);
-                updateSDKStatus("⚠️ فشل الربط (اضغط للتخطي التجريبي)", "text-red-400 hover:text-red-300");
-                
-                // تغيير شكل وتأثير الزر لتنبيه المستخدم بإمكانية التخطي
-                const container = document.getElementById('pi-status-container');
+            // تنبيه المستخدم بطريقة مرئية أن بإمكانه النقر لتفعيل وضع التخطي التجريبي
+            const container = document.getElementById('pi-status-container');
+            if (container) {
                 container.className = "flex items-center gap-2 bg-red-950/40 border border-red-500/50 rounded-full py-1.5 px-3 text-xs cursor-pointer animate-bounce hover:border-red-400";
-                document.getElementById('pi-status-icon').className = "fa-solid fa-triangle-exclamation text-red-400";
+            }
+            const icon = document.getElementById('pi-status-icon');
+            if (icon) {
+                icon.className = "fa-solid fa-triangle-exclamation text-red-400";
             }
         }
 
-        // ما يحدث عند الضغط على زر الحالة (إما إظهار الخطأ، أو تفعيل وضع التخطي مباشرة)
         function handleStatusClick() {
             if (currentUser.isPiAuthenticated || isBypassActive) {
                 alert(`أنت مسجل الدخول كـ: ${currentUser.username}`);
@@ -407,19 +413,23 @@
             }
         }
 
-        // تفعيل وضع التجربة وتخطي قيود الـ SDK
         function activateDemoBypass() {
             isBypassActive = true;
             currentUser.username = "رائد تجريبي (أبو كريم)";
             currentUser.avatar = "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem";
-            currentUser.isPiAuthenticated = true; // تمكين الأزرار والوظائف
+            currentUser.isPiAuthenticated = true; 
             
             updateUserProfileDOM();
             updateSDKStatus("🟢 وضع تجريبي (نشط)", "text-yellow-400");
             
             const container = document.getElementById('pi-status-container');
-            container.className = "flex items-center gap-2 bg-yellow-950/30 border border-yellow-500/30 rounded-full py-1.5 px-3 text-xs cursor-pointer hover:border-yellow-400";
-            document.getElementById('pi-status-icon').className = "fa-solid fa-flask text-yellow-400";
+            if (container) {
+                container.className = "flex items-center gap-2 bg-yellow-950/30 border border-yellow-500/30 rounded-full py-1.5 px-3 text-xs cursor-pointer hover:border-yellow-400";
+            }
+            const icon = document.getElementById('pi-status-icon');
+            if (icon) {
+                icon.className = "fa-solid fa-flask text-yellow-400";
+            }
             
             alert("تم تفعيل الوضع التجريبي بنجاح! يمكنك الآن تجربة جميع مزايا المنصة ونشر الفيديوهات والتعليق بكامل حريتك.");
         }
