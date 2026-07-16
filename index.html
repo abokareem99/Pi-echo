@@ -46,8 +46,8 @@
                 <i class="fa-regular fa-bell text-xl"></i>
                 <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
             </button>
-            <div class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/30 rounded-full py-1.5 px-3 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b]" onclick="showDetailedPiError()">
-                <i class="fa-solid fa-wallet text-[#e5a93b]"></i>
+            <div id="pi-status-container" class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/30 rounded-full py-1.5 px-3 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b]" onclick="handleStatusClick()">
+                <i id="pi-status-icon" class="fa-solid fa-wallet text-[#e5a93b]"></i>
                 <span id="user-pi-balance" class="text-gray-300 font-semibold">جاري تهيئة SDK...</span>
             </div>
             <img id="navbar-user-avatar" onclick="openEditProfileModal()" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-9 h-9 rounded-full border border-[#e5a93b] cursor-pointer hover:scale-105 transition-transform object-cover">
@@ -226,9 +226,6 @@
     </div>
 
     <script>
-        // تعريف معرف عميل Pi Network
-        const NEXT_PUBLIC_PI_CLIENT_ID = "OLeVqKQkQDdhq7ad7fRV1YMLThIDYNkjj";
-
         let currentUser = {
             username: "أبو كريم",
             avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem",
@@ -241,6 +238,7 @@
         let activeRecipientName = null;
         let selectedVideoDataUrl = null; 
         let piInitAttempts = 0;
+        let isBypassActive = false;
         let lastPiError = "يرجى التأكد من تشغيل VPN قوي وفتح التطبيق من داخل متصفح Pi Browser.";
 
         const defaultPosts = [
@@ -274,42 +272,24 @@
             }
         ];
 
-        // دوال آمنة للتعامل مع LocalStorage لتجنب توقف الموقع داخل متصفح Pi Browser
         function safeGetItem(key) {
-            try {
-                return localStorage.getItem(key);
-            } catch (e) {
-                console.warn("تم حظر الوصول لـ LocalStorage من قبل المتصفح:", e);
-                return null;
-            }
+            try { return localStorage.getItem(key); } catch (e) { return null; }
         }
 
         function safeSetItem(key, value) {
-            try {
-                localStorage.setItem(key, value);
-            } catch (e) {
-                console.warn("فشل الكتابة على LocalStorage:", e);
-            }
+            try { localStorage.setItem(key, value); } catch (e) {}
         }
 
         function initApp() {
             const savedUser = safeGetItem('piecho_user_v2');
             if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                } catch(e) {
-                    console.error("خطأ قراءة بيانات المستخدم:", e);
-                }
+                try { currentUser = JSON.parse(savedUser); } catch(e) {}
             }
             updateUserProfileDOM();
 
             const savedPosts = safeGetItem('piconnect_posts_v3');
             if (savedPosts) {
-                try {
-                    posts = JSON.parse(savedPosts);
-                } catch(e) {
-                    posts = defaultPosts;
-                }
+                try { posts = JSON.parse(savedPosts); } catch(e) { posts = defaultPosts; }
             } else {
                 posts = defaultPosts;
                 savePostsToLocalStorage();
@@ -331,87 +311,119 @@
             document.getElementById('sidebar-user-bio').innerText = currentUser.bio || "لا يوجد بايو محدد.";
         }
 
-        // تحديث نص الحالة في الهيدر بشكل فوري وتفاعلي
         function updateSDKStatus(text, className = "text-gray-300") {
             const balanceElement = document.getElementById('user-pi-balance');
             if (balanceElement) {
                 balanceElement.innerText = text;
-                balanceElement.className = `font-semibold text-xs md:text-sm ${className}`;
+                balanceElement.className = `font-semibold text-[10px] md:text-xs ${className}`;
             }
         }
 
-        // دالة التهيئة التفاعلية
+        // الكود المطور لتسجيل الدخول التفاعلي الذاتي
         function startPiSDKInitialization() {
-            updateSDKStatus("🔍 فحص مكتبة SDK...", "text-yellow-500/80 animate-pulse");
+            const urlParams = new URLSearchParams(window.location.search);
+            let useSandbox = false;
+
+            // إذا كان الرابط يحتوي على معيار الساندبوكس أو كنا نختبر خارج المتصفح
+            if (urlParams.has('sandbox')) {
+                useSandbox = urlParams.get('sandbox') === 'true';
+            } else {
+                const isPiBrowser = navigator.userAgent.includes("Pi") || window.location.href.includes("sandbox");
+                useSandbox = !isPiBrowser;
+            }
+
+            updateSDKStatus(`⚙️ تهيئة (${useSandbox ? 'Sandbox' : 'رسمي'})...`, "text-yellow-500 animate-pulse");
             
             if (typeof Pi !== 'undefined') {
-                console.log("تم رصد مكتبة Pi SDK بنجاح.");
-                updateSDKStatus("⚙️ جاري تهيئة الاتصال...", "text-yellow-500");
                 try {
-                    // الكشف التلقائي: إذا كان المستخدم داخل متصفح Pi، نوقف الـ Sandbox ليعمل الربط الحقيقي، وإلا نفعله للتجربة الخارجية.
-                    const isPiBrowser = navigator.userAgent.includes("Pi") || window.location.href.includes("sandbox");
-                    const useSandbox = !isPiBrowser; 
-
-                    Pi.init({ 
-                        version: "2.0", 
-                        sandbox: useSandbox 
-                    });
-                    
-                    console.log("تمت تهيئة SDK بنجاح. يجرى الآن استدعاء نافذة تسجيل الدخول...");
-                    updateSDKStatus("🔑 طلب تسجيل الدخول...", "text-purple-400");
-                    authenticatePiUser();
+                    Pi.init({ version: "2.0", sandbox: useSandbox });
+                    updateSDKStatus("🔑 جاري المصادقة...", "text-purple-400");
+                    authenticatePiUser(useSandbox);
                 } catch (err) {
                     console.error("فشل تهيئة Pi SDK:", err);
-                    lastPiError = "خطأ تهيئة: " + (err.message || err);
-                    updateSDKStatus("❌ فشلت التهيئة", "text-red-400");
+                    handleAuthError(err, useSandbox);
                 }
             } else {
                 piInitAttempts++;
-                if (piInitAttempts < 15) {
-                    console.log(`مكتبة Pi لم تحمل بعد، محاولة فحص أخرى (${piInitAttempts}/15)...`);
+                if (piInitAttempts < 10) {
                     setTimeout(startPiSDKInitialization, 500);
                 } else {
-                    console.warn("تعذر رصد Pi SDK.");
-                    lastPiError = "لم يتم تحميل ملف pi-sdk.js. تأكد من جودة اتصال الإنترنت أو جرب VPN مغاير.";
-                    updateSDKStatus("🌐 متصفح خارجي (افتح بـ Pi)", "text-yellow-500");
+                    lastPiError = "لم يتم العثور على مكتبة Pi SDK. تأكد من فتح الرابط من داخل متصفح Pi.";
+                    updateSDKStatus("⚠️ فشل الربط (اضغط للتخطي التجريبي)", "text-red-400 hover:text-red-300");
                 }
             }
         }
 
-        // دالة المصادقة وتسجيل الدخول المحدثة
-        function authenticatePiUser() {
+        function authenticatePiUser(currentSandboxState) {
             const scopes = ['username', 'payments'];
             
-            function onIncompletePaymentFound(payment) {
-                console.log("تم العثور على دفعة معلقة غير مكتملة:", payment);
-                alert(`هناك معاملة معلقة سابقة برقم: ${payment.identifier}. يرجى تسويتها.`);
+            Pi.authenticate(scopes, function(payment) {
+                console.log("دفعة معلقة مكتشفة:", payment);
+            })
+            .then(function(auth) {
+                currentUser.username = auth.user.username;
+                currentUser.avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${auth.user.username}`;
+                currentUser.isPiAuthenticated = true;
+                
+                updateUserProfileDOM();
+                updateSDKStatus(`🟢 متصل: ${auth.user.username}`, "text-green-400");
+                safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
+            })
+            .catch(function(error) {
+                console.error("فشل تسجيل الدخول لـ Pi:", error);
+                handleAuthError(error, currentSandboxState);
+            });
+        }
+
+        // دالة معالجة الأخطاء الذكية وإعادة المحاولة التلقائية
+        function handleAuthError(error, currentSandboxState) {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // إذا فشل الاتصال الرسمي ولم نقم بإعادة المحاولة مسبقاً، نجرب تحويله تلقائياً لـ Sandbox كحل بديل
+            if (!currentSandboxState && !urlParams.has('retry')) {
+                console.log("فشل الربط الرسمي. جاري التحويل لوضع الساندبوكس تلقائياً...");
+                window.location.href = window.location.pathname + "?sandbox=true&retry=true";
+            } else {
+                lastPiError = error.message || JSON.stringify(error);
+                updateSDKStatus("⚠️ فشل الربط (اضغط للتخطي التجريبي)", "text-red-400 hover:text-red-300");
+                
+                // تغيير شكل وتأثير الزر لتنبيه المستخدم بإمكانية التخطي
+                const container = document.getElementById('pi-status-container');
+                container.className = "flex items-center gap-2 bg-red-950/40 border border-red-500/50 rounded-full py-1.5 px-3 text-xs cursor-pointer animate-bounce hover:border-red-400";
+                document.getElementById('pi-status-icon').className = "fa-solid fa-triangle-exclamation text-red-400";
+            }
+        }
+
+        // ما يحدث عند الضغط على زر الحالة (إما إظهار الخطأ، أو تفعيل وضع التخطي مباشرة)
+        function handleStatusClick() {
+            if (currentUser.isPiAuthenticated || isBypassActive) {
+                alert(`أنت مسجل الدخول كـ: ${currentUser.username}`);
+                return;
             }
 
-            Pi.authenticate(scopes, onIncompletePaymentFound)
-                .then(function(auth) {
-                    console.log("تم تسجيل الدخول بنجاح عبر Pi:", auth);
-                    
-                    currentUser.username = auth.user.username;
-                    currentUser.avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${auth.user.username}`;
-                    currentUser.isPiAuthenticated = true;
-                    
-                    updateUserProfileDOM();
-                    updateSDKStatus(`🟢 متصل: ${auth.user.username}`, "text-green-400");
-                    
-                    safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
-                })
-                .catch(function(error) {
-                    console.error("فشل تسجيل الدخول لـ Pi:", error);
-                    lastPiError = "خطأ في المصادقة: " + (error.message || JSON.stringify(error));
-                    updateSDKStatus("❌ فشل ربط الحساب", "text-red-400");
-                });
+            const confirmBypass = confirm(`فشل ربط الحساب لسبب برمجي أو مشكلة بالشبكة.\n\nالخطأ المسجل:\n"${lastPiError}"\n\nهل ترغب في تخطي الربط وتفعيل "الوضع التجريبي" لتجربة النشر والتصفح بالكامل؟`);
+            if (confirmBypass) {
+                activateDemoBypass();
+            }
         }
 
-        function showDetailedPiError() {
-            alert(`تفاصيل الاتصال بـ SDK الحالي:\n\n${lastPiError}\n\nنصائح للربط:\n- تأكد من تفعيل VPN مستقر (مثل 1.1.1.1).\n- تأكد أن الرابط الحالي مسجل في بوابة develop.pi بدقة.`);
+        // تفعيل وضع التجربة وتخطي قيود الـ SDK
+        function activateDemoBypass() {
+            isBypassActive = true;
+            currentUser.username = "رائد تجريبي (أبو كريم)";
+            currentUser.avatar = "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem";
+            currentUser.isPiAuthenticated = true; // تمكين الأزرار والوظائف
+            
+            updateUserProfileDOM();
+            updateSDKStatus("🟢 وضع تجريبي (نشط)", "text-yellow-400");
+            
+            const container = document.getElementById('pi-status-container');
+            container.className = "flex items-center gap-2 bg-yellow-950/30 border border-yellow-500/30 rounded-full py-1.5 px-3 text-xs cursor-pointer hover:border-yellow-400";
+            document.getElementById('pi-status-icon').className = "fa-solid fa-flask text-yellow-400";
+            
+            alert("تم تفعيل الوضع التجريبي بنجاح! يمكنك الآن تجربة جميع مزايا المنصة ونشر الفيديوهات والتعليق بكامل حريتك.");
         }
 
-        // التحكم في الملف الشخصي
         function openEditProfileModal() {
             document.getElementById('modal-avatar-preview').src = currentUser.avatar;
             document.getElementById('edit-username').value = currentUser.username;
@@ -454,7 +466,6 @@
             }
         }
 
-        // إدارة الفيديوهات والمنشورات
         function triggerVideoUpload() {
             document.getElementById('post-video-file').click();
         }
@@ -489,8 +500,8 @@
             const newPost = {
                 id: posts.length + 1,
                 author: currentUser.username,
-                badge: "رائد وباني",
-                badgeColor: "bg-green-500/10 text-green-400",
+                badge: isBypassActive ? "وضع تجريبي" : "رائد وباني",
+                badgeColor: isBypassActive ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
                 avatar: currentUser.avatar,
                 content: textContent,
                 video: selectedVideoDataUrl,
@@ -612,8 +623,11 @@
             });
         }
 
-        // إدارة المدفوعات وبوابة الدفع
         function openSupportModal(postId, recipientName) {
+            if (!currentUser.isPiAuthenticated) {
+                alert("يرجى تفعيل الاتصال أو اختيار وضع التخطي أولاً لإرسال المعاملات.");
+                return;
+            }
             activePostIdForTip = postId;
             activeRecipientName = recipientName;
             document.getElementById('modal-desc').innerText = `أنت على وشك إرسال دعم مالي تجريبي إلى "${recipientName}" لدعم المحتوى الرقمي الخاص به على شبكة باي إيكو.`;
@@ -633,12 +647,12 @@
                 return;
             }
 
-            if (!currentUser.isPiAuthenticated) {
-                alert("عذراً، يجب أن تقوم بتسجيل الدخول كعضو موثق عبر Pi Browser أولاً لتتمكن من استخدام المحفظة.");
+            if (isBypassActive) {
+                alert(`محاكاة عملية دفع ناجحة بـ (${amount} Pi) إلى ${activeRecipientName}!\n\n(بما أنك تستخدم الوضع التجريبي المحلي، لم يتم خصم رصيد حقيقي من محفظتك)`);
+                closeSupportModal();
                 return;
             }
 
-            // إنشاء بيانات معاملة دفع Pi
             const paymentData = {
                 amount: amount,
                 memo: `دعم محتوى إلى ${activeRecipientName} عبر تطبيق باي إيكو (تجريبي)`,
@@ -664,11 +678,9 @@
                 }
             };
 
-            // إرسال طلب الدفع للـ SDK الرسمي
             Pi.createPayment(paymentData, callbacks);
         }
 
-        // تشغيل التطبيق بالكامل فور تحميل نصوص الـ HTML لتجنب التأخر
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
