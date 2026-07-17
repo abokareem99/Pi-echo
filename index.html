@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- استدعاء سكريبت Pi SDK الأصلي -->
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
     
     <style>
@@ -31,7 +32,6 @@
             background: #e5a93b;
             border-radius: 10px;
         }
-        /* تأثير النبض للموجات الصوتية */
         .voice-wave {
             display: flex;
             align-items: center;
@@ -55,7 +55,6 @@
             100% { transform: scaleY(1.1); }
         }
 
-        /* حماية وحل أزرار التلفون السفلية لرفعها وجعلها متجاوبة */
         .mobile-footer {
             position: fixed;
             bottom: 0;
@@ -94,20 +93,20 @@
                 <i class="fa-regular fa-bell text-xl"></i>
                 <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
             </button>
-            <div id="pi-status-container" class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/50 rounded-full py-1.5 px-3 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b]" onclick="handleStatusClick()">
+            <div id="pi-status-container" class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/50 rounded-full py-1.5 px-3 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b]" onclick="window.handleStatusClick()">
                 <i id="pi-status-icon" class="fa-solid fa-wallet text-[#e5a93b]"></i>
                 <span id="user-pi-balance" class="text-gray-300 font-semibold">جاري تهيئة SDK...</span>
             </div>
-            <img id="navbar-user-avatar" onclick="openEditProfileModal()" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-9 h-9 rounded-full border border-[#e5a93b] cursor-pointer hover:scale-105 transition-transform object-cover">
+            <img id="navbar-user-avatar" onclick="window.openEditProfileModal()" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-9 h-9 rounded-full border border-[#e5a93b] cursor-pointer hover:scale-105 transition-transform object-cover">
         </div>
     </header>
 
-    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0" onclick="toggleMobileSidebar()"></div>
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0" onclick="window.toggleMobileSidebar()"></div>
     <aside id="mobile-sidebar" class="fixed top-0 right-0 h-full w-72 bg-[#150b22] border-l-2 border-[#e5a93b] z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-5 flex flex-col justify-between overflow-y-auto">
         <div>
             <div class="flex justify-between items-center pb-4 border-b border-[#e5a93b]/20 mb-4">
                 <span class="font-bold text-sm text-[#e5a93b]">باي إيكو</span>
-                <button onclick="toggleMobileSidebar()" class="text-gray-400 hover:text-white text-lg">
+                <button onclick="window.toggleMobileSidebar()" class="text-gray-400 hover:text-white text-lg">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -115,7 +114,7 @@
             <div class="flex flex-col items-center text-center bg-[#1d102f] p-4 rounded-xl border border-[#e5a93b]/20 mb-4">
                 <div class="relative">
                     <img id="mobile-sidebar-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-16 h-16 rounded-full border-2 border-[#e5a93b] object-cover">
-                    <button onclick="openEditProfileModal(); toggleMobileSidebar();" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0d0614] rounded-full p-1.5 text-[10px] hover:bg-yellow-500">
+                    <button onclick="window.openEditProfileModal(); window.toggleMobileSidebar();" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0d0614] rounded-full p-1.5 text-[10px] hover:bg-yellow-500">
                         <i class="fa-solid fa-pen"></i>
                     </button>
                 </div>
@@ -126,20 +125,20 @@
             </div>
 
             <nav class="space-y-1">
-                <a href="#" onclick="toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
+                <a href="#" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
                     <i class="fa-solid fa-house text-base"></i>
                     <span>الرئيسية</span>
                 </a>
-                <a href="#" onclick="toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="#" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-compass text-base"></i>
                     <span>استكشف</span>
                 </a>
-                <a href="#" onclick="toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="#" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-message text-base"></i>
                     <span>الرسائل</span>
                 </a>
                 <hr class="border-[#e5a93b]/20 my-3">
-                <button onclick="openSupportModal(0, 'نظام الدعوات'); toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs">
+                <button onclick="window.openSupportModal(0, 'نظام الدعوات'); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs">
                     <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
                 </button>
             </nav>
@@ -156,7 +155,7 @@
                 <div class="flex flex-col items-center text-center">
                     <div class="relative group">
                         <img id="sidebar-user-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-20 h-20 rounded-full border-2 border-[#e5a93b] shadow-md object-cover">
-                        <button onclick="openEditProfileModal()" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0d0614] rounded-full p-2 text-xs hover:bg-yellow-500 transition-all shadow-md">
+                        <button onclick="window.openEditProfileModal()" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0d0614] rounded-full p-2 text-xs hover:bg-yellow-500 transition-all shadow-md">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </div>
@@ -192,7 +191,7 @@
                     <span>الرسائل</span>
                 </a>
                 <hr class="border-[#e5a93b]/30 my-3">
-                <button onclick="openSupportModal(0, 'نظام الدعوات')" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-3">
+                <button onclick="window.openSupportModal(0, 'نظام الدعوات')" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-3">
                     <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
                 </button>
                 <div class="text-center text-[11px] text-gray-500 pt-3 border-t border-[#e5a93b]/20">
@@ -210,14 +209,14 @@
                         
                         <div id="image-preview-container" class="hidden relative mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-60 flex justify-center items-center">
                             <img id="image-preview" class="max-h-60 w-full object-cover" src="">
-                            <button onclick="removeImageSelection()" class="absolute top-2 left-2 bg-red-600/90 text-white hover:bg-red-700 transition-colors w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
+                            <button onclick="window.removeImageSelection()" class="absolute top-2 left-2 bg-red-600/90 text-white hover:bg-red-700 transition-colors w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
                                 <i class="fa-solid fa-trash text-xs"></i>
                             </button>
                         </div>
 
                         <div id="video-preview-container" class="hidden relative mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-60 flex justify-center items-center">
                             <video id="video-preview" class="max-h-60 w-full" controls></video>
-                            <button onclick="removeVideoSelection()" class="absolute top-2 left-2 bg-red-600/90 text-white hover:bg-red-700 transition-colors w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
+                            <button onclick="window.removeVideoSelection()" class="absolute top-2 left-2 bg-red-600/90 text-white hover:bg-red-700 transition-colors w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
                                 <i class="fa-solid fa-trash text-xs"></i>
                             </button>
                         </div>
@@ -225,21 +224,21 @@
                 </div>
                 <div class="flex items-center justify-between mt-3 pt-3 border-t border-[#e5a93b]/20">
                     <div class="flex gap-2 text-gray-400">
-                        <button onclick="triggerImageUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
+                        <button onclick="window.triggerImageUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
                             <i class="fa-regular fa-image text-lg"></i>
                         </button>
-                        <input type="file" id="post-image-file" accept="image/*" class="hidden" onchange="previewSelectedImage(event)">
+                        <input type="file" id="post-image-file" accept="image/*" class="hidden" onchange="window.previewSelectedImage(event)">
 
-                        <button onclick="triggerVideoUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة فيديو">
+                        <button onclick="window.triggerVideoUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة فيديو">
                             <i class="fa-solid fa-video text-lg"></i>
                         </button>
-                        <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="previewSelectedVideo(event)">
+                        <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="window.previewSelectedVideo(event)">
                         
                         <button class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة رمز تعبيري">
                             <i class="fa-regular fa-face-smile text-lg"></i>
                         </button>
                     </div>
-                    <button id="publish-btn" onclick="createNewPost()" class="bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
+                    <button onclick="window.createNewPost()" class="bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
                         نشر المنشور
                     </button>
                 </div>
@@ -259,7 +258,7 @@
                         <span class="text-[10px] bg-red-600/20 text-red-400 px-2 py-0.5 rounded-full">نشط</span>
                     </div>
                     <p class="text-[10px] text-gray-400 leading-relaxed">انضم الآن وناقش آخر مستجدات الشبكة المفتوحة والتجارة مع الرواد بالصوت مباشر!</p>
-                    <button onclick="openVoiceChatModal()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-2 rounded-lg text-xs transition-all shadow-md">
+                    <button onclick="window.openVoiceChatModal()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-2 rounded-lg text-xs transition-all shadow-md">
                         <i class="fa-solid fa-headset ml-1"></i> انضمام للروم الصوتي
                     </button>
                 </div>
@@ -285,14 +284,14 @@
 
     <footer class="md:hidden mobile-footer text-gray-400 text-xl">
         <a href="#" class="text-[#e5a93b]"><i class="fa-solid fa-house"></i></a>
-        <a href="#" onclick="openVoiceChatModal()" class="hover:text-[#e5a93b]"><i class="fa-solid fa-microphone-lines"></i></a>
-        <a href="#" class="hover:text-[#e5a93b]" onclick="openEditProfileModal()"><i class="fa-regular fa-user"></i></a>
+        <a href="#" onclick="window.openVoiceChatModal()" class="hover:text-[#e5a93b]"><i class="fa-solid fa-microphone-lines"></i></a>
+        <a href="#" class="hover:text-[#e5a93b]" onclick="window.openEditProfileModal()"><i class="fa-regular fa-user"></i></a>
         <a href="#" class="hover:text-[#e5a93b]"><i class="fa-regular fa-message"></i></a>
     </footer>
 
     <div id="voice-chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-[0_0_30px_rgba(229,169,59,0.3)] relative">
-            <button onclick="closeVoiceChatModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
+            <button onclick="window.closeVoiceChatModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="w-16 h-16 bg-gradient-to-tr from-[#e5a93b] to-yellow-500 rounded-full flex items-center justify-center mx-auto shadow-md">
@@ -334,10 +333,10 @@
             </div>
 
             <div class="flex justify-center gap-4 pt-4 border-t border-[#e5a93b]/20">
-                <button id="toggle-mic-btn" onclick="toggleMicrophone()" class="bg-[#211434] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md">
+                <button id="toggle-mic-btn" onclick="window.toggleMicrophone()" class="bg-[#211434] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md">
                     <i id="mic-icon" class="fa-solid fa-microphone-slash text-lg"></i>
                 </button>
-                <button onclick="closeVoiceChatModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-full text-sm transition-all shadow-md">
+                <button onclick="window.closeVoiceChatModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-full text-sm transition-all shadow-md">
                     مغادرة الغرفة
                 </button>
             </div>
@@ -346,7 +345,7 @@
 
     <div id="profile-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl relative">
-            <button onclick="closeEditProfileModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
+            <button onclick="window.closeEditProfileModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <h3 class="text-xl font-bold text-[#e5a93b] text-center"><i class="fa-solid fa-user-gear ml-2"></i>تعديل الملف الشخصي</h3>
@@ -356,7 +355,7 @@
                     <img id="modal-avatar-preview" src="" class="w-24 h-24 rounded-full border-2 border-[#e5a93b] object-cover mb-3">
                     <label class="bg-[#211434] hover:bg-[#2c1b45] text-[#e5a93b] border border-[#e5a93b]/30 px-4 py-1.5 rounded-xl text-xs cursor-pointer font-semibold transition-all">
                         <i class="fa-solid fa-camera ml-1"></i> اختر صورة جديدة
-                        <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="previewAvatarChange(event)">
+                        <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="window.previewAvatarChange(event)">
                     </label>
                 </div>
                 <div class="space-y-1">
@@ -368,7 +367,7 @@
                     <textarea id="edit-bio" rows="3" class="w-full bg-[#211434] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b] resize-none"></textarea>
                 </div>
             </div>
-            <button onclick="saveUserProfile()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">
+            <button onclick="window.saveUserProfile()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">
                 حفظ التغييرات
             </button>
         </div>
@@ -376,7 +375,7 @@
 
     <div id="payment-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-2xl relative">
-            <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
+            <button onclick="window.closeSupportModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <div class="w-16 h-16 bg-gradient-to-tr from-[#5c1f75] to-[#e5a93b] rounded-full flex items-center justify-center mx-auto shadow-md">
@@ -393,53 +392,42 @@
             <div class="bg-[#211434] p-3 rounded-xl border border-[#e5a93b]/20 text-[11px] text-purple-300 leading-relaxed">
                 💡 <strong>اتصال الويب 3 نشط:</strong> هذه العملية ستستدعي دالة الدفع الآمنة لتوقيع المعاملة ببصمة إصبعك أو عبارة المرور عبر تطبيق المحفظة الرسمي.
             </div>
-            <button onclick="executePiPayment()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">
+            <button onclick="window.executePiPayment()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">
                 تأكيد وإرسال عبر Pi SDK
             </button>
         </div>
     </div>
 
-    <!-- تهيئة وربط Firebase SDK بإصدار v10 المتوافق مع المتصفحات -->
+    <!-- كود الجافا سكريبت الموحد والآمن باستخدام نظام الـ Module لـ Firebase و Pi SDK -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, arrayUnion, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+        // 1. استيراد دوال Firebase أولاً بنظام الموديول
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
 
-        // بيانات الاتصال الحقيقية بمشروعك (Echopi)
+        // بيانات اتصال Firebase الخاصة بمشروعك
         const firebaseConfig = {
-            apiKey: "AIzaSyCyDmlRaqGY2C-PfKAKxL8GoYgg1qKiqDY",
-            authDomain: "echopi-1a87c.firebaseapp.com",
-            projectId: "echopi-1a87c",
-            storageBucket: "echopi-1a87c.firebasestorage.app",
-            messagingSenderId: "93575678453",
-            appId: "1:93575678453:web:95891b9d64a4abade5b8bc"
+          apiKey: "AIzaSyCyDmlRaqGY2C-PfKAKxL8GoYgg1qKiqDY",
+          authDomain: "echopi-1a87c.firebaseapp.com",
+          projectId: "echopi-1a87c",
+          storageBucket: "echopi-1a87c.firebasestorage.app",
+          messagingSenderId: "93575678453",
+          appId: "1:93575678453:web:95891b9d64a4abade5b8bc"
         };
 
-        // تهيئة التطبيق وقاعدة البيانات
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const storage = getStorage(app);
+        // تهيئة خدمات الـ Firebase
+        const firebaseApp = initializeApp(firebaseConfig);
+        const auth = getAuth(firebaseApp);
+        const db = getFirestore(firebaseApp);
+        const storage = getStorage(firebaseApp);
 
-        // جعل المتغيرات والدوال عامة (Global) حتى تتعرف عليها أزرار الـ HTML الموزعة
-        window.db = db;
-        window.storage = storage;
-        window.firebase_collection = collection;
-        window.firebase_addDoc = addDoc;
-        window.firebase_updateDoc = updateDoc;
-        window.firebase_doc = doc;
-        window.firebase_arrayUnion = arrayUnion;
-        window.firebase_ref = ref;
-        window.firebase_uploadBytesResumable = uploadBytesResumable;
-        window.firebase_getDownloadURL = getDownloadURL;
+        // تصدير المتغيرات العامة للنافذة لتظل الروابط في عناصر الـ HTML تعمل بدون مشاكل
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseStorage = storage;
 
-        // استدعاء دالة التهيئة بعد ربطها بـ window لضمان إتمام تهيئة Firebase بالكامل أولاً
-        if (typeof window.initApp === "function") {
-            window.initApp();
-        }
-    </script>
-
-    <script>
-        // --- رابط خادم Vercel الخلفي الحقيقي ---
+        // 2. إعداد المتغيرات والمنطق البرمجي الخاص بـ Pi Echo
         const VERCEL_BACKEND_URL = "https://pi-echo.vercel.app/api";
 
         let currentUser = {
@@ -452,13 +440,46 @@
         let posts = [];
         let activePostIdForTip = null;
         let activeRecipientName = null;
-        let selectedVideoFileObj = null; 
-        let selectedImageFileObj = null; 
+        let selectedVideoDataUrl = null; 
+        let selectedImageDataUrl = null; 
         let piInitAttempts = 0;
         let isBypassActive = false;
         let lastPiError = "يرجى التأكد من فتح التطبيق من داخل متصفح Pi Browser أو تفعيل الـ Sandbox.";
         let isMicMuted = true;
         let isConnectingVoice = false;
+
+        const defaultPosts = [
+            {
+                id: 1,
+                author: "أحمد السوداني",
+                badge: "موثق KYC",
+                badgeColor: "bg-[#e5a93b]/10 text-[#e5a93b]",
+                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer1",
+                content: "متحمس جداً لمستقبل شبكة باي وتطبيقات المرافق الخدمية. آمل أن نرى دعماً حقيقياً ومشاريع محلية تساهم في نمو المنظومة في السودان والشرق الأوسط! 🚀⚡",
+                image: null,
+                video: "https://www.w3schools.com/html/mov_bbb.mp4", 
+                timestamp: "منذ ساعتين",
+                likes: 24,
+                likedByMe: false,
+                comments: [
+                    { author: "أبو كريم", content: "بالتأكيد يا رائد، العمل مستمر على قدم وساق!" }
+                ]
+            },
+            {
+                id: 2,
+                author: "سارة محمد",
+                badge: "مطور باي",
+                badgeColor: "bg-purple-900/30 text-purple-300",
+                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer2",
+                content: "نعمل حالياً على واجهة مستخدم مخصصة لمنصة الخدمات المصغرة على متصفح Pi Browser. التصاميم تبدو واعدة جداً وتأثير الإطارات الذهبية مدهش!",
+                image: null,
+                video: null,
+                timestamp: "منذ 5 ساعات",
+                likes: 42,
+                likedByMe: false,
+                comments: []
+            }
+        ];
 
         function safeGetItem(key) {
             try { return localStorage.getItem(key); } catch (e) { return null; }
@@ -468,37 +489,28 @@
             try { localStorage.setItem(key, value); } catch (e) {}
         }
 
-        // قمنا بربط دالة البدء بالنافذة (window) لكي يناديها موديول Firebase الخارجي فور تهيئته
-        window.initApp = function() {
+        // دالة التهيئة الرئيسية بعد تحميل واجهات النظام المتزامنة
+        function initApp() {
             const savedUser = safeGetItem('piecho_user_v2');
             if (savedUser) {
                 try { currentUser = JSON.parse(savedUser); } catch(e) {}
             }
             updateUserProfileDOM();
 
-            // الاستماع الحي لقاعدة البيانات Firestore وجلب المنشورات مرتبة زمنياً من الأحدث للأقدم
-            listenToLiveFeed();
+            const savedPosts = safeGetItem('piconnect_posts_v3');
+            if (savedPosts) {
+                try { posts = JSON.parse(savedPosts); } catch(e) { posts = defaultPosts; }
+            } else {
+                posts = defaultPosts;
+                savePostsToLocalStorage();
+            }
+            renderPosts();
             
             startPiSDKInitialization();
         }
 
-        function listenToLiveFeed() {
-            if (!window.db) return;
-            
-            const q = query(window.firebase_collection(window.db, "posts"));
-            
-            // قراءة البث المباشر للمنشورات
-            onSnapshot(q, (snapshot) => {
-                posts = [];
-                snapshot.forEach((doc) => {
-                    posts.push({ id: doc.id, ...doc.data() });
-                });
-                // ترتيب المنشورات زمنياً بحسب الـ timestamp
-                posts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                renderPosts();
-            }, (error) => {
-                console.error("خطأ أثناء جلب البث المباشر:", error);
-            });
+        function savePostsToLocalStorage() {
+            safeSetItem('piconnect_posts_v3', JSON.stringify(posts));
         }
 
         function updateUserProfileDOM() {
@@ -516,7 +528,7 @@
             if (mobBio) mobBio.innerText = currentUser.bio || "لا يوجد بايو محدد.";
         }
 
-        function toggleMobileSidebar() {
+        window.toggleMobileSidebar = function() {
             const sidebar = document.getElementById('mobile-sidebar');
             const overlay = document.getElementById('mobile-sidebar-overlay');
             if (sidebar.classList.contains('translate-x-full')) {
@@ -607,6 +619,8 @@
             console.log("تم العثور على دفعة معلقة غير مكتملة:", payment);
             if (payment && payment.transaction) {
                 completeIncompletePayment(payment.identifier, payment.transaction.txid);
+            } else if (payment) {
+                console.warn("الدفعة المعلقة تفتقد إلى معرف المعاملة (لم يتم توقيعها بعد).");
             }
         }
 
@@ -624,7 +638,7 @@
             }
         }
 
-        function handleStatusClick() {
+        window.handleStatusClick = function() {
             if (currentUser.isPiAuthenticated || isBypassActive) {
                 alert(`أنت مسجل الدخول كـ: ${currentUser.username}`);
                 return;
@@ -657,7 +671,7 @@
             alert("تم تفعيل الوضع التجريبي بنجاح! يمكنك الآن تجربة جميع مزايا المنصة ونشر الفيديوهات والتعليق بكامل حريتك.");
         }
 
-        function openVoiceChatModal() {
+        window.openVoiceChatModal = function() {
             document.getElementById('voice-chat-modal').classList.remove('hidden');
             document.getElementById('voice-chat-modal').classList.add('flex');
             
@@ -675,7 +689,7 @@
             }, 2500);
         }
 
-        function closeVoiceChatModal() {
+        window.closeVoiceChatModal = function() {
             isConnectingVoice = false;
             document.getElementById('voice-chat-modal').classList.add('hidden');
             document.getElementById('voice-chat-modal').classList.remove('flex');
@@ -687,7 +701,7 @@
             micBtn.className = "bg-[#211434] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md";
         }
 
-        function toggleMicrophone() {
+        window.toggleMicrophone = function() {
             isMicMuted = !isMicMuted;
             const micIcon = document.getElementById('mic-icon');
             const micBtn = document.getElementById('toggle-mic-btn');
@@ -703,177 +717,116 @@
             }
         }
 
-        function triggerImageUpload() {
+        window.triggerImageUpload = function() {
             document.getElementById('post-image-file').click();
         }
 
-        function previewSelectedImage(event) {
-            removeVideoSelection(); 
+        window.previewSelectedImage = function(event) {
+            window.removeVideoSelection(); 
             const file = event.target.files[0];
             if (file) {
-                selectedImageFileObj = file; // تخزين كائن الملف المرفوع لرفعه لـ Storage
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('image-preview').src = e.target.result;
+                    selectedImageDataUrl = e.target.result;
+                    document.getElementById('image-preview').src = selectedImageDataUrl;
                     document.getElementById('image-preview-container').classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        function removeImageSelection() {
-            selectedImageFileObj = null;
+        window.removeImageSelection = function() {
+            selectedImageDataUrl = null;
             document.getElementById('post-image-file').value = "";
             document.getElementById('image-preview').src = "";
             document.getElementById('image-preview-container').classList.add('hidden');
         }
 
-        function triggerVideoUpload() {
+        window.triggerVideoUpload = function() {
             document.getElementById('post-video-file').click();
         }
 
-        function previewSelectedVideo(event) {
-            removeImageSelection(); 
+        window.previewSelectedVideo = function(event) {
+            window.removeImageSelection(); 
             const file = event.target.files[0];
             if (file) {
-                selectedVideoFileObj = file; // تخزين كائن الملف لرفعه لـ Storage
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('video-preview').src = e.target.result;
+                    selectedVideoDataUrl = e.target.result;
+                    document.getElementById('video-preview').src = selectedVideoDataUrl;
                     document.getElementById('video-preview-container').classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        function removeVideoSelection() {
-            selectedVideoFileObj = null;
+        window.removeVideoSelection = function() {
+            selectedVideoDataUrl = null;
             document.getElementById('post-video-file').value = "";
             document.getElementById('video-preview').src = "";
             document.getElementById('video-preview-container').classList.add('hidden');
         }
 
-        // --- دالة رفع الملفات إلى Firebase Storage ---
-        function uploadFileToFirebase(file, folderName) {
-            return new Promise((resolve, reject) => {
-                if (!window.storage) {
-                    reject("Firebase Storage غير مهيأ");
-                    return;
-                }
-                const uniqueFileName = `${Date.now()}_${file.name}`;
-                const storageRef = window.firebase_ref(window.storage, `${folderName}/${uniqueFileName}`);
-                const uploadTask = window.firebase_uploadBytesResumable(storageRef, file);
-
-                uploadTask.on('state_changed', 
-                    (snapshot) => {
-                        // هنا يمكنك تتبع نسبة الرفع لو أردت مستقبلاً
-                    }, 
-                    (error) => reject(error), 
-                    () => {
-                        window.firebase_getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                            resolve(downloadURL);
-                        });
-                    }
-                );
-            });
-        }
-
-        async function createNewPost() {
+        window.createNewPost = function() {
             const textContent = document.getElementById('post-input').value.trim();
-            const publishBtn = document.getElementById('publish-btn');
-            
-            if (!textContent && !selectedVideoFileObj && !selectedImageFileObj) {
+            if (!textContent && !selectedVideoDataUrl && !selectedImageDataUrl) {
                 alert("من فضلك، اكتب نصاً أو ارفع صورة/فيديو أولاً لنشر المحتوى.");
                 return;
             }
 
-            publishBtn.disabled = true;
-            publishBtn.innerText = "جاري النشر...";
+            const newPost = {
+                id: posts.length + 1,
+                author: currentUser.username,
+                badge: isBypassActive ? "وضع تجريبي" : "رائد وباني",
+                badgeColor: isBypassActive ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
+                avatar: currentUser.avatar,
+                content: textContent,
+                image: selectedImageDataUrl,
+                video: selectedVideoDataUrl,
+                timestamp: "الآن",
+                likes: 0,
+                likedByMe: false,
+                comments: []
+            };
 
-            let fileUrl = null;
-            let fileType = null;
+            posts.unshift(newPost);
+            savePostsToLocalStorage();
+            renderPosts();
 
-            try {
-                // رفع الملفات حياً إلى السيرفر إن وجدت
-                if (selectedImageFileObj) {
-                    fileUrl = await uploadFileToFirebase(selectedImageFileObj, 'images');
-                    fileType = 'image';
-                } else if (selectedVideoFileObj) {
-                    fileUrl = await uploadFileToFirebase(selectedVideoFileObj, 'videos');
-                    fileType = 'video';
-                }
-
-                const newPost = {
-                    author: currentUser.username,
-                    badge: isBypassActive ? "وضع تجريبي" : "رائد وباني",
-                    badgeColor: isBypassActive ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
-                    avatar: currentUser.avatar,
-                    content: textContent,
-                    image: fileType === 'image' ? fileUrl : null,
-                    video: fileType === 'video' ? fileUrl : null,
-                    timestamp: "الآن",
-                    createdAt: Date.now(),
-                    likes: 0,
-                    likedBy: [], // تتبع الرواد الذين أعجبوا بالمنشور لمنع تكرار الإعجاب
-                    comments: []
-                };
-
-                // الحفظ المباشر في Firestore
-                await window.firebase_addDoc(window.firebase_collection(window.db, "posts"), newPost);
-
-                document.getElementById('post-input').value = "";
-                removeVideoSelection();
-                removeImageSelection();
-            } catch (err) {
-                console.error("فشل نشر المنشور:", err);
-                alert("حدث خطأ أثناء عملية النشر، يرجى المحاولة لاحقاً.");
-            } finally {
-                publishBtn.disabled = false;
-                publishBtn.innerText = "نشر المنشور";
-            }
+            document.getElementById('post-input').value = "";
+            window.removeVideoSelection();
+            window.removeImageSelection();
         }
 
-        async function toggleLike(postId) {
+        window.toggleLike = function(postId) {
             const post = posts.find(p => p.id === postId);
-            if (post && window.db) {
-                const postRef = window.firebase_doc(window.db, "posts", postId);
-                let likedBy = post.likedBy || [];
-                let likesCount = post.likes || 0;
-
-                if (likedBy.includes(currentUser.username)) {
-                    // إزالة الإعجاب
-                    likedBy = likedBy.filter(user => user !== currentUser.username);
-                    likesCount = Math.max(0, likesCount - 1);
+            if (post) {
+                if (post.likedByMe) {
+                    post.likes--;
+                    post.likedByMe = false;
                 } else {
-                    // إضافة إعجاب جديد
-                    likedBy.push(currentUser.username);
-                    likesCount++;
+                    post.likes++;
+                    post.likedByMe = true;
                 }
-
-                await window.firebase_updateDoc(postRef, {
-                    likes: likesCount,
-                    likedBy: likedBy
-                });
+                savePostsToLocalStorage();
+                renderPosts();
             }
         }
 
-        async function submitComment(postId) {
+        window.submitComment = function(postId) {
             const inputElement = document.getElementById(`comment-input-${postId}`);
             const text = inputElement.value.trim();
             if (!text) return;
 
             const post = posts.find(p => p.id === postId);
-            if (post && window.db) {
-                const postRef = window.firebase_doc(window.db, "posts", postId);
-                const newComment = {
+            if (post) {
+                if (!post.comments) post.comments = [];
+                post.comments.push({
                     author: currentUser.username,
-                    content: text,
-                    createdAt: Date.now()
-                };
-
-                await window.firebase_updateDoc(postRef, {
-                    comments: window.firebase_arrayUnion(newComment)
+                    content: text
                 });
+                savePostsToLocalStorage();
+                renderPosts();
             }
             inputElement.value = "";
         }
@@ -886,13 +839,13 @@
                 let mediaHTML = '';
                 if (post.video) {
                     mediaHTML = `
-                        <div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
+                        <div class="mt-3 rounded-xl overflow-hidden border border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
                             <video class="w-full max-h-80" controls src="${post.video}"></video>
                         </div>
                     `;
                 } else if (post.image) {
                     mediaHTML = `
-                        <div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
+                        <div class="mt-3 rounded-xl overflow-hidden border border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
                             <img class="w-full max-h-80 object-cover" src="${post.image}">
                         </div>
                     `;
@@ -912,8 +865,6 @@
                     `;
                 }
 
-                const isLikedByMe = post.likedBy && post.likedBy.includes(currentUser.username);
-
                 const postHTML = `
                     <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-5 space-y-4">
                         <div class="flex items-center justify-between">
@@ -924,10 +875,10 @@
                                         <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
                                         ${post.badge ? `<span class="text-[9px] px-2 py-0.5 rounded-full ${post.badgeColor} font-semibold">${post.badge}</span>` : ''}
                                     </div>
-                                    <span class="text-[10px] text-gray-500">${post.timestamp || 'نشط'}</span>
+                                    <span class="text-[10px] text-gray-500">${post.timestamp}</span>
                                 </div>
                             </div>
-                            <button onclick="openSupportModal('${post.id}', '${post.author}')" class="flex items-center gap-1 bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0d0614] transition-all px-3 py-1.5 rounded-xl text-xs font-semibold">
+                            <button onclick="window.openSupportModal(${post.id}, '${post.author}')" class="flex items-center gap-1 bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0d0614] transition-all px-3 py-1.5 rounded-xl text-xs font-semibold">
                                 <i class="fa-solid fa-heart-circle-bolt"></i>
                                 <span>أرسل Pi</span>
                             </button>
@@ -938,9 +889,9 @@
                         ${mediaHTML}
                         
                         <div class="flex items-center gap-6 pt-3 border-t border-[#e5a93b]/20 text-xs text-gray-400">
-                            <button onclick="toggleLike('${post.id}')" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${isLikedByMe ? 'text-red-500' : ''}">
-                                <i class="${isLikedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
-                                <span>${post.likes || 0}</span>
+                            <button onclick="window.toggleLike(${post.id})" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${post.likedByMe ? 'text-red-500' : ''}">
+                                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
+                                <span>${post.likes}</span>
                             </button>
                             <div class="flex items-center gap-1.5 cursor-pointer hover:text-purple-400">
                                 <i class="fa-regular fa-comment text-sm"></i>
@@ -952,7 +903,7 @@
 
                         <div class="flex gap-2 mt-3 pt-2">
                             <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#1d102f] text-xs text-gray-200 border border-[#e5a93b]/20 rounded-xl px-3 py-2 outline-none focus:border-[#e5a93b]">
-                            <button onclick="submitComment('${post.id}')" class="bg-[#211434] hover:bg-[#e5a93b] hover:text-[#0d0614] text-[#e5a93b] text-xs font-bold px-3 py-2 rounded-xl transition-all border border-[#e5a93b]/30">إرسال</button>
+                            <button onclick="window.submitComment(${post.id})" class="bg-[#211434] hover:bg-[#e5a93b] hover:text-[#0d0614] text-[#e5a93b] text-xs font-bold px-3 py-2 rounded-xl transition-all border border-[#e5a93b]/30">إرسال</button>
                         </div>
                     </div>
                 `;
@@ -960,7 +911,7 @@
             });
         }
 
-        function openEditProfileModal() {
+        window.openEditProfileModal = function() {
             document.getElementById('modal-avatar-preview').src = currentUser.avatar;
             document.getElementById('edit-username').value = currentUser.username;
             document.getElementById('edit-bio').value = currentUser.bio || "";
@@ -968,12 +919,12 @@
             document.getElementById('profile-modal').classList.add('flex');
         }
 
-        function closeEditProfileModal() {
+        window.closeEditProfileModal = function() {
             document.getElementById('profile-modal').classList.add('hidden');
             document.getElementById('profile-modal').classList.remove('flex');
         }
 
-        function previewAvatarChange(event) {
+        window.previewAvatarChange = function(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -984,38 +935,25 @@
             }
         }
 
-        async function saveUserProfile() {
+        window.saveUserProfile = function() {
             const newName = document.getElementById('edit-username').value.trim();
             const newBio = document.getElementById('edit-bio').value.trim();
-            const avatarPreviewSrc = document.getElementById('modal-avatar-preview').src;
-            const avatarFile = document.getElementById('avatar-upload').files[0];
-
+            const newAvatar = document.getElementById('modal-avatar-preview').src;
+            
             if (newName) {
-                try {
-                    let finalAvatarUrl = avatarPreviewSrc;
-                    
-                    // إذا كان هناك ملف صورة رمزية جديد تم اختياره، نرفعه لـ Storage
-                    if (avatarFile) {
-                        finalAvatarUrl = await uploadFileToFirebase(avatarFile, 'avatars');
-                    }
-
-                    currentUser.username = newName;
-                    currentUser.bio = newBio;
-                    currentUser.avatar = finalAvatarUrl;
-                    
-                    updateUserProfileDOM();
-                    safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
-                    closeEditProfileModal();
-                } catch (err) {
-                    console.error("خطأ أثناء تحديث الملف الشخصي:", err);
-                    alert("فشل تحديث بيانات الملف الشخصي، حاول مجدداً.");
-                }
+                currentUser.username = newName;
+                currentUser.bio = newBio;
+                currentUser.avatar = newAvatar;
+                
+                updateUserProfileDOM();
+                safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
+                window.closeEditProfileModal();
             } else {
                 alert("يرجى إدخال اسم مستخدم صالح.");
             }
         }
 
-        function openSupportModal(postId, recipientName) {
+        window.openSupportModal = function(postId, recipientName) {
             if (!currentUser.isPiAuthenticated) {
                 alert("يرجى تفعيل الاتصال أو اختيار وضع التخطي أولاً لإرسال المعاملات.");
                 return;
@@ -1026,20 +964,18 @@
             document.getElementById('payment-modal').classList.remove('hidden');
             document.getElementById('payment-modal').classList.add('flex');
             
-            const payBtn = document.querySelector("#payment-modal button[onclick='executePiPayment()']");
-            payBtn.disabled = false;
-            payBtn.innerText = "تأكيد وإرسال عبر Pi SDK";
-            payBtn.className = "w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10";
+            const payBtn = document.querySelector("#payment-modal button[onclick='window.executePiPayment()']");
+            if(payBtn) resetPayButton(payBtn);
         }
 
-        function closeSupportModal() {
+        window.closeSupportModal = function() {
             document.getElementById('payment-modal').classList.add('hidden');
             document.getElementById('payment-modal').classList.remove('flex');
         }
 
-        function executePiPayment() {
+        window.executePiPayment = function() {
             const amount = parseFloat(document.getElementById('tip-amount').value);
-            const payBtn = document.querySelector("#payment-modal button[onclick='executePiPayment()']");
+            const payBtn = document.querySelector("#payment-modal button[onclick='window.executePiPayment()']");
 
             if (isNaN(amount) || amount <= 0) {
                 alert("الرجاء إدخال قيمة دعم صالحة بـ Pi.");
@@ -1048,7 +984,7 @@
 
             if (isBypassActive) {
                 alert(`محاكاة عملية دفع ناجحة بـ (${amount} Pi) إلى ${activeRecipientName}!\n\n(بما أنك تستخدم الوضع التجريبي المحلي، لم يتم خصم رصيد حقيقي من محفظتك)`);
-                closeSupportModal();
+                window.closeSupportModal();
                 return;
             }
 
@@ -1112,7 +1048,7 @@
                             payBtn.innerText = "🎉 تم الدفع بنجاح!";
                             
                             setTimeout(() => {
-                                closeSupportModal();
+                                window.closeSupportModal();
                                 resetPayButton(payBtn);
                             }, 2000);
                         } else {
@@ -1123,7 +1059,7 @@
                         console.error("خطأ أثناء الاتصال بالخادم للإتمام:", err);
                         payBtn.innerText = "⚠️ لم يكتمل الرد، جاري التحقق التلقائي...";
                         setTimeout(() => {
-                            closeSupportModal();
+                            window.closeSupportModal();
                             resetPayButton(payBtn);
                         }, 3000);
                     });
@@ -1162,6 +1098,9 @@
             })
             .catch(err => console.error("فشلت تسوية الدفعة المعلقة القديمة:", err));
         }
+
+        // تشغيل التطبيق بأمان عند جاهزية واجهة المستخدم الكاملة
+        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
