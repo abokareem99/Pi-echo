@@ -432,8 +432,10 @@
         window.firebase_uploadBytesResumable = uploadBytesResumable;
         window.firebase_getDownloadURL = getDownloadURL;
 
-        // إطلاق التطبيق بعد المزامنة
-        initApp();
+        // استدعاء دالة التهيئة بعد ربطها بـ window لضمان إتمام تهيئة Firebase بالكامل أولاً
+        if (typeof window.initApp === "function") {
+            window.initApp();
+        }
     </script>
 
     <script>
@@ -466,7 +468,8 @@
             try { localStorage.setItem(key, value); } catch (e) {}
         }
 
-        function initApp() {
+        // قمنا بربط دالة البدء بالنافذة (window) لكي يناديها موديول Firebase الخارجي فور تهيئته
+        window.initApp = function() {
             const savedUser = safeGetItem('piecho_user_v2');
             if (savedUser) {
                 try { currentUser = JSON.parse(savedUser); } catch(e) {}
