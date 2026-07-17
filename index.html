@@ -240,7 +240,7 @@
                             <i class="fa-regular fa-face-smile text-lg"></i>
                         </button>
                     </div>
-                    <button onclick="window.createNewPost()" class="bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
+                    <button id="main-post-btn" onclick="window.createNewPost()" class="bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
                         نشر المنشور
                     </button>
                 </div>
@@ -792,9 +792,12 @@
             });
         }
 
-        // دالة إنشاء المنشورات وحفظها سحابياً في Firebase Firestore مباشرة
+        // دالة إنشاء المنشورات وحفظها سحابياً في Firebase Firestore مباشرة (معدلة لمنع التكرار وتفريغ الحقل)
         window.createNewPost = async function() {
-            const textContent = document.getElementById('post-input').value.trim();
+            const postInput = document.getElementById('post-input');
+            const textContent = postInput.value.trim();
+            const postBtn = document.getElementById('main-post-btn');
+            
             if (!textContent && !selectedVideoDataUrl && !selectedImageDataUrl) {
                 alert("من فضلك، اكتب نصاً أو ارفع صورة/فيديو أولاً لنشر المحتوى.");
                 return;
@@ -803,6 +806,14 @@
             const isDemo = isBypassActive;
             
             try {
+                // 1. تعطيل الزر وتغيير حالته البصرية لمنع الضغط المتكرر
+                if (postBtn) {
+                    postBtn.disabled = true;
+                    postBtn.innerText = "جاري النشر...";
+                    postBtn.className = "bg-gray-600 text-gray-400 font-bold px-5 py-1.5 rounded-lg text-sm cursor-not-allowed shadow-none";
+                }
+
+                // 2. الرفع المباشر لقاعدة البيانات
                 await addDoc(collection(window.firebaseDb, "posts"), {
                     author: currentUser.username,
                     badge: isDemo ? "وضع تجريبي" : "رائد وباني",
@@ -817,14 +828,21 @@
                     comments: []
                 });
                 
-                // تصفير مدخلات النشر بعد النجاح
-                document.getElementById('post-input').value = "";
+                // 3. تصفير الحقل وتطهير المرفقات
+                postInput.value = "";
                 window.removeVideoSelection();
                 window.removeImageSelection();
                 
             } catch (error) {
                 console.error("فشل رفع المنشور إلى Firebase:", error);
                 alert("حدث خطأ أثناء الاتصال السحابي بقاعدة البيانات، يرجى المحاولة لاحقاً.");
+            } finally {
+                // 4. إعادة تفعيل الزر بعد اكتمال العملية بنجاح أو حدوث خطأ
+                if (postBtn) {
+                    postBtn.disabled = false;
+                    postBtn.innerText = "نشر المنشور";
+                    postBtn.className = "bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10";
+                }
             }
         }
 
