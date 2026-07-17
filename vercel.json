@@ -16,8 +16,16 @@
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "/api/payments/approve",
       "dest": "server.js"
+    },
+    {
+      "src": "/api/payments/complete",
+      "dest": "server.js"
+    },
+    {
+      "src": "/eagle-logo.png",
+      "dest": "/eagle-logo.png"
     },
     {
       "src": "/(.*)",
