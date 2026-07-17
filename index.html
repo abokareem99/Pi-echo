@@ -102,6 +102,8 @@
     </header>
 
     <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0" onclick="window.toggleMobileSidebar()"></div>
+    
+    <!-- القائمة الجانبية للهاتف المحمول المعدلة لمنع مشاكل التعطيل -->
     <aside id="mobile-sidebar" class="fixed top-0 right-0 h-full w-72 bg-[#150b22] border-l-2 border-[#e5a93b] z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-5 flex flex-col justify-between overflow-y-auto">
         <div>
             <div class="flex justify-between items-center pb-4 border-b border-[#e5a93b]/20 mb-4">
@@ -125,17 +127,17 @@
             </div>
 
             <nav class="space-y-1">
-                <a href="#" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
                     <i class="fa-solid fa-house text-base"></i>
                     <span>الرئيسية</span>
                 </a>
-                <a href="#" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); alert('قسم استكشف قيد التطوير والربط البرمجي حالياً!');" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-compass text-base"></i>
                     <span>استكشف</span>
                 </a>
-                <a href="#" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); alert('صندوق الرسائل وغرف المحادثة المباشرة قيد التجهيز للتحديث القادم...');" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-message text-base"></i>
-                    <span>الرسائل</span>
+                    <span>الالتحاق بالمحادثات</span>
                 </a>
                 <hr class="border-[#e5a93b]/20 my-3">
                 <button onclick="window.openSupportModal(0, 'نظام الدعوات'); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs">
@@ -178,15 +180,15 @@
             </div>
 
             <nav class="space-y-1 bg-[#150b22] p-4 rounded-2xl border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)]">
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
+                <a href="javascript:void(0)" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
                     <i class="fa-solid fa-house text-lg"></i>
                     <span>الرئيسية</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="javascript:void(0)" onclick="alert('قسم استكشف قيد التطوير والربط البرمجي حالياً!');" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-compass text-lg"></i>
                     <span>استكشف</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="javascript:void(0)" onclick="alert('صندوق الرسائل وغرف المحادثة المباشرة قيد التجهيز للتحديث القادم...');" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-message text-lg"></i>
                     <span>الرسائل</span>
                 </a>
@@ -283,10 +285,10 @@
     </div>
 
     <footer class="md:hidden mobile-footer text-gray-400 text-xl">
-        <a href="#" class="text-[#e5a93b]"><i class="fa-solid fa-house"></i></a>
-        <a href="#" onclick="window.openVoiceChatModal()" class="hover:text-[#e5a93b]"><i class="fa-solid fa-microphone-lines"></i></a>
-        <a href="#" class="hover:text-[#e5a93b]" onclick="window.openEditProfileModal()"><i class="fa-regular fa-user"></i></a>
-        <a href="#" class="hover:text-[#e5a93b]"><i class="fa-regular fa-message"></i></a>
+        <a href="javascript:void(0)" class="text-[#e5a93b]"><i class="fa-solid fa-house"></i></a>
+        <a href="javascript:void(0)" onclick="window.openVoiceChatModal()" class="hover:text-[#e5a93b]"><i class="fa-solid fa-microphone-lines"></i></a>
+        <a href="javascript:void(0)" class="hover:text-[#e5a93b]" onclick="window.openEditProfileModal()"><i class="fa-regular fa-user"></i></a>
+        <a href="javascript:void(0)" class="hover:text-[#e5a93b]" onclick="alert('صندوق الرسائل والمحادثة المباشرة قيد التهيئة والتفعيل...');"><i class="fa-regular fa-message"></i></a>
     </footer>
 
     <div id="voice-chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
@@ -403,7 +405,7 @@
         // 1. استيراد دوال Firebase أولاً بنظام الموديول
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
         import { getStorage } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
 
         // بيانات اتصال Firebase الخاصة بمشروعك
@@ -450,7 +452,7 @@
 
         const defaultPosts = [
             {
-                id: 1,
+                id: "default-1",
                 author: "أحمد السوداني",
                 badge: "موثق KYC",
                 badgeColor: "bg-[#e5a93b]/10 text-[#e5a93b]",
@@ -466,7 +468,7 @@
                 ]
             },
             {
-                id: 2,
+                id: "default-2",
                 author: "سارة محمد",
                 badge: "مطور باي",
                 badgeColor: "bg-purple-900/30 text-purple-300",
@@ -496,21 +498,11 @@
                 try { currentUser = JSON.parse(savedUser); } catch(e) {}
             }
             updateUserProfileDOM();
-
-            const savedPosts = safeGetItem('piconnect_posts_v3');
-            if (savedPosts) {
-                try { posts = JSON.parse(savedPosts); } catch(e) { posts = defaultPosts; }
-            } else {
-                posts = defaultPosts;
-                savePostsToLocalStorage();
-            }
-            renderPosts();
+            
+            // بدء مراقبة قاعدة بيانات Firebase Firestore حياً بدلاً من التخزين المحلي
+            listenToPostsFromFirebase();
             
             startPiSDKInitialization();
-        }
-
-        function savePostsToLocalStorage() {
-            safeSetItem('piconnect_posts_v3', JSON.stringify(posts));
         }
 
         function updateUserProfileDOM() {
@@ -767,35 +759,73 @@
             document.getElementById('video-preview-container').classList.add('hidden');
         }
 
-        window.createNewPost = function() {
+        // دالة جلب ومراقبة المنشورات من Firebase Firestore بشكل حي وتلقائي
+        function listenToPostsFromFirebase() {
+            const q = query(collection(window.firebaseDb, "posts"), orderBy("timestamp", "desc"));
+            
+            onSnapshot(q, (snapshot) => {
+                posts = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    posts.push({
+                        id: doc.id,
+                        author: data.author || "رائد مجهول",
+                        badge: data.badge || "رائد",
+                        badgeColor: data.badgeColor || "bg-purple-900/30 text-purple-300",
+                        avatar: data.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Pioneer",
+                        content: data.content || "",
+                        image: data.image || null,
+                        video: data.video || null,
+                        timestamp: data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : "الآن",
+                        likes: data.likes || 0,
+                        likedByMe: data.likedByMe || false,
+                        comments: data.comments || []
+                    });
+                });
+                
+                // دمج المنشورات الافتراضية مع السحابية في حال خلو قاعدة البيانات مؤقتاً
+                if (posts.length === 0) {
+                    posts = defaultPosts;
+                }
+                
+                renderPosts();
+            });
+        }
+
+        // دالة إنشاء المنشورات وحفظها سحابياً في Firebase Firestore مباشرة
+        window.createNewPost = async function() {
             const textContent = document.getElementById('post-input').value.trim();
             if (!textContent && !selectedVideoDataUrl && !selectedImageDataUrl) {
                 alert("من فضلك، اكتب نصاً أو ارفع صورة/فيديو أولاً لنشر المحتوى.");
                 return;
             }
 
-            const newPost = {
-                id: posts.length + 1,
-                author: currentUser.username,
-                badge: isBypassActive ? "وضع تجريبي" : "رائد وباني",
-                badgeColor: isBypassActive ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
-                avatar: currentUser.avatar,
-                content: textContent,
-                image: selectedImageDataUrl,
-                video: selectedVideoDataUrl,
-                timestamp: "الآن",
-                likes: 0,
-                likedByMe: false,
-                comments: []
-            };
-
-            posts.unshift(newPost);
-            savePostsToLocalStorage();
-            renderPosts();
-
-            document.getElementById('post-input').value = "";
-            window.removeVideoSelection();
-            window.removeImageSelection();
+            const isDemo = isBypassActive;
+            
+            try {
+                await addDoc(collection(window.firebaseDb, "posts"), {
+                    author: currentUser.username,
+                    badge: isDemo ? "وضع تجريبي" : "رائد وباني",
+                    badgeColor: isDemo ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
+                    avatar: currentUser.avatar,
+                    content: textContent,
+                    image: selectedImageDataUrl || null,
+                    video: selectedVideoDataUrl || null,
+                    timestamp: serverTimestamp(),
+                    likes: 0,
+                    likedByMe: false,
+                    comments: []
+                });
+                
+                // تصفير مدخلات النشر بعد النجاح
+                document.getElementById('post-input').value = "";
+                window.removeVideoSelection();
+                window.removeImageSelection();
+                
+            } catch (error) {
+                console.error("فشل رفع المنشور إلى Firebase:", error);
+                alert("حدث خطأ أثناء الاتصال السحابي بقاعدة البيانات، يرجى المحاولة لاحقاً.");
+            }
         }
 
         window.toggleLike = function(postId) {
@@ -839,13 +869,13 @@
                 let mediaHTML = '';
                 if (post.video) {
                     mediaHTML = `
-                        <div class="mt-3 rounded-xl overflow-hidden border border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
+                        <div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
                             <video class="w-full max-h-80" controls src="${post.video}"></video>
                         </div>
                     `;
                 } else if (post.image) {
                     mediaHTML = `
-                        <div class="mt-3 rounded-xl overflow-hidden border border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
+                        <div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center">
                             <img class="w-full max-h-80 object-cover" src="${post.image}">
                         </div>
                     `;
@@ -878,7 +908,7 @@
                                     <span class="text-[10px] text-gray-500">${post.timestamp}</span>
                                 </div>
                             </div>
-                            <button onclick="window.openSupportModal(${post.id}, '${post.author}')" class="flex items-center gap-1 bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0d0614] transition-all px-3 py-1.5 rounded-xl text-xs font-semibold">
+                            <button onclick="window.openSupportModal('${post.id}', '${post.author}')" class="flex items-center gap-1 bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0d0614] transition-all px-3 py-1.5 rounded-xl text-xs font-semibold">
                                 <i class="fa-solid fa-heart-circle-bolt"></i>
                                 <span>أرسل Pi</span>
                             </button>
@@ -889,7 +919,7 @@
                         ${mediaHTML}
                         
                         <div class="flex items-center gap-6 pt-3 border-t border-[#e5a93b]/20 text-xs text-gray-400">
-                            <button onclick="window.toggleLike(${post.id})" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${post.likedByMe ? 'text-red-500' : ''}">
+                            <button onclick="window.toggleLike('${post.id}')" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${post.likedByMe ? 'text-red-500' : ''}">
                                 <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
                                 <span>${post.likes}</span>
                             </button>
@@ -903,7 +933,7 @@
 
                         <div class="flex gap-2 mt-3 pt-2">
                             <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#1d102f] text-xs text-gray-200 border border-[#e5a93b]/20 rounded-xl px-3 py-2 outline-none focus:border-[#e5a93b]">
-                            <button onclick="window.submitComment(${post.id})" class="bg-[#211434] hover:bg-[#e5a93b] hover:text-[#0d0614] text-[#e5a93b] text-xs font-bold px-3 py-2 rounded-xl transition-all border border-[#e5a93b]/30">إرسال</button>
+                            <button onclick="window.submitComment('${post.id}')" class="bg-[#211434] hover:bg-[#e5a93b] hover:text-[#0d0614] text-[#e5a93b] text-xs font-bold px-3 py-2 rounded-xl transition-all border border-[#e5a93b]/30">إرسال</button>
                         </div>
                     </div>
                 `;
@@ -1052,7 +1082,7 @@
                                 resetPayButton(payBtn);
                             }, 2000);
                         } else {
-                            throw new Error("فشل إغلاق المعاملة بالخادم.");
+                            throw new Error("فشلت إغلاق المعاملة بالخادم.");
                         }
                     })
                     .catch(err => {
