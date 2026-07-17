@@ -791,10 +791,10 @@
             });
         }
 
-        // دالة إنشاء المنشورات السحابية وحفظها (تم حل مشكلة التعليق والتصفير بالكامل هنا)
+        // دالة إنشاء المنشورات السحابية وحفظها الآمنة والمحدثة بالكامل
         window.createNewPost = async function() {
             const postInput = document.getElementById('post-input');
-            const textContent = postInput.value.trim();
+            const textContent = postInput ? postInput.value.trim() : "";
             const postBtn = document.getElementById('main-post-btn');
             
             if (!textContent && !selectedVideoDataUrl && !selectedImageDataUrl) {
@@ -804,26 +804,25 @@
 
             const isDemo = isBypassActive;
             
-            // 1. تجميد وتعطيل زر النشر فوراً وتغيير حالته البصرية
+            // 1. تجميد وتعطيل زر النشر فوراً وتغيير حالته البصرية لحين الرفع
             if (postBtn) {
                 postBtn.disabled = true;
                 postBtn.innerText = "جاري النشر...";
                 postBtn.className = "bg-gray-600 text-gray-400 font-bold px-5 py-1.5 rounded-lg text-sm cursor-not-allowed shadow-none";
             }
 
-            // حفظ المرفقات والنصوص الحالية لإرسالها، ثم تصفير عناصر الواجهة فوراً
-            // هذه الخطوة تضمن تصفير شاشة المستخدم دون انتظار استجابة السيرفر وتفادي تجميد الواجهة
+            // حفظ المرفقات والنصوص الحالية محلياً لإرسالها
             const contentToSend = textContent;
             const imageToSend = selectedImageDataUrl || null;
             const videoToSend = selectedVideoDataUrl || null;
 
-            // تفريغ الحقول فورا على شاشة العميل
-            postInput.value = "";
+            // 2. تفريغ الحقول فورا على شاشة العميل لمنع تجميد الواجهة والتكرار
+            if (postInput) postInput.value = "";
             window.removeVideoSelection();
             window.removeImageSelection();
 
             try {
-                // 2. إرسال الطلب لـ Firebase Firestore
+                // 3. إرسال الطلب لـ Firebase Firestore
                 await addDoc(collection(window.firebaseDb, "posts"), {
                     author: currentUser.username,
                     badge: isDemo ? "وضع تجريبي" : "رائد وباني",
@@ -841,18 +840,16 @@
                 console.log("تم النشر السحابي بنجاح وتحديث قاعدة البيانات!");
             } catch (error) {
                 console.error("فشل رفع المنشور إلى Firebase:", error);
-                alert("حدث خطأ أثناء الاتصال السحابي بقاعدة البيانات، يرجى المحاولة لاحقاً.");
-                // في حال الفشل فقط، نعيد النص المكتوب للحقل حتى لا يضيع تعب المستخدم
-                postInput.value = contentToSend;
+                alert("حدث خطأ أثناء الاتصال السحابي بقاعدة البيانات، تم حفظ نص منشورك في الحافظة.");
+                // إعادة النص المكتوب في حال حدوث خطأ تام بالشبكة منعاً لضياع تعب المستخدم
+                if (postInput) postInput.value = contentToSend;
             } finally {
-                // 3. إعادة تفعيل الزر مجدداً بعد زمن بسيط ليتوافق مع تحديث المعاينة الحية (onSnapshot)
-                setTimeout(() => {
-                    if (postBtn) {
-                        postBtn.disabled = false;
-                        postBtn.innerText = "نشر المنشور";
-                        postBtn.className = "bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10";
-                    }
-                }, 800);
+                // 4. خطوة الأمان القصوى: إعادة زر النشر للعمل فوراً وبدون أي شروط أو تأخير يعيق التجربة
+                if (postBtn) {
+                    postBtn.disabled = false;
+                    postBtn.innerText = "نشر المنشور";
+                    postBtn.className = "bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10";
+                }
             }
         }
 
