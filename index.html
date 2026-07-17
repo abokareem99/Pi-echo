@@ -239,7 +239,7 @@
                             <i class="fa-regular fa-face-smile text-lg"></i>
                         </button>
                     </div>
-                    <button onclick="createNewPost()" class="bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
+                    <button id="publish-btn" onclick="createNewPost()" class="bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
                         نشر المنشور
                     </button>
                 </div>
@@ -399,8 +399,45 @@
         </div>
     </div>
 
+    <!-- تهيئة وربط Firebase SDK بإصدار v10 المتوافق مع المتصفحات -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, arrayUnion, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+        // بيانات الاتصال الحقيقية بمشروعك (Echopi)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCyDmlRaqGY2C-PfKAKxL8GoYgg1qKiqDY",
+            authDomain: "echopi-1a87c.firebaseapp.com",
+            projectId: "echopi-1a87c",
+            storageBucket: "echopi-1a87c.firebasestorage.app",
+            messagingSenderId: "93575678453",
+            appId: "1:93575678453:web:95891b9d64a4abade5b8bc"
+        };
+
+        // تهيئة التطبيق وقاعدة البيانات
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // جعل المتغيرات والدوال عامة (Global) حتى تتعرف عليها أزرار الـ HTML الموزعة
+        window.db = db;
+        window.storage = storage;
+        window.firebase_collection = collection;
+        window.firebase_addDoc = addDoc;
+        window.firebase_updateDoc = updateDoc;
+        window.firebase_doc = doc;
+        window.firebase_arrayUnion = arrayUnion;
+        window.firebase_ref = ref;
+        window.firebase_uploadBytesResumable = uploadBytesResumable;
+        window.firebase_getDownloadURL = getDownloadURL;
+
+        // إطلاق التطبيق بعد المزامنة
+        initApp();
+    </script>
+
     <script>
-        // --- رابط خادم Vercel الخلفي الحقيقي بعد التحديث والربط ---
+        // --- رابط خادم Vercel الخلفي الحقيقي ---
         const VERCEL_BACKEND_URL = "https://pi-echo.vercel.app/api";
 
         let currentUser = {
@@ -413,46 +450,13 @@
         let posts = [];
         let activePostIdForTip = null;
         let activeRecipientName = null;
-        let selectedVideoDataUrl = null; 
-        let selectedImageDataUrl = null; 
+        let selectedVideoFileObj = null; 
+        let selectedImageFileObj = null; 
         let piInitAttempts = 0;
         let isBypassActive = false;
         let lastPiError = "يرجى التأكد من فتح التطبيق من داخل متصفح Pi Browser أو تفعيل الـ Sandbox.";
         let isMicMuted = true;
         let isConnectingVoice = false;
-
-        const defaultPosts = [
-            {
-                id: 1,
-                author: "أحمد السوداني",
-                badge: "موثق KYC",
-                badgeColor: "bg-[#e5a93b]/10 text-[#e5a93b]",
-                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer1",
-                content: "متحمس جداً لمستقبل شبكة باي وتطبيقات المرافق الخدمية. آمل أن نرى دعماً حقيقياً ومشاريع محلية تساهم في نمو المنظومة في السودان والشرق الأوسط! 🚀⚡",
-                image: null,
-                video: "https://www.w3schools.com/html/mov_bbb.mp4", 
-                timestamp: "منذ ساعتين",
-                likes: 24,
-                likedByMe: false,
-                comments: [
-                    { author: "أبو كريم", content: "بالتأكيد يا رائد، العمل مستمر على قدم وساق!" }
-                ]
-            },
-            {
-                id: 2,
-                author: "سارة محمد",
-                badge: "مطور باي",
-                badgeColor: "bg-purple-900/30 text-purple-300",
-                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pioneer2",
-                content: "نعمل حالياً على واجهة مستخدم مخصصة لمنصة الخدمات المصغرة على متصفح Pi Browser. التصاميم تبدو واعدة جداً وتأثير الإطارات الذهبية مدهش!",
-                image: null,
-                video: null,
-                timestamp: "منذ 5 ساعات",
-                likes: 42,
-                likedByMe: false,
-                comments: []
-            }
-        ];
 
         function safeGetItem(key) {
             try { return localStorage.getItem(key); } catch (e) { return null; }
@@ -469,20 +473,29 @@
             }
             updateUserProfileDOM();
 
-            const savedPosts = safeGetItem('piconnect_posts_v3');
-            if (savedPosts) {
-                try { posts = JSON.parse(savedPosts); } catch(e) { posts = defaultPosts; }
-            } else {
-                posts = defaultPosts;
-                savePostsToLocalStorage();
-            }
-            renderPosts();
+            // الاستماع الحي لقاعدة البيانات Firestore وجلب المنشورات مرتبة زمنياً من الأحدث للأقدم
+            listenToLiveFeed();
             
             startPiSDKInitialization();
         }
 
-        function savePostsToLocalStorage() {
-            safeSetItem('piconnect_posts_v3', JSON.stringify(posts));
+        function listenToLiveFeed() {
+            if (!window.db) return;
+            
+            const q = query(window.firebase_collection(window.db, "posts"));
+            
+            // قراءة البث المباشر للمنشورات
+            onSnapshot(q, (snapshot) => {
+                posts = [];
+                snapshot.forEach((doc) => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+                // ترتيب المنشورات زمنياً بحسب الـ timestamp
+                posts.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderPosts();
+            }, (error) => {
+                console.error("خطأ أثناء جلب البث المباشر:", error);
+            });
         }
 
         function updateUserProfileDOM() {
@@ -591,8 +604,6 @@
             console.log("تم العثور على دفعة معلقة غير مكتملة:", payment);
             if (payment && payment.transaction) {
                 completeIncompletePayment(payment.identifier, payment.transaction.txid);
-            } else if (payment) {
-                console.warn("الدفعة المعلقة تفتقد إلى معرف المعاملة (لم يتم توقيعها بعد).");
             }
         }
 
@@ -697,10 +708,10 @@
             removeVideoSelection(); 
             const file = event.target.files[0];
             if (file) {
+                selectedImageFileObj = file; // تخزين كائن الملف المرفوع لرفعه لـ Storage
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    selectedImageDataUrl = e.target.result;
-                    document.getElementById('image-preview').src = selectedImageDataUrl;
+                    document.getElementById('image-preview').src = e.target.result;
                     document.getElementById('image-preview-container').classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
@@ -708,7 +719,7 @@
         }
 
         function removeImageSelection() {
-            selectedImageDataUrl = null;
+            selectedImageFileObj = null;
             document.getElementById('post-image-file').value = "";
             document.getElementById('image-preview').src = "";
             document.getElementById('image-preview-container').classList.add('hidden');
@@ -722,10 +733,10 @@
             removeImageSelection(); 
             const file = event.target.files[0];
             if (file) {
+                selectedVideoFileObj = file; // تخزين كائن الملف لرفعه لـ Storage
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    selectedVideoDataUrl = e.target.result;
-                    document.getElementById('video-preview').src = selectedVideoDataUrl;
+                    document.getElementById('video-preview').src = e.target.result;
                     document.getElementById('video-preview-container').classList.remove('hidden');
                 };
                 reader.readAsDataURL(file);
@@ -733,72 +744,133 @@
         }
 
         function removeVideoSelection() {
-            selectedVideoDataUrl = null;
+            selectedVideoFileObj = null;
             document.getElementById('post-video-file').value = "";
             document.getElementById('video-preview').src = "";
             document.getElementById('video-preview-container').classList.add('hidden');
         }
 
-        function createNewPost() {
+        // --- دالة رفع الملفات إلى Firebase Storage ---
+        function uploadFileToFirebase(file, folderName) {
+            return new Promise((resolve, reject) => {
+                if (!window.storage) {
+                    reject("Firebase Storage غير مهيأ");
+                    return;
+                }
+                const uniqueFileName = `${Date.now()}_${file.name}`;
+                const storageRef = window.firebase_ref(window.storage, `${folderName}/${uniqueFileName}`);
+                const uploadTask = window.firebase_uploadBytesResumable(storageRef, file);
+
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // هنا يمكنك تتبع نسبة الرفع لو أردت مستقبلاً
+                    }, 
+                    (error) => reject(error), 
+                    () => {
+                        window.firebase_getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                            resolve(downloadURL);
+                        });
+                    }
+                );
+            });
+        }
+
+        async function createNewPost() {
             const textContent = document.getElementById('post-input').value.trim();
-            if (!textContent && !selectedVideoDataUrl && !selectedImageDataUrl) {
+            const publishBtn = document.getElementById('publish-btn');
+            
+            if (!textContent && !selectedVideoFileObj && !selectedImageFileObj) {
                 alert("من فضلك، اكتب نصاً أو ارفع صورة/فيديو أولاً لنشر المحتوى.");
                 return;
             }
 
-            const newPost = {
-                id: posts.length + 1,
-                author: currentUser.username,
-                badge: isBypassActive ? "وضع تجريبي" : "رائد وباني",
-                badgeColor: isBypassActive ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
-                avatar: currentUser.avatar,
-                content: textContent,
-                image: selectedImageDataUrl,
-                video: selectedVideoDataUrl,
-                timestamp: "الآن",
-                likes: 0,
-                likedByMe: false,
-                comments: []
-            };
+            publishBtn.disabled = true;
+            publishBtn.innerText = "جاري النشر...";
 
-            posts.unshift(newPost);
-            savePostsToLocalStorage();
-            renderPosts();
+            let fileUrl = null;
+            let fileType = null;
 
-            document.getElementById('post-input').value = "";
-            removeVideoSelection();
-            removeImageSelection();
-        }
-
-        function toggleLike(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (post) {
-                if (post.likedByMe) {
-                    post.likes--;
-                    post.likedByMe = false;
-                } else {
-                    post.likes++;
-                    post.likedByMe = true;
+            try {
+                // رفع الملفات حياً إلى السيرفر إن وجدت
+                if (selectedImageFileObj) {
+                    fileUrl = await uploadFileToFirebase(selectedImageFileObj, 'images');
+                    fileType = 'image';
+                } else if (selectedVideoFileObj) {
+                    fileUrl = await uploadFileToFirebase(selectedVideoFileObj, 'videos');
+                    fileType = 'video';
                 }
-                savePostsToLocalStorage();
-                renderPosts();
+
+                const newPost = {
+                    author: currentUser.username,
+                    badge: isBypassActive ? "وضع تجريبي" : "رائد وباني",
+                    badgeColor: isBypassActive ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
+                    avatar: currentUser.avatar,
+                    content: textContent,
+                    image: fileType === 'image' ? fileUrl : null,
+                    video: fileType === 'video' ? fileUrl : null,
+                    timestamp: "الآن",
+                    createdAt: Date.now(),
+                    likes: 0,
+                    likedBy: [], // تتبع الرواد الذين أعجبوا بالمنشور لمنع تكرار الإعجاب
+                    comments: []
+                };
+
+                // الحفظ المباشر في Firestore
+                await window.firebase_addDoc(window.firebase_collection(window.db, "posts"), newPost);
+
+                document.getElementById('post-input').value = "";
+                removeVideoSelection();
+                removeImageSelection();
+            } catch (err) {
+                console.error("فشل نشر المنشور:", err);
+                alert("حدث خطأ أثناء عملية النشر، يرجى المحاولة لاحقاً.");
+            } finally {
+                publishBtn.disabled = false;
+                publishBtn.innerText = "نشر المنشور";
             }
         }
 
-        function submitComment(postId) {
+        async function toggleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (post && window.db) {
+                const postRef = window.firebase_doc(window.db, "posts", postId);
+                let likedBy = post.likedBy || [];
+                let likesCount = post.likes || 0;
+
+                if (likedBy.includes(currentUser.username)) {
+                    // إزالة الإعجاب
+                    likedBy = likedBy.filter(user => user !== currentUser.username);
+                    likesCount = Math.max(0, likesCount - 1);
+                } else {
+                    // إضافة إعجاب جديد
+                    likedBy.push(currentUser.username);
+                    likesCount++;
+                }
+
+                await window.firebase_updateDoc(postRef, {
+                    likes: likesCount,
+                    likedBy: likedBy
+                });
+            }
+        }
+
+        async function submitComment(postId) {
             const inputElement = document.getElementById(`comment-input-${postId}`);
             const text = inputElement.value.trim();
             if (!text) return;
 
             const post = posts.find(p => p.id === postId);
-            if (post) {
-                if (!post.comments) post.comments = [];
-                post.comments.push({
+            if (post && window.db) {
+                const postRef = window.firebase_doc(window.db, "posts", postId);
+                const newComment = {
                     author: currentUser.username,
-                    content: text
+                    content: text,
+                    createdAt: Date.now()
+                };
+
+                await window.firebase_updateDoc(postRef, {
+                    comments: window.firebase_arrayUnion(newComment)
                 });
-                savePostsToLocalStorage();
-                renderPosts();
             }
             inputElement.value = "";
         }
@@ -837,6 +909,8 @@
                     `;
                 }
 
+                const isLikedByMe = post.likedBy && post.likedBy.includes(currentUser.username);
+
                 const postHTML = `
                     <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-5 space-y-4">
                         <div class="flex items-center justify-between">
@@ -847,10 +921,10 @@
                                         <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
                                         ${post.badge ? `<span class="text-[9px] px-2 py-0.5 rounded-full ${post.badgeColor} font-semibold">${post.badge}</span>` : ''}
                                     </div>
-                                    <span class="text-[10px] text-gray-500">${post.timestamp}</span>
+                                    <span class="text-[10px] text-gray-500">${post.timestamp || 'نشط'}</span>
                                 </div>
                             </div>
-                            <button onclick="openSupportModal(${post.id}, '${post.author}')" class="flex items-center gap-1 bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0d0614] transition-all px-3 py-1.5 rounded-xl text-xs font-semibold">
+                            <button onclick="openSupportModal('${post.id}', '${post.author}')" class="flex items-center gap-1 bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0d0614] transition-all px-3 py-1.5 rounded-xl text-xs font-semibold">
                                 <i class="fa-solid fa-heart-circle-bolt"></i>
                                 <span>أرسل Pi</span>
                             </button>
@@ -861,9 +935,9 @@
                         ${mediaHTML}
                         
                         <div class="flex items-center gap-6 pt-3 border-t border-[#e5a93b]/20 text-xs text-gray-400">
-                            <button onclick="toggleLike(${post.id})" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${post.likedByMe ? 'text-red-500' : ''}">
-                                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
-                                <span>${post.likes}</span>
+                            <button onclick="toggleLike('${post.id}')" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${isLikedByMe ? 'text-red-500' : ''}">
+                                <i class="${isLikedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
+                                <span>${post.likes || 0}</span>
                             </button>
                             <div class="flex items-center gap-1.5 cursor-pointer hover:text-purple-400">
                                 <i class="fa-regular fa-comment text-sm"></i>
@@ -875,7 +949,7 @@
 
                         <div class="flex gap-2 mt-3 pt-2">
                             <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#1d102f] text-xs text-gray-200 border border-[#e5a93b]/20 rounded-xl px-3 py-2 outline-none focus:border-[#e5a93b]">
-                            <button onclick="submitComment(${post.id})" class="bg-[#211434] hover:bg-[#e5a93b] hover:text-[#0d0614] text-[#e5a93b] text-xs font-bold px-3 py-2 rounded-xl transition-all border border-[#e5a93b]/30">إرسال</button>
+                            <button onclick="submitComment('${post.id}')" class="bg-[#211434] hover:bg-[#e5a93b] hover:text-[#0d0614] text-[#e5a93b] text-xs font-bold px-3 py-2 rounded-xl transition-all border border-[#e5a93b]/30">إرسال</button>
                         </div>
                     </div>
                 `;
@@ -907,19 +981,32 @@
             }
         }
 
-        function saveUserProfile() {
+        async function saveUserProfile() {
             const newName = document.getElementById('edit-username').value.trim();
             const newBio = document.getElementById('edit-bio').value.trim();
-            const newAvatar = document.getElementById('modal-avatar-preview').src;
-            
+            const avatarPreviewSrc = document.getElementById('modal-avatar-preview').src;
+            const avatarFile = document.getElementById('avatar-upload').files[0];
+
             if (newName) {
-                currentUser.username = newName;
-                currentUser.bio = newBio;
-                currentUser.avatar = newAvatar;
-                
-                updateUserProfileDOM();
-                safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
-                closeEditProfileModal();
+                try {
+                    let finalAvatarUrl = avatarPreviewSrc;
+                    
+                    // إذا كان هناك ملف صورة رمزية جديد تم اختياره، نرفعه لـ Storage
+                    if (avatarFile) {
+                        finalAvatarUrl = await uploadFileToFirebase(avatarFile, 'avatars');
+                    }
+
+                    currentUser.username = newName;
+                    currentUser.bio = newBio;
+                    currentUser.avatar = finalAvatarUrl;
+                    
+                    updateUserProfileDOM();
+                    safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
+                    closeEditProfileModal();
+                } catch (err) {
+                    console.error("خطأ أثناء تحديث الملف الشخصي:", err);
+                    alert("فشل تحديث بيانات الملف الشخصي، حاول مجدداً.");
+                }
             } else {
                 alert("يرجى إدخال اسم مستخدم صالح.");
             }
@@ -936,7 +1023,6 @@
             document.getElementById('payment-modal').classList.remove('hidden');
             document.getElementById('payment-modal').classList.add('flex');
             
-            // إعادة تعيين واجهة زر الدفع وحالة التفعيل عند كل فتح للمودال
             const payBtn = document.querySelector("#payment-modal button[onclick='executePiPayment()']");
             payBtn.disabled = false;
             payBtn.innerText = "تأكيد وإرسال عبر Pi SDK";
@@ -948,7 +1034,6 @@
             document.getElementById('payment-modal').classList.remove('flex');
         }
 
-        // --- دالة الدفع مع تحسينات الأمان ومنع انقضاء المهلة (Session Timeout) ---
         function executePiPayment() {
             const amount = parseFloat(document.getElementById('tip-amount').value);
             const payBtn = document.querySelector("#payment-modal button[onclick='executePiPayment()']");
@@ -964,7 +1049,6 @@
                 return;
             }
 
-            // تعطيل الزر لتجنب النقرات المتكررة التي تسبب أخطاء ومزامنة خاطئة
             payBtn.disabled = true;
             payBtn.innerText = "⏳ جاري إرسال الطلب لـ Pi Network...";
             payBtn.className = "w-full bg-gray-600 text-gray-300 font-bold py-3 rounded-xl cursor-not-allowed";
@@ -1018,11 +1102,9 @@
                         return response.json();
                     })
                     .then(data => {
-                        // دعم النجاح المباشر أو النجاح الذكي للمعاملات المكتملة مسبقاً (already_completed)
                         if (data && (data.completed || data.success)) {
                             Pi.completePayment(paymentId);
                             
-                            // إظهار رسالة النجاح داخل الزر وإغلاق نافذة الدفع تلقائياً
                             payBtn.className = "w-full bg-green-600 text-white font-bold py-3 rounded-xl";
                             payBtn.innerText = "🎉 تم الدفع بنجاح!";
                             
@@ -1054,7 +1136,6 @@
                 }
             };
 
-            // تشغيل محرك الدفع
             Pi.createPayment(paymentData, callbacks);
         }
 
@@ -1064,7 +1145,6 @@
             button.className = "w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10";
         }
 
-        // إرسال تسوية المعاملات المعلقة للخلفية
         function completeIncompletePayment(paymentId, txid) {
             fetch(`${VERCEL_BACKEND_URL}/payments/complete`, {
                 method: 'POST',
@@ -1079,8 +1159,6 @@
             })
             .catch(err => console.error("فشلت تسوية الدفعة المعلقة القديمة:", err));
         }
-
-        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
