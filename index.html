@@ -1001,7 +1001,6 @@
                     .catch(err => {
                         console.error("خطأ أثناء الاتصال بالخادم للموافقة:", err);
                         payBtn.innerText = "❌ فشل المصادقة على الدفعة من السيرفر";
-                        // تمت إزالة الـ alert المزعج هنا لتفادي مقاطعة المستخدم بنوافذ منبثقة غير مرغوبة
                         setTimeout(() => resetPayButton(payBtn), 3000);
                     });
                 },
@@ -1019,11 +1018,11 @@
                         return response.json();
                     })
                     .then(data => {
-                        // تعديل الشرط ليدعم النجاح المباشر أو النجاح الذكي للمعاملات المكتملة مسبقاً (already_completed)
+                        // دعم النجاح المباشر أو النجاح الذكي للمعاملات المكتملة مسبقاً (already_completed)
                         if (data && (data.completed || data.success)) {
                             Pi.completePayment(paymentId);
                             
-                            // إظهار رسالة النجاح داخل الزر وإغلاق نافذة الدفع تلقائياً بشكل هادئ وسلس
+                            // إظهار رسالة النجاح داخل الزر وإغلاق نافذة الدفع تلقائياً
                             payBtn.className = "w-full bg-green-600 text-white font-bold py-3 rounded-xl";
                             payBtn.innerText = "🎉 تم الدفع بنجاح!";
                             
@@ -1037,7 +1036,6 @@
                     })
                     .catch(err => {
                         console.error("خطأ أثناء الاتصال بالخادم للإتمام:", err);
-                        // تم إلغاء الـ alert هنا أيضاً! سيقوم التطبيق بتسجيل صامت ومحاولة المعالجة التلقائية لاحقاً دون إزعاج
                         payBtn.innerText = "⚠️ لم يكتمل الرد، جاري التحقق التلقائي...";
                         setTimeout(() => {
                             closeSupportModal();
