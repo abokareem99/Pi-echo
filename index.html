@@ -103,7 +103,6 @@
 
     <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0" onclick="window.toggleMobileSidebar()"></div>
     
-    <!-- القائمة الجانبية للهاتف المحمول المعدلة لمنع مشاكل التعطيل -->
     <aside id="mobile-sidebar" class="fixed top-0 right-0 h-full w-72 bg-[#150b22] border-l-2 border-[#e5a93b] z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-5 flex flex-col justify-between overflow-y-auto">
         <div>
             <div class="flex justify-between items-center pb-4 border-b border-[#e5a93b]/20 mb-4">
@@ -792,7 +791,7 @@
             });
         }
 
-        // دالة إنشاء المنشورات وحفظها سحابياً في Firebase Firestore مباشرة (معدلة لمنع التكرار وتفريغ الحقل)
+        // دالة إنشاء المنشورات السحابية وحفظها (تم حل مشكلة التعليق والتصفير بالكامل هنا)
         window.createNewPost = async function() {
             const postInput = document.getElementById('post-input');
             const textContent = postInput.value.trim();
@@ -805,44 +804,55 @@
 
             const isDemo = isBypassActive;
             
-            try {
-                // 1. تعطيل الزر وتغيير حالته البصرية لمنع الضغط المتكرر
-                if (postBtn) {
-                    postBtn.disabled = true;
-                    postBtn.innerText = "جاري النشر...";
-                    postBtn.className = "bg-gray-600 text-gray-400 font-bold px-5 py-1.5 rounded-lg text-sm cursor-not-allowed shadow-none";
-                }
+            // 1. تجميد وتعطيل زر النشر فوراً وتغيير حالته البصرية
+            if (postBtn) {
+                postBtn.disabled = true;
+                postBtn.innerText = "جاري النشر...";
+                postBtn.className = "bg-gray-600 text-gray-400 font-bold px-5 py-1.5 rounded-lg text-sm cursor-not-allowed shadow-none";
+            }
 
-                // 2. الرفع المباشر لقاعدة البيانات
+            // حفظ المرفقات والنصوص الحالية لإرسالها، ثم تصفير عناصر الواجهة فوراً
+            // هذه الخطوة تضمن تصفير شاشة المستخدم دون انتظار استجابة السيرفر وتفادي تجميد الواجهة
+            const contentToSend = textContent;
+            const imageToSend = selectedImageDataUrl || null;
+            const videoToSend = selectedVideoDataUrl || null;
+
+            // تفريغ الحقول فورا على شاشة العميل
+            postInput.value = "";
+            window.removeVideoSelection();
+            window.removeImageSelection();
+
+            try {
+                // 2. إرسال الطلب لـ Firebase Firestore
                 await addDoc(collection(window.firebaseDb, "posts"), {
                     author: currentUser.username,
                     badge: isDemo ? "وضع تجريبي" : "رائد وباني",
                     badgeColor: isDemo ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
                     avatar: currentUser.avatar,
-                    content: textContent,
-                    image: selectedImageDataUrl || null,
-                    video: selectedVideoDataUrl || null,
+                    content: contentToSend,
+                    image: imageToSend,
+                    video: videoToSend,
                     timestamp: serverTimestamp(),
                     likes: 0,
                     likedByMe: false,
                     comments: []
                 });
                 
-                // 3. تصفير الحقل وتطهير المرفقات
-                postInput.value = "";
-                window.removeVideoSelection();
-                window.removeImageSelection();
-                
+                console.log("تم النشر السحابي بنجاح وتحديث قاعدة البيانات!");
             } catch (error) {
                 console.error("فشل رفع المنشور إلى Firebase:", error);
                 alert("حدث خطأ أثناء الاتصال السحابي بقاعدة البيانات، يرجى المحاولة لاحقاً.");
+                // في حال الفشل فقط، نعيد النص المكتوب للحقل حتى لا يضيع تعب المستخدم
+                postInput.value = contentToSend;
             } finally {
-                // 4. إعادة تفعيل الزر بعد اكتمال العملية بنجاح أو حدوث خطأ
-                if (postBtn) {
-                    postBtn.disabled = false;
-                    postBtn.innerText = "نشر المنشور";
-                    postBtn.className = "bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10";
-                }
+                // 3. إعادة تفعيل الزر مجدداً بعد زمن بسيط ليتوافق مع تحديث المعاينة الحية (onSnapshot)
+                setTimeout(() => {
+                    if (postBtn) {
+                        postBtn.disabled = false;
+                        postBtn.innerText = "نشر المنشور";
+                        postBtn.className = "bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10";
+                    }
+                }, 800);
             }
         }
 
