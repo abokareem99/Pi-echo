@@ -399,7 +399,7 @@
         </div>
     </div>
 
-    <!-- كود الجافا سكريبت المطور بالكامل لربط الميديا بـ Cloudinary بدلاً من Firebase Storage -->
+    <!-- كود الجافا سكريبت المصحح بالكامل -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -809,12 +809,12 @@
             let finalImageUrl = null;
             let finalVideoUrl = null;
 
-            // إعدادات الربط المباشر لحسابك في Cloudinary
+            // إعدادات الرفع المباشر لحساب Cloudinary الخاص بك
             const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/s8z1mgu4/upload";
             const UPLOAD_PRESET = "piecho_preset";
 
             try {
-                // 1. رفع الصورة مباشرة إلى Cloudinary (Unsigned)
+                // 1. رفع الصورة مباشرة إلى Cloudinary
                 if (selectedImageFile) {
                     const formData = new FormData();
                     formData.append("file", selectedImageFile);
@@ -829,7 +829,7 @@
                     }
                 }
 
-                // 2. رفع الفيديو وضغطه تلقائياً عبر السحابة لزيادة سرعة التصفح
+                // 2. رفع الفيديو مباشرة إلى Cloudinary وتحسين البث تلقائياً
                 if (selectedVideoFile) {
                     const formData = new FormData();
                     formData.append("file", selectedVideoFile);
@@ -838,7 +838,6 @@
                     const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
                     const data = await response.json();
                     if (data.secure_url) {
-                        // تحسين جودة وحجم الفيديو فورياً للبث الذكي
                         finalVideoUrl = data.secure_url.replace("/upload/", "/upload/q_auto,f_auto/");
                     } else {
                         throw new Error(data.error?.message || "فشل رفع الفيديو");
@@ -847,7 +846,7 @@
 
                 if (postBtn) postBtn.innerText = "✍️ جاري توثيق المنشور في Firestore...";
 
-                // 3. حفظ مستند المنشور داخل قواعد بيانات Firebase Firestore
+                // 3. حفظ مستند المنشور داخل Firebase Firestore
                 await addDoc(collection(window.firebaseDb, "posts"), {
                     author: currentUser.username,
                     badge: isDemo ? "وضع تجريبي" : "رائد وباني",
@@ -869,7 +868,7 @@
             } catch (error) {
                 console.error("حدث خطأ أثناء عملية النشر:", error);
                 alert("عذراً، فشل رفع الميديا ونشر المحتوى. يرجى التحقق من اتصال الشبكة.");
-            } finaly {
+            } finally { // <-- تم تصحيح الكلمة الإملائية هنا بنجاح!
                 if (postBtn) {
                     postBtn.disabled = false;
                     postBtn.innerText = "نشر المنشور";
