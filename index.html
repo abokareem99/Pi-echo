@@ -443,6 +443,7 @@
         
         let selectedImageFile = null;
         let selectedVideoFile = null;
+        let selectedAvatarFile = null;
         let selectedImageDataUrl = null; 
         let selectedVideoDataUrl = null; 
         
@@ -593,7 +594,7 @@
             Pi.authenticate(scopes, onIncompletePaymentFound)
             .then(function(auth) {
                 currentUser.username = auth.user.username;
-                currentUser.avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${auth.user.username}`;
+                currentUser.avatar = currentUser.avatar.includes('dicebear.com') ? `https://api.dicebear.com/7.x/bottts/svg?seed=${auth.user.username}` : currentUser.avatar;
                 currentUser.isPiAuthenticated = true;
                 
                 updateUserProfileDOM();
@@ -641,7 +642,6 @@
         function activateDemoBypass() {
             isBypassActive = true;
             currentUser.username = "رائد تجريبي (أبو كريم)";
-            currentUser.avatar = "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem";
             currentUser.isPiAuthenticated = true; 
             
             updateUserProfileDOM();
@@ -843,12 +843,12 @@
                     }
                 }
 
-                // مسح الحقول وإعادة واجهة المستخدم لحالتها فوراً دون انتظار خوادم الفايربيس البعيدة
+                // مسح الحقول وإعادة واجهة المستخدم لحالتها فوراً
                 if (postInput) postInput.value = "";
                 window.removeVideoSelection();
                 window.removeImageSelection();
 
-                // 3. إرسال المستند إلى Firestore في الخلفية بدون حظر الواجهة (Non-blocking Asynchronous Write)
+                // 3. إرسال المستند إلى Firestore
                 addDoc(collection(window.firebaseDb, "posts"), {
                     author: currentUser.username,
                     badge: isDemo ? "وضع تجريبي" : "رائد وباني",
@@ -861,14 +861,13 @@
                     likes: 0,
                     comments: []
                 }).catch(err => {
-                    console.error("عطل خفيف في مزامنة الخلفية الفورية لـ Firestore:", err);
+                    console.error("عطل في مزامنة Firestore في الخلفية:", err);
                 });
 
             } catch (error) {
                 console.error("حدث خطأ أثناء عملية النشر:", error);
                 alert("عذراً، فشل رفع الميديا ونشر المحتوى. يرجى التحقق من اتصال الشبكة.");
             } finally {
-                // إعادة تعيين الزر للعمل الفوري دائماً
                 if (postBtn) {
                     postBtn.disabled = false;
                     postBtn.innerText = "نشر المنشور";
@@ -994,32 +993,81 @@
             document.getElementById('edit-bio').value = currentUser.bio || "";
             document.getElementById('profile-modal').classList.remove('hidden');
             document.getElementById('profile-modal').classList.add('flex');
+            selectedAvatarFile = null; 
         }
 
         window.closeEditProfileModal = function() {
             document.getElementById('profile-modal').classList.add('hidden');
             document.getElementById('profile-modal').classList.remove('flex');
+            selectedAvatarFile = null;
         }
 
         window.previewAvatarChange = function(event) {
             const file = event.target.files[0];
             if (file) {
+                selectedAvatarFile = file; 
                 const reader = new FileReader();
-                reader.onload = function(e) { document.getElementById('modal-avatar-preview').src = e.target.result; };
+                reader.onload = function(e) { 
+                    document.getElementById('modal-avatar-preview').src = e.target.result; 
+                };
                 reader.readAsDataURL(file);
             }
         }
 
-        window.saveUserProfile = function() {
+        window.saveUserProfile = async function() {
             const newName = document.getElementById('edit-username').value.trim();
             const newBio = document.getElementById('edit-bio').value.trim();
-            if (newName) {
+            const saveBtn = document.querySelector("#profile-modal button[onclick='window.saveUserProfile()']");
+            
+            if (!newName) {
+                alert("يرجى إدخال اسم المستخدم أولاً.");
+                return;
+            }
+
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerText = "⏳ جاري حفظ ورفع البيانات...";
+            }
+
+            try {
+                let finalAvatarUrl = currentUser.avatar;
+
+                // رفع الصورة الشخصية الجديدة إلى Cloudinary إن وجدت
+                if (selectedAvatarFile) {
+                    const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/s8z1mgu4/upload";
+                    const UPLOAD_PRESET = "piecho_preset";
+                    const formData = new FormData();
+                    formData.append("file", selectedAvatarFile);
+                    formData.append("upload_preset", UPLOAD_PRESET);
+
+                    const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
+                    const data = await response.json();
+                    if (data.secure_url) {
+                        finalAvatarUrl = data.secure_url;
+                    } else {
+                        throw new Error(data.error?.message || "فشل رفع الصورة الشخصية");
+                    }
+                }
+
                 currentUser.username = newName;
                 currentUser.bio = newBio;
-                currentUser.avatar = document.getElementById('modal-avatar-preview').src;
+                currentUser.avatar = finalAvatarUrl;
+                
                 updateUserProfileDOM();
                 safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
+                
+                selectedAvatarFile = null;
                 window.closeEditProfileModal();
+                alert("تم تحديث وحفظ الملف الشخصي بنجاح!");
+                
+            } catch (error) {
+                console.error("خطأ أثناء حفظ الملف الشخصي:", error);
+                alert("حدث خطأ أثناء رفع الصورة الشخصية، يرجى التحقق من الشبكة وإعادة المحاولة.");
+            } finally {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = "حفظ التغييرات";
+                }
             }
         }
 
