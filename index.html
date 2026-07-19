@@ -399,12 +399,11 @@
         </div>
     </div>
 
-    <!-- كود الجافا سكريبت المطور بالكامل لربط الوسائط بـ Firebase Storage -->
+    <!-- كود الجافا سكريبت المطور بالكامل لربط الميديا بـ Cloudinary بدلاً من Firebase Storage -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCyDmlRaqGY2C-PfKAKxL8GoYgg1qKiqDY",
@@ -425,11 +424,9 @@
         const firebaseApp = initializeApp(firebaseConfig);
         const auth = getAuth(firebaseApp);
         const db = getFirestore(firebaseApp);
-        const storage = getStorage(firebaseApp);
 
         window.firebaseAuth = auth;
         window.firebaseDb = db;
-        window.firebaseStorage = storage;
 
         const VERCEL_BACKEND_URL = "https://pi-echo.vercel.app/api";
 
@@ -754,7 +751,6 @@
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     
-                    // الحماية هنا: فحص كائن التوقيت المحلي لتفادي أخطاء الـ Null المؤقتة أثناء الرفع الفوري
                     let formattedTime = "الآن";
                     if (data.timestamp && typeof data.timestamp.seconds !== 'undefined') {
                         formattedTime = new Date(data.timestamp.seconds * 1000).toLocaleString('ar-EG', { 
@@ -806,28 +802,52 @@
             
             if (postBtn) {
                 postBtn.disabled = true;
-                postBtn.innerText = "⏳ جاري رفع الوسائط...";
+                postBtn.innerText = "⏳ جاري رفع الوسائط إلى السحابة...";
                 postBtn.className = "bg-gray-600 text-gray-400 font-bold px-5 py-1.5 rounded-lg text-sm cursor-not-allowed shadow-none";
             }
 
             let finalImageUrl = null;
             let finalVideoUrl = null;
 
+            // إعدادات الربط المباشر لحسابك في Cloudinary
+            const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/s8z1mgu4/upload";
+            const UPLOAD_PRESET = "piecho_preset";
+
             try {
+                // 1. رفع الصورة مباشرة إلى Cloudinary (Unsigned)
                 if (selectedImageFile) {
-                    const imageRef = ref(window.firebaseStorage, `posts/images/${Date.now()}_${selectedImageFile.name}`);
-                    const uploadResult = await uploadBytes(imageRef, selectedImageFile);
-                    finalImageUrl = await getDownloadURL(uploadResult.ref);
+                    const formData = new FormData();
+                    formData.append("file", selectedImageFile);
+                    formData.append("upload_preset", UPLOAD_PRESET);
+
+                    const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
+                    const data = await response.json();
+                    if (data.secure_url) {
+                        finalImageUrl = data.secure_url;
+                    } else {
+                        throw new Error(data.error?.message || "فشل رفع الصورة");
+                    }
                 }
 
+                // 2. رفع الفيديو وضغطه تلقائياً عبر السحابة لزيادة سرعة التصفح
                 if (selectedVideoFile) {
-                    const videoRef = ref(window.firebaseStorage, `posts/videos/${Date.now()}_${selectedVideoFile.name}`);
-                    const uploadResult = await uploadBytes(videoRef, selectedVideoFile);
-                    finalVideoUrl = await getDownloadURL(uploadResult.ref);
+                    const formData = new FormData();
+                    formData.append("file", selectedVideoFile);
+                    formData.append("upload_preset", UPLOAD_PRESET);
+
+                    const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
+                    const data = await response.json();
+                    if (data.secure_url) {
+                        // تحسين جودة وحجم الفيديو فورياً للبث الذكي
+                        finalVideoUrl = data.secure_url.replace("/upload/", "/upload/q_auto,f_auto/");
+                    } else {
+                        throw new Error(data.error?.message || "فشل رفع الفيديو");
+                    }
                 }
 
-                if (postBtn) postBtn.innerText = "✍️ جاري توثيق المنشور...";
+                if (postBtn) postBtn.innerText = "✍️ جاري توثيق المنشور في Firestore...";
 
+                // 3. حفظ مستند المنشور داخل قواعد بيانات Firebase Firestore
                 await addDoc(collection(window.firebaseDb, "posts"), {
                     author: currentUser.username,
                     badge: isDemo ? "وضع تجريبي" : "رائد وباني",
@@ -844,12 +864,12 @@
                 if (postInput) postInput.value = "";
                 window.removeVideoSelection();
                 window.removeImageSelection();
-                console.log("تم الرفع والحفظ بنجاح دائم!");
+                console.log("تم النشر وحفظ الوسائط في سحابة Cloudinary بنجاح!");
 
             } catch (error) {
-                console.error("فشل رفع الملفات أو المستند:", error);
-                alert("تعذر نشر المنشور؛ يرجى التحقق من إعدادات قواعد القراءة والكتابة (Security Rules) في Firebase Storage.");
-            } finally {
+                console.error("حدث خطأ أثناء عملية النشر:", error);
+                alert("عذراً، فشل رفع الميديا ونشر المحتوى. يرجى التحقق من اتصال الشبكة.");
+            } finaly {
                 if (postBtn) {
                     postBtn.disabled = false;
                     postBtn.innerText = "نشر المنشور";
@@ -1094,7 +1114,6 @@
             }).catch(err => console.error(err));
         }
 
-        // معالجة تشغيل الدالة فوراً إذا كان المستند قد تم تحميله بالفعل لتجنب مشاكل تأخير الـ Modules
         if (document.readyState === "loading") {
             window.addEventListener('DOMContentLoaded', initApp);
         } else {
