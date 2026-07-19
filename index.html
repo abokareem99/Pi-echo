@@ -235,7 +235,6 @@
                         </button>
                         <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="window.previewSelectedVideo(event)">
                         
-                        <!-- لوحة اختيار الرموز التعبيرية المضافة تفاعلياً -->
                         <div class="relative">
                             <button onclick="window.toggleEmojiPicker(event)" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة رمز تعبيري">
                                 <i class="fa-regular fa-face-smile text-lg"></i>
@@ -412,7 +411,7 @@
         </div>
     </div>
 
-    <!-- كود الجافا سكريبت المعدل والمصلح بالكامل -->
+    <!-- كود الجافا سكريبت المصحح بالكامل للمزامنة والرفع المضمون -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -496,6 +495,11 @@
         function initApp() {
             if (window.__piEchoAppInitialized) return;
             window.__piEchoAppInitialized = true;
+
+            // تفعيل المصادقة المجهولة فوراً للجميع لضمان فتح خط المزامنة المستمر مع سيرفرات Firebase
+            signInAnonymously(auth).then(() => {
+                console.log("تمت مصادقة وتأمين اتصال Firebase بنجاح.");
+            }).catch(e => console.error("Firebase auth crash:", e));
 
             const savedUser = safeGetItem('piecho_user_v2');
             if (savedUser) {
@@ -656,11 +660,6 @@
             if (icon) {
                 icon.className = "fa-solid fa-flask text-yellow-400";
             }
-            
-            // تفعيل حماية تسجيل الدخول المجهول لضمان قواعد أمان وثائق Firestore
-            signInAnonymously(auth).then(() => {
-                console.log("تمت مصادقة الوضع التجريبي عبر Firebase بنجاح.");
-            }).catch(e => console.error(e));
 
             alert("تم تفعيل الوضع التجريبي بنجاح!");
         }
@@ -763,7 +762,6 @@
             document.getElementById('video-preview-container').classList.add('hidden');
         }
 
-        // دوال معالجة وإضافة الرموز التعبيرية (Emojis)
         window.toggleEmojiPicker = function(event) {
             event.stopPropagation();
             const picker = document.getElementById('emoji-picker');
@@ -862,7 +860,7 @@
                     const formData = new FormData();
                     formData.append("file", selectedImageFile);
                     formData.append("upload_preset", UPLOAD_PRESET);
-                    formData.append("resource_type", "auto"); // لضمان قبول وتصنيف الملفات بشكل تلقائي وصحيح
+                    formData.append("resource_type", "auto"); 
 
                     const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
                     const data = await response.json();
@@ -873,12 +871,12 @@
                     }
                 }
 
-                // 2. رفع الفيديو إلى Cloudinary
+                // 2. رفع الفيديو إلى Cloudinary (تم إصلاح خطأ الاسم البرمجي هنا)
                 if (selectedVideoFile) {
                     const formData = new FormData();
-                    formData.append("file", selectedVideoFileFile || selectedVideoFile);
+                    formData.append("file", selectedVideoFile);
                     formData.append("upload_preset", UPLOAD_PRESET);
-                    formData.append("resource_type", "auto"); // إجبار التمييز التلقائي للفيديو لمنع رفض السيرفر
+                    formData.append("resource_type", "auto"); 
 
                     const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
                     const data = await response.json();
@@ -889,7 +887,7 @@
                     }
                 }
 
-                // 3. إرسال المستند إلى Firestore والانتظار حتى اكتمال المعاملة بالكامل لمنع ثغرة السبق التزامني
+                // 3. التسجيل في Firestore والانتظار حتى اكتمال المعاملة البرمجية الحقيقية على السيرفر
                 await addDoc(collection(window.firebaseDb, "posts"), {
                     author: currentUser.username,
                     badge: isDemo ? "وضع تجريبي" : "رائد وباني",
@@ -903,15 +901,16 @@
                     comments: []
                 });
 
-                // مسح واجهة المستخدم وتصفير الاختيارات بعد التأكد التام من نجاح الإرسال لقاعدة البيانات
+                // تصفير ومسح واجهة المستخدم والحقول فوراً بعد التأكد من نجاح الكتابة بدون تعليق
                 if (postInput) postInput.value = "";
                 window.removeVideoSelection();
                 window.removeImageSelection();
 
             } catch (error) {
                 console.error("حدث خطأ أثناء عملية النشر:", error);
-                alert("عذراً، فشل رفع الميديا ونشر المحتوى: " + (error.message || "مشكلة في اتصال الشبكة."));
+                alert("عذراً، فشل رفع الميديا ونشر المحتوى: " + (error.message || "مشكلة في اتصال الشبكة بقاعدة البيانات."));
             } finally {
+                // استعادة حالة الزر الأصلية دائماً لمنع تعليقه
                 if (postBtn) {
                     postBtn.disabled = false;
                     postBtn.innerText = "نشر المنشور";
