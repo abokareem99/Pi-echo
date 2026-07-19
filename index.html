@@ -204,7 +204,7 @@
         <main class="col-span-1 md:col-span-2 space-y-6">
             <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-4">
                 <div class="flex gap-3">
-                    <img id="feed-post-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="User Avatar" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
+                    <img id="feed-post-avatar" src="https://api.dicebear.com/7.x/bottts?seed=AboKareem" alt="User Avatar" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
                     <div class="flex-1">
                         <textarea id="post-input" placeholder="ماذا يدور في ذهنك اليوم يا رائد؟" rows="3" class="w-full bg-[#1b0e2b] rounded-xl p-3 text-sm text-gray-200 placeholder-gray-500 border border-[#e5a93b]/30 focus:border-[#e5a93b] focus:outline-none resize-none transition-all"></textarea>
                         
@@ -223,7 +223,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center justify-between mt-3 pt-3 border-t border-[#e5a93b]/20">
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-[#e5a93b]/20 relative">
                     <div class="flex gap-2 text-gray-400">
                         <button onclick="window.triggerImageUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
                             <i class="fa-regular fa-image text-lg"></i>
@@ -235,9 +235,22 @@
                         </button>
                         <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="window.previewSelectedVideo(event)">
                         
-                        <button class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة رمز تعبيري">
-                            <i class="fa-regular fa-face-smile text-lg"></i>
-                        </button>
+                        <!-- لوحة اختيار الرموز التعبيرية المضافة تفاعلياً -->
+                        <div class="relative">
+                            <button onclick="window.toggleEmojiPicker(event)" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة رمز تعبيري">
+                                <i class="fa-regular fa-face-smile text-lg"></i>
+                            </button>
+                            <div id="emoji-picker" class="hidden absolute right-0 bottom-12 z-50 bg-[#150b22] border-2 border-[#e5a93b] p-3 rounded-2xl grid grid-cols-4 gap-2 shadow-2xl w-44">
+                                <button onclick="window.appendEmoji('🥧')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">🥧</button>
+                                <button onclick="window.appendEmoji('🚀')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">🚀</button>
+                                <button onclick="window.appendEmoji('💎')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">💎</button>
+                                <button onclick="window.appendEmoji('⚡')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">⚡</button>
+                                <button onclick="window.appendEmoji('😂')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">😂</button>
+                                <button onclick="window.appendEmoji('🔥')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">🔥</button>
+                                <button onclick="window.appendEmoji('❤️')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">❤️</button>
+                                <button onclick="window.appendEmoji('👍')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">👍</button>
+                            </div>
+                        </div>
                     </div>
                     <button id="main-post-btn" onclick="window.createNewPost()" class="bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
                         نشر المنشور
@@ -399,10 +412,10 @@
         </div>
     </div>
 
-    <!-- كود الجافا سكريبت المعدل بالكامل -->
+    <!-- كود الجافا سكريبت المعدل والمصلح بالكامل -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -627,18 +640,6 @@
             }
         }
 
-        window.handleStatusClick = function() {
-            if (currentUser.isPiAuthenticated || isBypassActive) {
-                alert(`أنت مسجل الدخول كـ: ${currentUser.username}`);
-                return;
-            }
-
-            const confirmBypass = confirm(`فشل ربط الحساب لسبب برمجي أو مشكلة بالشبكة.\n\nالخطأ المسجل:\n"${lastPiError}"\n\nهل ترغب في تفعيل "الوضع التجريبي" لتجربة النشر والتصفح بالكامل؟`);
-            if (confirmBypass) {
-                activateDemoBypass();
-            }
-        }
-
         function activateDemoBypass() {
             isBypassActive = true;
             currentUser.username = "رائد تجريبي (أبو كريم)";
@@ -655,7 +656,25 @@
             if (icon) {
                 icon.className = "fa-solid fa-flask text-yellow-400";
             }
+            
+            // تفعيل حماية تسجيل الدخول المجهول لضمان قواعد أمان وثائق Firestore
+            signInAnonymously(auth).then(() => {
+                console.log("تمت مصادقة الوضع التجريبي عبر Firebase بنجاح.");
+            }).catch(e => console.error(e));
+
             alert("تم تفعيل الوضع التجريبي بنجاح!");
+        }
+
+        window.handleStatusClick = function() {
+            if (currentUser.isPiAuthenticated || isBypassActive) {
+                alert(`أنت مسجل الدخول كـ: ${currentUser.username}`);
+                return;
+            }
+
+            const confirmBypass = confirm(`فشل ربط الحساب لسبب برمجي أو مشكلة بالشبكة.\n\nالخطأ المسجل:\n"${lastPiError}"\n\nهل ترغب في تفعيل "الوضع التجريبي" لتجربة النشر والتصفح بالكامل؟`);
+            if (confirmBypass) {
+                activateDemoBypass();
+            }
         }
 
         window.openVoiceChatModal = function() {
@@ -744,6 +763,31 @@
             document.getElementById('video-preview-container').classList.add('hidden');
         }
 
+        // دوال معالجة وإضافة الرموز التعبيرية (Emojis)
+        window.toggleEmojiPicker = function(event) {
+            event.stopPropagation();
+            const picker = document.getElementById('emoji-picker');
+            if(picker.classList.contains('hidden')) {
+                picker.classList.remove('hidden');
+            } else {
+                picker.classList.add('hidden');
+            }
+        }
+
+        window.appendEmoji = function(emoji) {
+            const postInput = document.getElementById('post-input');
+            if (postInput) {
+                postInput.value += emoji;
+                postInput.focus();
+            }
+            document.getElementById('emoji-picker').classList.add('hidden');
+        }
+
+        document.addEventListener('click', function() {
+            const picker = document.getElementById('emoji-picker');
+            if (picker) picker.classList.add('hidden');
+        });
+
         function listenToPostsFromFirebase() {
             const q = query(collection(window.firebaseDb, "posts"), orderBy("timestamp", "desc"));
             onSnapshot(q, (snapshot) => {
@@ -802,7 +846,7 @@
             
             if (postBtn) {
                 postBtn.disabled = true;
-                postBtn.innerText = "⏳ جاري رفع الوسائط...";
+                postBtn.innerText = "⏳ جاري الرفع والمزامنة...";
                 postBtn.className = "bg-gray-600 text-gray-400 font-bold px-5 py-1.5 rounded-lg text-sm cursor-not-allowed shadow-none";
             }
 
@@ -818,6 +862,7 @@
                     const formData = new FormData();
                     formData.append("file", selectedImageFile);
                     formData.append("upload_preset", UPLOAD_PRESET);
+                    formData.append("resource_type", "auto"); // لضمان قبول وتصنيف الملفات بشكل تلقائي وصحيح
 
                     const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
                     const data = await response.json();
@@ -831,25 +876,21 @@
                 // 2. رفع الفيديو إلى Cloudinary
                 if (selectedVideoFile) {
                     const formData = new FormData();
-                    formData.append("file", selectedVideoFile);
+                    formData.append("file", selectedVideoFileFile || selectedVideoFile);
                     formData.append("upload_preset", UPLOAD_PRESET);
+                    formData.append("resource_type", "auto"); // إجبار التمييز التلقائي للفيديو لمنع رفض السيرفر
 
                     const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
                     const data = await response.json();
                     if (data.secure_url) {
                         finalVideoUrl = data.secure_url.replace("/upload/", "/upload/q_auto,f_auto/");
                     } else {
-                        throw new Error(data.error?.message || "فشل رفع الفيديو");
+                        throw new Error(data.error?.message || "فشل رفع مقطع الفيديو");
                     }
                 }
 
-                // مسح الحقول وإعادة واجهة المستخدم لحالتها فوراً
-                if (postInput) postInput.value = "";
-                window.removeVideoSelection();
-                window.removeImageSelection();
-
-                // 3. إرسال المستند إلى Firestore
-                addDoc(collection(window.firebaseDb, "posts"), {
+                // 3. إرسال المستند إلى Firestore والانتظار حتى اكتمال المعاملة بالكامل لمنع ثغرة السبق التزامني
+                await addDoc(collection(window.firebaseDb, "posts"), {
                     author: currentUser.username,
                     badge: isDemo ? "وضع تجريبي" : "رائد وباني",
                     badgeColor: isDemo ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
@@ -860,13 +901,16 @@
                     timestamp: serverTimestamp(),
                     likes: 0,
                     comments: []
-                }).catch(err => {
-                    console.error("عطل في مزامنة Firestore في الخلفية:", err);
                 });
+
+                // مسح واجهة المستخدم وتصفير الاختيارات بعد التأكد التام من نجاح الإرسال لقاعدة البيانات
+                if (postInput) postInput.value = "";
+                window.removeVideoSelection();
+                window.removeImageSelection();
 
             } catch (error) {
                 console.error("حدث خطأ أثناء عملية النشر:", error);
-                alert("عذراً، فشل رفع الميديا ونشر المحتوى. يرجى التحقق من اتصال الشبكة.");
+                alert("عذراً، فشل رفع الميديا ونشر المحتوى: " + (error.message || "مشكلة في اتصال الشبكة."));
             } finally {
                 if (postBtn) {
                     postBtn.disabled = false;
@@ -1032,13 +1076,13 @@
             try {
                 let finalAvatarUrl = currentUser.avatar;
 
-                // رفع الصورة الشخصية الجديدة إلى Cloudinary إن وجدت
                 if (selectedAvatarFile) {
                     const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/s8z1mgu4/upload";
                     const UPLOAD_PRESET = "piecho_preset";
                     const formData = new FormData();
                     formData.append("file", selectedAvatarFile);
                     formData.append("upload_preset", UPLOAD_PRESET);
+                    formData.append("resource_type", "auto");
 
                     const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
                     const data = await response.json();
