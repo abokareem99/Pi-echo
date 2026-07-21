@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>باي إيكو | Pi Echo</title>
+    <title>Pi Echo</title>
     <link class="rounded-full" rel="icon" type="image/png" href="eagle-logo.png">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,7 +14,7 @@
     <style>
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #0d0614;
+            background-color: #080604;
             min-height: 100vh;
             min-height: 100dvh;
             display: flex;
@@ -22,7 +22,7 @@
             overflow-x: hidden;
         }
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #150b22; }
+        ::-webkit-scrollbar-track { background: #141009; }
         ::-webkit-scrollbar-thumb { background: #e5a93b; border-radius: 10px; }
         .voice-wave { display: flex; align-items: center; gap: 3px; height: 30px; }
         .voice-bar {
@@ -40,9 +40,9 @@
         }
 
         .mobile-footer {
-            position: fixed; bottom: 0; left: 0; width: 100%; z-index: 45;
-            background-color: #150b22; border-top: 2px solid #e5a93b;
-            box-shadow: 0 -4px 20px rgba(229, 169, 59, 0.15);
+            position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 45;
+            background-color: #120e07; border: 2px solid #e5a93b; border-radius: 20px;
+            box-shadow: 0 4px 25px rgba(229, 169, 59, 0.25);
             padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
             display: flex; justify-content: space-around; align-items: center;
         }
@@ -50,16 +50,16 @@
 </head>
 <body class="text-gray-100">
 
-    <header class="sticky top-0 z-40 bg-[#150b22] border-b-2 border-[#e5a93b] shadow-[0_4px_20px_rgba(229,169,59,0.15)] px-4 lg:px-8 py-3 flex items-center justify-between">
+    <header class="sticky top-0 z-40 bg-[#120e07] border-b-2 border-[#e5a93b] shadow-[0_4px_20px_rgba(229,169,59,0.15)] px-4 lg:px-8 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <button onclick="window.toggleMobileSidebar()" class="md:hidden text-[#e5a93b] hover:text-yellow-400 text-xl transition-all ml-1" title="القائمة">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <img src="eagle-logo.png" alt="شعار باي إيكو" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover shadow-md">
-            <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-[#e5a93b] to-yellow-400 bg-clip-text text-transparent">باي <span class="text-purple-400">إيكو</span></span>
+            <img src="eagle-logo.png" alt="Pi Echo Logo" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover shadow-md">
+            <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-[#e5a93b] to-yellow-400 bg-clip-text text-transparent">Pi Echo</span>
         </div>
 
-        <div class="hidden md:flex items-center bg-[#211434] rounded-full px-4 py-1.5 w-96 border border-[#e5a93b]/30 focus-within:border-[#e5a93b] transition-all">
+        <div class="hidden md:flex items-center bg-[#1b140b] rounded-full px-4 py-1.5 w-96 border border-[#e5a93b]/30 focus-within:border-[#e5a93b] transition-all">
             <i class="fa-solid fa-magnifying-glass text-gray-400 ml-2"></i>
             <input type="text" placeholder="ابحث عن منشورات أو رواد..." class="bg-transparent border-none outline-none text-sm w-full text-gray-200 placeholder-gray-500">
         </div>
@@ -69,7 +69,7 @@
                 <i class="fa-regular fa-bell text-xl"></i>
                 <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
             </button>
-            <div id="pi-status-container" class="flex items-center gap-2 bg-[#211434] border border-[#e5a93b]/50 rounded-full py-1.5 px-3 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b]" onclick="window.handleStatusClick()">
+            <div id="pi-status-container" class="flex items-center gap-2 bg-[#1b140b] border border-[#e5a93b]/50 rounded-full py-1.5 px-3 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b]" onclick="window.handleStatusClick()">
                 <i id="pi-status-icon" class="fa-solid fa-wallet text-[#e5a93b]"></i>
                 <span id="user-pi-balance" class="text-gray-300 font-semibold">جاري تهيئة SDK...</span>
             </div>
@@ -79,19 +79,19 @@
 
     <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0" onclick="window.toggleMobileSidebar()"></div>
     
-    <aside id="mobile-sidebar" class="fixed top-0 right-0 h-full w-72 bg-[#150b22] border-l-2 border-[#e5a93b] z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-5 flex flex-col justify-between overflow-y-auto">
+    <aside id="mobile-sidebar" class="fixed top-0 right-0 h-full w-72 bg-[#120e07] border-l-2 border-[#e5a93b] z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-5 flex flex-col justify-between overflow-y-auto">
         <div>
             <div class="flex justify-between items-center pb-4 border-b border-[#e5a93b]/20 mb-4">
-                <span class="font-bold text-sm text-[#e5a93b]">باي إيكو</span>
+                <span class="font-bold text-sm text-[#e5a93b]">Pi Echo</span>
                 <button onclick="window.toggleMobileSidebar()" class="text-gray-400 hover:text-white text-lg">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             
-            <div class="flex flex-col items-center text-center bg-[#1d102f] p-4 rounded-xl border border-[#e5a93b]/20 mb-4">
+            <div class="flex flex-col items-center text-center bg-[#1a130a] p-4 rounded-xl border border-[#e5a93b]/20 mb-4">
                 <div class="relative">
                     <img id="mobile-sidebar-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-16 h-16 rounded-full border-2 border-[#e5a93b] object-cover">
-                    <button onclick="window.openEditProfileModal(); window.toggleMobileSidebar();" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0d0614] rounded-full p-1.5 text-[10px] hover:bg-yellow-500">
+                    <button onclick="window.openEditProfileModal(); window.toggleMobileSidebar();" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#080604] rounded-full p-1.5 text-[10px] hover:bg-yellow-500">
                         <i class="fa-solid fa-pen"></i>
                     </button>
                 </div>
@@ -100,20 +100,20 @@
             </div>
 
             <nav class="space-y-1">
-                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-l from-[#664b12]/40 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
                     <i class="fa-solid fa-house text-base"></i>
                     <span>الرئيسية</span>
                 </a>
-                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); alert('قسم استكشف قيد التطوير والربط البرمجي حالياً!');" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); alert('قسم استكشف قيد التطوير والربط البرمجي حالياً!');" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#1b140b] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-compass text-base"></i>
                     <span>استكشف</span>
                 </a>
-                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); alert('صندوق الرسائل وغرف المحادثة المباشرة قيد التجهيز للتحديث القادم...');" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); alert('صندوق الرسائل وغرف المحادثة المباشرة قيد التجهيز للتحديث القادم...');" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#1b140b] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-message text-base"></i>
                     <span>الالتحاق بالمحادثات</span>
                 </a>
                 <hr class="border-[#e5a93b]/20 my-3">
-                <button onclick="window.openInviteModal(); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs">
+                <button onclick="window.openInviteModal(); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#080604] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs">
                     <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
                 </button>
             </nav>
@@ -123,11 +123,11 @@
     <div class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 pb-28 md:pb-6 grid grid-cols-1 md:grid-cols-4 gap-6">
 
         <aside class="hidden md:block md:col-span-1 space-y-4">
-            <div class="bg-[#150b22] p-5 rounded-2xl border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)] space-y-4">
+            <div class="bg-[#120e07] p-5 rounded-2xl border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)] space-y-4">
                 <div class="flex flex-col items-center text-center">
                     <div class="relative group">
                         <img id="sidebar-user-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-20 h-20 rounded-full border-2 border-[#e5a93b] shadow-md object-cover">
-                        <button onclick="window.openEditProfileModal()" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0d0614] rounded-full p-2 text-xs hover:bg-yellow-500 transition-all shadow-md">
+                        <button onclick="window.openEditProfileModal()" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#080604] rounded-full p-2 text-xs hover:bg-yellow-500 transition-all shadow-md">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </div>
@@ -141,29 +141,29 @@
                 </div>
             </div>
 
-            <nav class="space-y-1 bg-[#150b22] p-4 rounded-2xl border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)]">
-                <a href="javascript:void(0)" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#5c1f75]/30 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
+            <nav class="space-y-1 bg-[#120e07] p-4 rounded-2xl border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)]">
+                <a href="javascript:void(0)" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#664b12]/40 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
                     <i class="fa-solid fa-house text-lg"></i><span>الرئيسية</span>
                 </a>
-                <a href="javascript:void(0)" onclick="alert('قسم استكشف قيد التطوير والربط البرمجي حالياً!');" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="javascript:void(0)" onclick="alert('قسم استكشف قيد التطوير والربط البرمجي حالياً!');" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#1b140b] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-compass text-lg"></i><span>استكشف</span>
                 </a>
-                <a href="javascript:void(0)" onclick="alert('صندوق الرسائل وغرف المحادثة المباشرة قيد التجهيز للتحديث القادم...');" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#211434] hover:text-[#e5a93b] transition-all">
+                <a href="javascript:void(0)" onclick="alert('صندوق الرسائل وغرف المحادثة المباشرة قيد التجهيز للتحديث القادم...');" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#1b140b] hover:text-[#e5a93b] transition-all">
                     <i class="fa-regular fa-message text-lg"></i><span>الرسائل</span>
                 </a>
                 <hr class="border-[#e5a93b]/30 my-3">
-                <button onclick="window.openInviteModal()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-3">
+                <button onclick="window.openInviteModal()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#080604] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-3">
                     <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
                 </button>
             </nav>
         </aside>
 
         <main class="col-span-1 md:col-span-2 space-y-6">
-            <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-4">
+            <div class="bg-[#120e07] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-4">
                 <div class="flex gap-3">
                     <img id="feed-post-avatar" src="https://api.dicebear.com/7.x/bottts?seed=AboKareem" alt="User Avatar" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
                     <div class="flex-1">
-                        <textarea id="post-input" placeholder="ماذا يدور في ذهنك اليوم يا رائد؟" rows="3" class="w-full bg-[#1b0e2b] rounded-xl p-3 text-sm text-gray-200 placeholder-gray-500 border border-[#e5a93b]/30 focus:border-[#e5a93b] focus:outline-none resize-none transition-all"></textarea>
+                        <textarea id="post-input" placeholder="ماذا يدور في ذهنك اليوم يا رائد؟" rows="3" class="w-full bg-[#161109] rounded-xl p-3 text-sm text-gray-200 placeholder-gray-500 border border-[#e5a93b]/30 focus:border-[#e5a93b] focus:outline-none resize-none transition-all"></textarea>
                         
                         <div id="image-preview-container" class="hidden relative mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-60 flex justify-center items-center">
                             <img id="image-preview" class="max-h-60 w-full object-cover" src="">
@@ -182,33 +182,33 @@
                 </div>
                 <div class="flex items-center justify-between mt-3 pt-3 border-t border-[#e5a93b]/20 relative">
                     <div class="flex gap-2 text-gray-400">
-                        <button onclick="window.triggerImageUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
+                        <button onclick="window.triggerImageUpload()" class="p-2 hover:bg-[#1b140b] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
                             <i class="fa-regular fa-image text-lg"></i>
                         </button>
                         <input type="file" id="post-image-file" accept="image/*" class="hidden" onchange="window.previewSelectedImage(event)">
 
-                        <button onclick="window.triggerVideoUpload()" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة فيديو">
+                        <button onclick="window.triggerVideoUpload()" class="p-2 hover:bg-[#1b140b] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة فيديو">
                             <i class="fa-solid fa-video text-lg"></i>
                         </button>
                         <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="window.previewSelectedVideo(event)">
                         
                         <div class="relative">
-                            <button onclick="window.toggleEmojiPicker(event)" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة شعارات ورموز تعبيرية">
+                            <button onclick="window.toggleEmojiPicker(event)" class="p-2 hover:bg-[#1b140b] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة شعارات ورموز تعبيرية">
                                 <i class="fa-regular fa-face-smile text-lg"></i>
                             </button>
-                            <div id="emoji-picker" class="hidden absolute right-0 top-10 z-50 bg-[#150b22] border-2 border-[#e5a93b] p-3 rounded-2xl grid grid-cols-4 gap-2 shadow-2xl w-48">
-                                <button onclick="window.appendEmoji('🥧')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="شعار باي">🥧</button>
-                                <button onclick="window.appendEmoji('🦅')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="شعار التطبيق (الصقر)">🦅</button>
-                                <button onclick="window.appendEmoji('🚀')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="صاروخ">🚀</button>
-                                <button onclick="window.appendEmoji('💎')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="جوهرة">💎</button>
-                                <button onclick="window.appendEmoji('⚡')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="برق">⚡</button>
-                                <button onclick="window.appendEmoji('🔥')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="نار">🔥</button>
-                                <button onclick="window.appendEmoji('❤️')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="قلب">❤️</button>
-                                <button onclick="window.appendEmoji('👍')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="إعجاب">👍</button>
+                            <div id="emoji-picker" class="hidden absolute right-0 top-10 z-50 bg-[#120e07] border-2 border-[#e5a93b] p-3 rounded-2xl grid grid-cols-4 gap-2 shadow-2xl w-48">
+                                <button onclick="window.appendEmoji('🥧')" class="hover:bg-[#1b140b] p-1.5 rounded text-lg transition-colors" title="شعار باي">🥧</button>
+                                <button onclick="window.appendEmoji('🦅')" class="hover:bg-[#1b140b] p-1.5 rounded text-lg transition-colors" title="شعار التطبيق (الصقر)">🦅</button>
+                                <button onclick="window.appendEmoji('🚀')" class="hover:bg-[#1b140b] p-1.5 rounded text-lg transition-colors" title="صاروخ">🚀</button>
+                                <button onclick="window.appendEmoji('💎')" class="hover:bg-[#1b140b] p-1.5 rounded text-lg transition-colors" title="جوهرة">💎</button>
+                                <button onclick="window.appendEmoji('⚡')" class="hover:bg-[#1b140b] p-1.5 rounded text-lg transition-colors" title="برق">⚡</button>
+                                <button onclick="window.appendEmoji('🔥')" class="hover:bg-[#1b140b] p-1.5 rounded text-lg transition-colors" title="نار">🔥</button>
+                                <button onclick="window.appendEmoji('❤️')" class="hover:bg-[#1b140b] p-1.5 rounded text-lg transition-colors" title="قلب">❤️</button>
+                                <button onclick="window.appendEmoji('👍')" class="hover:bg-[#1b140b] p-1.5 rounded text-lg transition-colors" title="إعجاب">👍</button>
                             </div>
                         </div>
                     </div>
-                    <button id="main-post-btn" onclick="window.createNewPost()" class="bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
+                    <button id="main-post-btn" onclick="window.createNewPost()" class="bg-[#e5a93b] text-[#080604] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10">
                         نشر المنشور
                     </button>
                 </div>
@@ -218,28 +218,28 @@
         </main>
 
         <aside class="hidden md:block md:col-span-1 space-y-6">
-            <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] p-4 rounded-2xl space-y-4">
+            <div class="bg-[#120e07] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] p-4 rounded-2xl space-y-4">
                 <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2">
                     <i class="fa-solid fa-microphone-lines ml-2 animate-pulse"></i>الدردشة الصوتية المباشرة
                 </h3>
-                <div class="p-3 bg-[#1d102f] rounded-xl border border-[#e5a93b]/30 space-y-3">
+                <div class="p-3 bg-[#1a130a] rounded-xl border border-[#e5a93b]/30 space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-gray-300 font-bold">روم رواد باي العرب 🎙️</span>
                         <span class="text-[10px] bg-red-600/20 text-red-400 px-2 py-0.5 rounded-full">نشط</span>
                     </div>
                     <p class="text-[10px] text-gray-400 leading-relaxed">انضم الآن وناقش آخر مستجدات الشبكة المفتوحة والتجارة مع الرواد بالصوت مباشر!</p>
-                    <button onclick="window.openVoiceChatModal()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-2 rounded-lg text-xs transition-all shadow-md">
+                    <button onclick="window.openVoiceChatModal()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#080604] font-bold py-2 rounded-lg text-xs transition-all shadow-md">
                         <i class="fa-solid fa-headset ml-1"></i> انضمام للروم الصوتي
                     </button>
                 </div>
             </div>
             
-            <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] p-4 rounded-2xl space-y-4">
+            <div class="bg-[#120e07] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] p-4 rounded-2xl space-y-4">
                 <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2">
                     <i class="fa-solid fa-circle-nodes ml-2"></i>أخبار الشبكة المفتوحة
                 </h3>
                 <div class="space-y-3">
-                    <div class="p-2.5 bg-[#1d102f] rounded-xl hover:bg-[#25153a] transition-all cursor-pointer">
+                    <div class="p-2.5 bg-[#1a130a] rounded-xl hover:bg-[#251b0f] transition-all cursor-pointer">
                         <h4 class="text-xs font-bold text-gray-200">الاستعداد للمرحلة القادمة</h4>
                         <p class="text-[10px] text-gray-500 mt-1">تحديثات هامة لبروتوكول الـ SDK والمطورين...</p>
                     </div>
@@ -247,6 +247,16 @@
             </div>
         </aside>
     </div>
+
+    <!-- سياسات وزيل الصفحة -->
+    <footer class="w-full bg-[#120e07] border-t-2 border-[#e5a93b]/50 py-6 px-4 mt-auto text-center text-xs text-gray-400 space-y-3">
+        <div class="flex flex-wrap justify-center gap-6 text-[#e5a93b] font-semibold">
+            <a href="javascript:void(0)" onclick="alert('سياسة الخصوصية: نلتزم بحماية بيانات الرواد وخصوصيتهم طبقاً لمعايير شبكة باي.');" class="hover:underline">سياسة الخصوصية</a>
+            <a href="javascript:void(0)" onclick="alert('شروط الاستخدام: هذا التطبيق مخصص لمجتمع باي نتورك ويخضع لشروط وأحكام الشبكة.');" class="hover:underline">شروط الاستخدام</a>
+            <a href="javascript:void(0)" onclick="alert('إخلاء المسؤولية: Pi Echo هو تطبيق مجتمعي لامركزي غير تابع رسمياً لفريق كور بي بشكل مباشر.');" class="hover:underline">إخلاء المسؤولية</a>
+        </div>
+        <p class="text-gray-500">© 2026 Pi Echo. All rights reserved. Built for the Pi Network Community.</p>
+    </footer>
 
     <footer class="md:hidden mobile-footer text-gray-400 text-xl">
         <a href="javascript:void(0)" class="text-[#e5a93b]"><i class="fa-solid fa-house"></i></a>
@@ -257,33 +267,33 @@
 
     <!-- نافذة دعوة صديق الجديدة -->
     <div id="invite-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl relative">
+        <div class="bg-[#120e07] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl relative">
             <button onclick="window.closeInviteModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
             <div class="w-16 h-16 bg-gradient-to-tr from-[#e5a93b] to-yellow-500 rounded-full flex items-center justify-center mx-auto shadow-md">
-                <i class="fa-solid fa-user-plus text-[#0d0614] text-2xl"></i>
+                <i class="fa-solid fa-user-plus text-[#080604] text-2xl"></i>
             </div>
             <div>
                 <h3 class="text-xl font-bold text-[#e5a93b]">دعوة صديق إلى شبكة باي 🥧</h3>
                 <p class="text-xs text-gray-400 mt-1">شارك رسالة الدعوة الخاصة بك مع أصدقائك</p>
             </div>
-            <div class="bg-[#211434] p-4 rounded-xl border border-[#e5a93b]/30 text-xs text-gray-200 text-right leading-relaxed select-all" id="invite-text-content">
+            <div class="bg-[#1b140b] p-4 rounded-xl border border-[#e5a93b]/30 text-xs text-gray-200 text-right leading-relaxed select-all" id="invite-text-content">
                 الباي هي عملة رقمية جديدة تم تطويرها من طرف فريق من حاملي الدكتوراه من جامعة ستانفورد، مع أكثر من 55 مليون فرد حول العالم. للمشاركة معنا في باي ، إختر هذا الرابط https://minepi.com/Abokareem999 وإستخدم إسم المستخدم الخاص بي Abokareem999 ككود دعوة
             </div>
             <div class="flex gap-2">
-                <button onclick="window.copyInviteText()" class="flex-1 bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md text-xs flex items-center justify-center gap-2">
+                <button onclick="window.copyInviteText()" class="flex-1 bg-[#e5a93b] hover:bg-yellow-500 text-[#080604] font-bold py-3 rounded-xl transition-all shadow-md text-xs flex items-center justify-center gap-2">
                     <i class="fa-solid fa-copy"></i> نسخ النص بالكامل
                 </button>
-                <button onclick="window.closeInviteModal()" class="bg-[#211434] border border-[#e5a93b]/30 hover:border-[#e5a93b] text-gray-300 font-semibold px-5 py-3 rounded-xl text-xs transition-all">إغلاق</button>
+                <button onclick="window.closeInviteModal()" class="bg-[#1b140b] border border-[#e5a93b]/30 hover:border-[#e5a93b] text-gray-300 font-semibold px-5 py-3 rounded-xl text-xs transition-all">إغلاق</button>
             </div>
         </div>
     </div>
 
     <!-- نافذة الروم الصوتي -->
     <div id="voice-chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-[0_0_30px_rgba(229,169,59,0.3)] relative">
+        <div class="bg-[#120e07] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-[0_0_30px_rgba(229,169,59,0.3)] relative">
             <button onclick="window.closeVoiceChatModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
             <div class="w-16 h-16 bg-gradient-to-tr from-[#e5a93b] to-yellow-500 rounded-full flex items-center justify-center mx-auto shadow-md">
-                <i class="fa-solid fa-microphone text-[#0d0614] text-3xl animate-bounce"></i>
+                <i class="fa-solid fa-microphone text-[#080604] text-3xl animate-bounce"></i>
             </div>
             <div>
                 <h3 class="text-xl font-bold text-[#e5a93b]">روم رواد باي العرب 🎙️</h3>
@@ -297,16 +307,16 @@
             <div class="space-y-2">
                 <h4 class="text-xs text-gray-400 text-right">الرواد النشطين بالصوت (3):</h4>
                 <div class="grid grid-cols-3 gap-3">
-                    <div class="bg-[#1d102f] p-2 rounded-xl border border-purple-950 flex flex-col items-center">
+                    <div class="bg-[#1a130a] p-2 rounded-xl border border-amber-950/50 flex flex-col items-center">
                         <img id="voice-modal-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" class="w-8 h-8 rounded-full border border-[#e5a93b]">
                         <span id="voice-modal-username" class="text-[9px] text-gray-300 mt-1 truncate w-full">أبو كريم (أنت)</span>
                     </div>
-                    <div class="bg-[#1d102f] p-2 rounded-xl border border-purple-950 flex flex-col items-center relative">
+                    <div class="bg-[#1a130a] p-2 rounded-xl border border-amber-950/50 flex flex-col items-center relative">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed" class="w-8 h-8 rounded-full">
                         <span class="text-[9px] text-gray-300 mt-1 truncate w-full">أحمد السوداني</span>
                         <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-black"></span>
                     </div>
-                    <div class="bg-[#1d102f] p-2 rounded-xl border border-purple-950 flex flex-col items-center relative">
+                    <div class="bg-[#1a130a] p-2 rounded-xl border border-amber-950/50 flex flex-col items-center relative">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" class="w-8 h-8 rounded-full">
                         <span class="text-[9px] text-gray-300 mt-1 truncate w-full">سارة محمد</span>
                         <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-green-500 rounded-full border border-black"></span>
@@ -314,7 +324,7 @@
                 </div>
             </div>
             <div class="flex justify-center gap-4 pt-4 border-t border-[#e5a93b]/20">
-                <button id="toggle-mic-btn" onclick="window.toggleMicrophone()" class="bg-[#211434] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md">
+                <button id="toggle-mic-btn" onclick="window.toggleMicrophone()" class="bg-[#1b140b] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md">
                     <i id="mic-icon" class="fa-solid fa-microphone-slash text-lg"></i>
                 </button>
                 <button onclick="window.closeVoiceChatModal()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2.5 rounded-full text-sm transition-all shadow-md">مغادرة الغرفة</button>
@@ -324,35 +334,35 @@
 
     <!-- نافذة تعديل الملف الشخصي -->
     <div id="profile-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl relative">
+        <div class="bg-[#120e07] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 space-y-6 shadow-2xl relative">
             <button onclick="window.closeEditProfileModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
             <h3 class="text-xl font-bold text-[#e5a93b] text-center"><i class="fa-solid fa-user-gear ml-2"></i>تعديل الملف الشخصي</h3>
             <div class="space-y-4">
                 <div class="flex flex-col items-center">
                     <img id="modal-avatar-preview" src="" class="w-24 h-24 rounded-full border-2 border-[#e5a93b] object-cover mb-3">
-                    <label class="bg-[#211434] hover:bg-[#2c1b45] text-[#e5a93b] border border-[#e5a93b]/30 px-4 py-1.5 rounded-xl text-xs cursor-pointer font-semibold transition-all">
+                    <label class="bg-[#1b140b] hover:bg-[#251b0f] text-[#e5a93b] border border-[#e5a93b]/30 px-4 py-1.5 rounded-xl text-xs cursor-pointer font-semibold transition-all">
                         <i class="fa-solid fa-camera ml-1"></i> اختر صورة جديدة
                         <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="window.previewAvatarChange(event)">
                     </label>
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs text-gray-400 block">الاسم الشخصي (الرائد)</label>
-                    <input type="text" id="edit-username" class="w-full bg-[#211434] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b]">
+                    <input type="text" id="edit-username" class="w-full bg-[#1b140b] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b]">
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs text-gray-400 block">الوصف الشخصي (البايو)</label>
-                    <textarea id="edit-bio" rows="3" class="w-full bg-[#211434] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b] resize-none"></textarea>
+                    <textarea id="edit-bio" rows="3" class="w-full bg-[#1b140b] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-sm text-gray-200 outline-none focus:border-[#e5a93b] resize-none"></textarea>
                 </div>
             </div>
-            <button onclick="window.saveUserProfile()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">حفظ التغييرات</button>
+            <button onclick="window.saveUserProfile()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#080604] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">حفظ التغييرات</button>
         </div>
     </div>
 
     <!-- نافذة دعم Pi -->
     <div id="payment-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-2xl relative">
+        <div class="bg-[#120e07] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-2xl relative">
             <button onclick="window.closeSupportModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
-            <div class="w-16 h-16 bg-gradient-to-tr from-[#5c1f75] to-[#e5a93b] rounded-full flex items-center justify-center mx-auto shadow-md">
+            <div class="w-16 h-16 bg-gradient-to-tr from-[#664b12] to-[#e5a93b] rounded-full flex items-center justify-center mx-auto shadow-md">
                 <i class="fa-solid fa-pi text-white text-3xl animate-pulse"></i>
             </div>
             <div>
@@ -362,21 +372,21 @@
             </div>
             <div id="amount-container" class="space-y-2">
                 <label class="text-xs text-gray-400 block">حدد قيمة الدعم بـ Pi:</label>
-                <input type="number" id="tip-amount" value="1.0" min="0.1" step="0.1" class="bg-[#211434] border border-[#e5a93b]/30 rounded-xl px-4 py-2 text-center text-[#e5a93b] font-bold text-lg focus:outline-none focus:border-[#e5a93b] w-32 mx-auto block">
+                <input type="number" id="tip-amount" value="1.0" min="0.1" step="0.1" class="bg-[#1b140b] border border-[#e5a93b]/30 rounded-xl px-4 py-2 text-center text-[#e5a93b] font-bold text-lg focus:outline-none focus:border-[#e5a93b] w-32 mx-auto block">
             </div>
-            <div class="bg-[#211434] p-3 rounded-xl border border-[#e5a93b]/20 text-[11px] text-purple-300 leading-relaxed">
+            <div class="bg-[#1b140b] p-3 rounded-xl border border-[#e5a93b]/20 text-[11px] text-amber-300 leading-relaxed">
                 💡 <strong>اتصال الويب 3 نشط:</strong> هذه العملية ستستدعي دالة الدفع الآمنة لتوقيع المعاملة ببصمة إصبعك أو عبارة المرور.
             </div>
-            <button onclick="window.executePiPayment()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">تأكيد وإرسال عبر Pi SDK</button>
+            <button onclick="window.executePiPayment()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#080604] font-bold py-3 rounded-xl transition-all shadow-md shadow-[#e5a93b]/10">تأكيد وإرسال عبر Pi SDK</button>
         </div>
     </div>
 
     <!-- النافذة الخضراء للنجاح والشكر -->
     <div id="success-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-[#150b22] border-2 border-green-500 rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-[0_0_30px_rgba(34,197,94,0.3)] relative">
+        <div class="bg-[#120e07] border-2 border-green-500 rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-[0_0_30px_rgba(34,197,94,0.3)] relative">
             <button onclick="window.closeSuccessModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
             <div class="w-20 h-20 bg-gradient-to-tr from-green-600 to-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-green-500/30">
-                <i class="fa-solid fa-check text-[#0d0614] text-4xl"></i>
+                <i class="fa-solid fa-check text-[#080604] text-4xl"></i>
             </div>
             <div>
                 <div class="flex items-center justify-center gap-2 text-green-400 font-extrabold text-xl mb-1">
@@ -386,9 +396,9 @@
                 <p id="success-modal-desc" class="text-xs text-gray-300 mt-2 leading-relaxed"></p>
             </div>
             <div class="bg-green-950/40 border border-green-500/30 p-3 rounded-xl text-xs text-green-300">
-                ✨ شكراً لك على دعم الرواد وإثراء مجتمع باي إيكو!
+                ✨ شكراً لك على دعم الرواد وإثراء مجتمع Pi Echo!
             </div>
-            <button onclick="window.closeSuccessModal()" class="w-full bg-green-500 hover:bg-green-600 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md shadow-green-500/20">حسناً، شكراً لك</button>
+            <button onclick="window.closeSuccessModal()" class="w-full bg-green-500 hover:bg-green-600 text-[#080604] font-bold py-3 rounded-xl transition-all shadow-md shadow-green-500/20">حسناً، شكراً لك</button>
         </div>
     </div>
 
@@ -522,7 +532,7 @@
             if (typeof Pi !== 'undefined') {
                 try {
                     Pi.init({ version: "2.0", sandbox: useSandbox });
-                    updateSDKStatus("🔑 جاري المصادقة...", "text-purple-400");
+                    updateSDKStatus("🔑 جاري المصادقة...", "text-amber-400");
                     Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
                     .then(function(authData) {
                         currentUser.username = authData.user.username;
@@ -701,10 +711,10 @@
             const micBtn = document.getElementById('toggle-mic-btn');
             const micIcon = document.getElementById('mic-icon');
             if(isMicMuted) {
-                micBtn.className = "bg-[#211434] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md";
+                micBtn.className = "bg-[#1b140b] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md";
                 micIcon.className = "fa-solid fa-microphone-slash text-lg";
             } else {
-                micBtn.className = "bg-[#e5a93b] text-[#0d0614] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md shadow-[#e5a93b]/30";
+                micBtn.className = "bg-[#e5a93b] text-[#080604] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md shadow-[#e5a93b]/30";
                 micIcon.className = "fa-solid fa-microphone text-lg";
             }
         }
@@ -788,7 +798,7 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ paymentId: paymentId })
-                    }).catch(error => console.error("خطأ في الاتصال بالخادم للموافقة:", error));
+                    }).catch(error => console.error("خطأ في الاتصال بالمخادم للموافقة:", error));
                 },
                 onReadyForServerCompletion: function(paymentId, txid) {
                     fetch(`${BACKEND_URL}/api/payments/complete`, {
@@ -883,7 +893,7 @@
                         id: doc.id,
                         author: data.author || "رائد مجهول",
                         badge: data.badge || "رائد",
-                        badgeColor: data.badgeColor || "bg-purple-900/30 text-purple-300",
+                        badgeColor: data.badgeColor || "bg-amber-500/10 text-amber-400",
                         avatar: data.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Pioneer",
                         content: data.content || "",
                         image: data.image || null,
@@ -970,7 +980,7 @@
                 if (postBtn) {
                     postBtn.disabled = false;
                     postBtn.innerText = "نشر المنشور";
-                    postBtn.className = "bg-[#e5a93b] text-[#0d0614] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10";
+                    postBtn.className = "bg-[#e5a93b] text-[#080604] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10";
                 }
             }
         }
@@ -992,7 +1002,7 @@
                 if (post.comments && post.comments.length > 0) {
                     commentsHTML = `<div class="mt-3 pt-3 border-t border-[#e5a93b]/20 space-y-2">
                             ${post.comments.map(c => `
-                                <div class="bg-[#1d102f] p-2.5 rounded-xl text-xs flex gap-2 border border-[#e5a93b]/10">
+                                <div class="bg-[#1a130a] p-2.5 rounded-xl text-xs flex gap-2 border border-[#e5a93b]/10">
                                     <span class="font-bold text-[#e5a93b]">${c.author}:</span>
                                     <span class="text-gray-300">${c.content}</span>
                                 </div>
@@ -1002,13 +1012,13 @@
 
                 let commentInputHTML = `
                     <div class="mt-3 flex gap-2">
-                        <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#211434] rounded-lg px-3 py-1.5 text-xs text-gray-200 border border-[#e5a93b]/30 focus:border-[#e5a93b] outline-none">
-                        <button onclick="window.submitComment('${post.id}')" class="bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] px-4 rounded-lg text-xs font-bold transition-all">إرسال</button>
+                        <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#1b140b] rounded-lg px-3 py-1.5 text-xs text-gray-200 border border-[#e5a93b]/30 focus:border-[#e5a93b] outline-none">
+                        <button onclick="window.submitComment('${post.id}')" class="bg-[#e5a93b] hover:bg-yellow-500 text-[#080604] px-4 rounded-lg text-xs font-bold transition-all">إرسال</button>
                     </div>
                 `;
 
                 const postHTML = `
-                    <div class="bg-[#150b22] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-5 space-y-4">
+                    <div class="bg-[#120e07] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-5 space-y-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <img src="${post.avatar}" alt="${post.author}" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
@@ -1020,7 +1030,7 @@
                                     <span class="text-[10px] text-gray-500">${post.timestamp}</span>
                                 </div>
                             </div>
-                            <button onclick="window.openSupportModal('${post.id}', '${post.author}')" class="bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/30 hover:bg-[#e5a93b] hover:text-[#0d0614] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+                            <button onclick="window.openSupportModal('${post.id}', '${post.author}')" class="bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/30 hover:bg-[#e5a93b] hover:text-[#080604] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
                                 <i class="fa-solid fa-pi"></i>دعم الرائد
                             </button>
                         </div>
@@ -1031,7 +1041,7 @@
                                 <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
                                 <span>${post.likes}</span>
                             </button>
-                            <div class="flex items-center gap-1.5 cursor-pointer hover:text-purple-400">
+                            <div class="flex items-center gap-1.5 cursor-pointer hover:text-amber-400">
                                 <i class="fa-regular fa-comment text-sm"></i>
                                 <span>${post.comments ? post.comments.length : 0}</span>
                             </div>
