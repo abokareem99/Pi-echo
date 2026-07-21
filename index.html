@@ -193,18 +193,19 @@
                         <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="window.previewSelectedVideo(event)">
                         
                         <div class="relative">
-                            <button onclick="window.toggleEmojiPicker(event)" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة رمز تعبيري">
+                            <button onclick="window.toggleEmojiPicker(event)" class="p-2 hover:bg-[#211434] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة شعارات ورموز تعبيرية">
                                 <i class="fa-regular fa-face-smile text-lg"></i>
                             </button>
-                            <div id="emoji-picker" class="hidden absolute right-0 top-10 z-50 bg-[#150b22] border-2 border-[#e5a93b] p-3 rounded-2xl grid grid-cols-4 gap-2 shadow-2xl w-44">
-                                <button onclick="window.appendEmoji('🥧')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">🥧</button>
-                                <button onclick="window.appendEmoji('🚀')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">🚀</button>
-                                <button onclick="window.appendEmoji('💎')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">💎</button>
-                                <button onclick="window.appendEmoji('⚡')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">⚡</button>
-                                <button onclick="window.appendEmoji('😂')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">😂</button>
-                                <button onclick="window.appendEmoji('🔥')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">🔥</button>
-                                <button onclick="window.appendEmoji('❤️')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">❤️</button>
-                                <button onclick="window.appendEmoji('👍')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors">👍</button>
+                            <!-- قائمة الرموز التعبيرية المحدثة مع شعار باي وشعار التطبيق (الصقر) -->
+                            <div id="emoji-picker" class="hidden absolute right-0 top-10 z-50 bg-[#150b22] border-2 border-[#e5a93b] p-3 rounded-2xl grid grid-cols-4 gap-2 shadow-2xl w-48">
+                                <button onclick="window.appendEmoji('🥧')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="شعار باي">🥧</button>
+                                <button onclick="window.appendEmoji('🦅')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="شعار التطبيق (الصقر)">🦅</button>
+                                <button onclick="window.appendEmoji('🚀')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="صاروخ">🚀</button>
+                                <button onclick="window.appendEmoji('💎')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="جوهرة">💎</button>
+                                <button onclick="window.appendEmoji('⚡')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="برق">⚡</button>
+                                <button onclick="window.appendEmoji('🔥')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="نار">🔥</button>
+                                <button onclick="window.appendEmoji('❤️')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="قلب">❤️</button>
+                                <button onclick="window.appendEmoji('👍')" class="hover:bg-[#211434] p-1.5 rounded text-lg transition-colors" title="إعجاب">👍</button>
                             </div>
                         </div>
                     </div>
@@ -348,7 +349,7 @@
         </div>
     </div>
 
-    <!-- النافذة الخضراء الجديدة للنجاح والشكر مع علامة الصح وشعار باي -->
+    <!-- النافذة الخضراء للنجاح والشكر -->
     <div id="success-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-[#150b22] border-2 border-green-500 rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-[0_0_30px_rgba(34,197,94,0.3)] relative">
             <button onclick="window.closeSuccessModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -699,7 +700,6 @@
             activeRecipientName = null;
         }
 
-        // تحكم نافذة النجاح الخضراء
         window.openSuccessModal = function(msgText) {
             document.getElementById('success-modal-desc').innerText = msgText;
             document.getElementById('success-modal').classList.remove('hidden');
