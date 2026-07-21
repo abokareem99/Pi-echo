@@ -113,7 +113,7 @@
                     <span>الالتحاق بالمحادثات</span>
                 </a>
                 <hr class="border-[#e5a93b]/20 my-3">
-                <button onclick="window.openSupportModal(0, 'نظام الدعوات'); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs">
+                <button onclick="window.openInviteModal(); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs">
                     <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
                 </button>
             </nav>
@@ -152,7 +152,7 @@
                     <i class="fa-regular fa-message text-lg"></i><span>الرسائل</span>
                 </a>
                 <hr class="border-[#e5a93b]/30 my-3">
-                <button onclick="window.openSupportModal(0, 'نظام الدعوات')" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-3">
+                <button onclick="window.openInviteModal()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0d0614] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-3">
                     <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
                 </button>
             </nav>
@@ -255,6 +255,29 @@
         <a href="javascript:void(0)" class="hover:text-[#e5a93b]" onclick="window.openEditProfileModal()"><i class="fa-regular fa-user"></i></a>
         <a href="javascript:void(0)" class="hover:text-[#e5a93b]" onclick="alert('صندوق الرسائل والمحادثة المباشرة قيد التهيئة والتفعيل...');"><i class="fa-regular fa-message"></i></a>
     </footer>
+
+    <!-- نافذة دعوة صديق الجديدة -->
+    <div id="invite-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#150b22] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl relative">
+            <button onclick="window.closeInviteModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <div class="w-16 h-16 bg-gradient-to-tr from-[#e5a93b] to-yellow-500 rounded-full flex items-center justify-center mx-auto shadow-md">
+                <i class="fa-solid fa-user-plus text-[#0d0614] text-2xl"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-[#e5a93b]">دعوة صديق إلى شبكة باي 🥧</h3>
+                <p class="text-xs text-gray-400 mt-1">شارك رسالة الدعوة الخاصة بك مع أصدقائك</p>
+            </div>
+            <div class="bg-[#211434] p-4 rounded-xl border border-[#e5a93b]/30 text-xs text-gray-200 text-right leading-relaxed select-all" id="invite-text-content">
+                الباي هي عملة رقمية جديدة تم تطويرها من طرف فريق من حاملي الدكتوراه من جامعة ستانفورد، مع أكثر من 55 مليون فرد حول العالم. للمشاركة معنا في باي ، إختر هذا الرابط https://minepi.com/Abokareem999 وإستخدم إسم المستخدم الخاص بي Abokareem999 ككود دعوة
+            </div>
+            <div class="flex gap-2">
+                <button onclick="window.copyInviteText()" class="flex-1 bg-[#e5a93b] hover:bg-yellow-500 text-[#0d0614] font-bold py-3 rounded-xl transition-all shadow-md text-xs flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-copy"></i> نسخ النص بالكامل
+                </button>
+                <button onclick="window.closeInviteModal()" class="bg-[#211434] border border-[#e5a93b]/30 hover:border-[#e5a93b] text-gray-300 font-semibold px-5 py-3 rounded-xl text-xs transition-all">إغلاق</button>
+            </div>
+        </div>
+    </div>
 
     <!-- نافذة الروم الصوتي -->
     <div id="voice-chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
@@ -558,6 +581,32 @@
                 updateSDKStatus("🟢 وضع تجريبي (نشط)", "text-yellow-400");
                 alert("تم تفعيل الوضع التجريبي بنجاح!");
             }
+        }
+
+        // دوال نافذة دعوة صديق الجديدة
+        window.openInviteModal = function() {
+            const modal = document.getElementById('invite-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        window.closeInviteModal = function() {
+            const modal = document.getElementById('invite-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        window.copyInviteText = function() {
+            const text = "الباي هي عملة رقمية جديدة تم تطويرها من طرف فريق من حاملي الدكتوراه من جامعة ستانفورد، مع أكثر من 55 مليون فرد حول العالم. للمشاركة معنا في باي ، إختر هذا الرابط https://minepi.com/Abokareem999 وإستخدم إسم المستخدم الخاص بي Abokareem999 ككود دعوة";
+            navigator.clipboard.writeText(text).then(() => {
+                alert("تم نسخ نص الدعوة بنجاح! يمكنك مشاركته الآن 🚀");
+            }).catch(err => {
+                console.error("فشل النسخ:", err);
+            });
         }
 
         window.triggerImageUpload = function() { document.getElementById('post-image-file').click(); }
