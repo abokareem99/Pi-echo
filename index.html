@@ -44,7 +44,7 @@
             background: linear-gradient(135deg, #1b0f2e, #130a21); border: 2px solid #e5a93b; border-radius: 20px;
             box-shadow: 0 4px 25px rgba(229, 169, 59, 0.25);
             padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
-            display: flex; justify-content: space-around; align-items: center;
+            display: flex; justify-around; align-items: center;
         }
     </style>
 </head>
@@ -64,11 +64,7 @@
             <input type="text" id="global-search-input" placeholder="ابحث عن منشورات أو رواد..." class="bg-transparent border-none outline-none text-sm w-full text-gray-200 placeholder-gray-500" oninput="window.handleGlobalSearch(this.value)">
         </div>
 
-        <div class="flex items-center gap-3">
-            <button class="relative p-2 text-gray-300 hover:text-[#e5a93b] transition-colors" onclick="window.openChatModal(); window.switchChatTab('requests');" title="طلبات الصداقة">
-                <i class="fa-solid fa-user-plus text-lg"></i>
-                <span id="header-requests-badge" class="hidden absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-            </button>
+        <div class="flex items-center gap-4">
             <button class="relative p-2 text-gray-300 hover:text-[#e5a93b] transition-colors" onclick="alert('لا توجد إشعارات جديدة حالياً.')">
                 <i class="fa-regular fa-bell text-xl"></i>
                 <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
@@ -114,7 +110,7 @@
                 </a>
                 <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); window.openChatModal();" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all rounded-xl">
                     <i class="fa-regular fa-message text-base"></i>
-                    <span>الرسائل والصداقة</span>
+                    <span>الرسائل العامة</span>
                 </a>
                 <hr class="border-[#e5a93b]/20 my-3">
                 <button onclick="window.openInviteModal(); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0b0713] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs">
@@ -139,9 +135,9 @@
                     <p id="sidebar-user-bio" class="text-xs text-gray-400 mt-2 px-2 italic line-clamp-3">مهتم بتطوير مشاريع الويب 3 ودعم مجتمع باي في الوطن العربي.</p>
                 </div>
                 <div class="pt-3 border-t border-[#e5a93b]/30 flex justify-around text-center text-xs text-gray-400">
-                    <div><span id="friends-count-sidebar" class="block font-bold text-gray-100 text-sm">0</span><span>أصدقاء</span></div>
-                    <div class="border-l border-[#e5a93b]/30"></div>
                     <div><span class="block font-bold text-gray-100 text-sm">١.٢ ألف</span><span>متابع</span></div>
+                    <div class="border-l border-[#e5a93b]/30"></div>
+                    <div><span class="block font-bold text-gray-100 text-sm">٣٤٠</span><span>يتابع</span></div>
                 </div>
             </div>
 
@@ -153,7 +149,7 @@
                     <i class="fa-regular fa-compass text-lg"></i><span>استكشف</span>
                 </a>
                 <a href="javascript:void(0)" onclick="window.openChatModal()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all">
-                    <i class="fa-regular fa-message text-lg"></i><span>الرسائل والصداقة</span>
+                    <i class="fa-regular fa-message text-lg"></i><span>الرسائل العامة</span>
                 </a>
                 <hr class="border-[#e5a93b]/30 my-3">
                 <button onclick="window.openInviteModal()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0b0713] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-3">
@@ -298,7 +294,24 @@
                 </div>
                 <div id="explore-content-pioneers" class="space-y-3 hidden">
                     <div class="space-y-2">
-                        <div class="p-3.5 bg-[#1b0f2e] border border-[#e5a93b]/30 rounded-xl flex items-center justify-between">
+                        <div class="p-3.5 bg-[#1b0f2e] border border-[#e5a93b]/30 rounded-xl flex items-center justify-between flex-wrap gap-2">
+                            <div class="flex items-center gap-3">
+                                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" class="w-10 h-10 rounded-full border border-[#e5a93b] object-cover">
+                                <div>
+                                    <h4 class="font-bold text-xs text-gray-100">أبو كريم (Abokareem999)</h4>
+                                    <p class="text-[10px] text-gray-400">مطور تطبيقات ويب 3 ومؤسس منصة Pi Echo</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="window.sendFriendRequest('Abokareem999')" class="bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/40 hover:bg-[#e5a93b] hover:text-[#0b0713] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                                    <i class="fa-solid fa-user-plus"></i> طلب صداقة
+                                </button>
+                                <button onclick="window.openPrivateChat('Abokareem999', 'https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem')" class="bg-purple-600/20 text-purple-300 border border-purple-500/40 hover:bg-purple-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                                    <i class="fa-solid fa-[#fa-paper-plane] fa-envelope"></i> دردشة خاصة
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-3.5 bg-[#1b0f2e] border border-[#e5a93b]/30 rounded-xl flex items-center justify-between flex-wrap gap-2">
                             <div class="flex items-center gap-3">
                                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed" class="w-10 h-10 rounded-full border border-[#e5a93b]/40">
                                 <div>
@@ -306,11 +319,16 @@
                                     <p class="text-[10px] text-gray-400">مستثمر ومحلل عملات رقمية وسوق باي</p>
                                 </div>
                             </div>
-                            <button onclick="window.sendFriendRequest('أحمد السوداني', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed')" class="bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0b0713] border border-[#e5a93b]/40 px-3 py-1 rounded-xl text-xs font-bold transition-all">
-                                <i class="fa-solid fa-user-plus ml-1"></i> إضافة صديق
-                            </button>
+                            <div class="flex gap-2">
+                                <button onclick="window.sendFriendRequest('أحمد السوداني')" class="bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/40 hover:bg-[#e5a93b] hover:text-[#0b0713] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                                    <i class="fa-solid fa-user-plus"></i> طلب صداقة
+                                </button>
+                                <button onclick="window.openPrivateChat('أحمد السوداني', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed')" class="bg-purple-600/20 text-purple-300 border border-purple-500/40 hover:bg-purple-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                                    <i class="fa-solid fa-envelope"></i> دردشة خاصة
+                                </button>
+                            </div>
                         </div>
-                        <div class="p-3.5 bg-[#1b0f2e] border border-[#e5a93b]/30 rounded-xl flex items-center justify-between">
+                        <div class="p-3.5 bg-[#1b0f2e] border border-[#e5a93b]/30 rounded-xl flex items-center justify-between flex-wrap gap-2">
                             <div class="flex items-center gap-3">
                                 <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" class="w-10 h-10 rounded-full border border-[#e5a93b]/40">
                                 <div>
@@ -318,9 +336,14 @@
                                     <p class="text-[10px] text-gray-400">مطورة واجهات وتصميم ثلاثي الأبعاد</p>
                                 </div>
                             </div>
-                            <button onclick="window.sendFriendRequest('سارة محمد', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah')" class="bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0b0713] border border-[#e5a93b]/40 px-3 py-1 rounded-xl text-xs font-bold transition-all">
-                                <i class="fa-solid fa-user-plus ml-1"></i> إضافة صديق
-                            </button>
+                            <div class="flex gap-2">
+                                <button onclick="window.sendFriendRequest('سارة محمد')" class="bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/40 hover:bg-[#e5a93b] hover:text-[#0b0713] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                                    <i class="fa-solid fa-user-plus"></i> طلب صداقة
+                                </button>
+                                <button onclick="window.openPrivateChat('سارة محمد', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah')" class="bg-purple-600/20 text-purple-300 border border-purple-500/40 hover:bg-purple-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
+                                    <i class="fa-solid fa-envelope"></i> دردشة خاصة
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -424,17 +447,16 @@
         </div>
     </div>
 
-    <!-- نافذة الدردشة المحدثة: الدردشة العامة والرسائل الخاصة وطلبات الصداقة -->
+    <!-- نافذة الدردشة العامة -->
     <div id="chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] rounded-3xl max-w-2xl w-full h-[85vh] flex flex-col shadow-[0_0_30px_rgba(229,169,59,0.3)] relative overflow-hidden">
-            
+        <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] rounded-3xl max-w-lg w-full h-[80vh] flex flex-col shadow-[0_0_30px_rgba(229,169,59,0.3)] relative overflow-hidden">
             <div class="p-4 bg-[#24153b] border-b border-[#e5a93b]/30 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-gradient-to-tr from-[#e5a93b] to-yellow-500 rounded-full flex items-center justify-center text-[#0b0713] font-bold">
-                        <i class="fa-regular fa-comments text-lg"></i>
+                        <i class="fa-regular fa-message text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="font-bold text-sm text-[#e5a93b]">الرسائل والصداقة 💬</h3>
+                        <h3 class="font-bold text-sm text-[#e5a93b]">الدردشة العامة للرواد 💬</h3>
                         <span class="text-[10px] text-green-400 font-semibold flex items-center gap-1">
                             <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> متصل الآن
                         </span>
@@ -442,70 +464,37 @@
                 </div>
                 <button onclick="window.closeChatModal()" class="text-gray-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
             </div>
-
-            <!-- تبويبات الرسائل -->
-            <div class="flex border-b border-[#e5a93b]/20 bg-[#160d24] px-4 gap-2 text-xs font-semibold">
-                <button onclick="window.switchChatTab('general')" id="chat-tab-btn-general" class="py-3 px-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-globe"></i> الدردشة العامة
-                </button>
-                <button onclick="window.switchChatTab('private')" id="chat-tab-btn-private" class="py-3 px-3 text-gray-400 hover:text-[#e5a93b] transition-all flex items-center gap-1.5">
-                    <i class="fa-regular fa-paper-plane"></i> الرسائل الخاصة
-                </button>
-                <button onclick="window.switchChatTab('requests')" id="chat-tab-btn-requests" class="py-3 px-3 text-gray-400 hover:text-[#e5a93b] transition-all flex items-center gap-1.5 relative">
-                    <i class="fa-solid fa-user-check"></i> طلبات الصداقة
-                    <span id="requests-badge-count" class="hidden bg-red-500 text-white text-[9px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+            <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 bg-[#0d0714]"></div>
+            <div class="p-3 bg-[#24153b] border-t border-[#e5a93b]/30 flex gap-2 items-center">
+                <input type="text" id="chat-input" placeholder="اكتب رسالتك إلى الرواد..." class="flex-1 bg-[#130a21] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-xs text-gray-200 outline-none focus:border-[#e5a93b]" onkeypress="if(event.key === 'Enter') window.sendChatMessage()">
+                <button onclick="window.sendChatMessage()" class="bg-[#e5a93b] hover:bg-yellow-500 text-[#0b0713] font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md">
+                    <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
+        </div>
+    </div>
 
-            <!-- محتوى التبويبات -->
-            <div class="flex-1 overflow-hidden relative bg-[#0d0714]">
-                
-                <!-- تبويب الدردشة العامة -->
-                <div id="chat-view-general" class="h-full flex flex-col">
-                    <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3"></div>
-                    <div class="p-3 bg-[#24153b] border-t border-[#e5a93b]/30 flex gap-2 items-center">
-                        <input type="text" id="chat-input" placeholder="اكتب رسالتك إلى الرواد..." class="flex-1 bg-[#130a21] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-xs text-gray-200 outline-none focus:border-[#e5a93b]" onkeypress="if(event.key === 'Enter') window.sendChatMessage()">
-                        <button onclick="window.sendChatMessage()" class="bg-[#e5a93b] hover:bg-yellow-500 text-[#0b0713] font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
+    <!-- نافذة الدردشة الخاصة الجديدة المضافة -->
+    <div id="private-chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] rounded-3xl max-w-lg w-full h-[80vh] flex flex-col shadow-[0_0_30px_rgba(229,169,59,0.3)] relative overflow-hidden">
+            <div class="p-4 bg-[#24153b] border-b border-[#e5a93b]/30 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img id="private-chat-user-avatar" src="" class="w-10 h-10 rounded-full border border-[#e5a93b] object-cover">
+                    <div>
+                        <h3 id="private-chat-user-name" class="font-bold text-sm text-[#e5a93b]">محادثة خاصة</h3>
+                        <span class="text-[10px] text-green-400 font-semibold flex items-center gap-1">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> اتصال مباشر وآمن
+                        </span>
                     </div>
                 </div>
-
-                <!-- تبويب الرسائل الخاصة -->
-                <div id="chat-view-private" class="h-full hidden flex flex-col md:flex-row">
-                    <!-- قائمة الأصدقاء -->
-                    <div class="w-full md:w-1/3 border-b md:border-b-0 md:border-l border-[#e5a93b]/20 bg-[#130a21] p-3 flex flex-col space-y-2 overflow-y-auto max-h-40 md:max-h-full">
-                        <h4 class="text-xs font-bold text-[#e5a93b] mb-1 flex items-center gap-1">
-                            <i class="fa-solid fa-users text-xs"></i> الأصدقاء (<span id="friends-count">0</span>)
-                        </h4>
-                        <div id="private-friends-list" class="space-y-1"></div>
-                    </div>
-
-                    <!-- شاشة المحادثة الخاصة -->
-                    <div class="flex-1 flex flex-col h-full bg-[#0d0714]">
-                        <div id="private-chat-header" class="p-2.5 bg-[#1b0f2e] border-b border-[#e5a93b]/20 flex items-center gap-2">
-                            <span class="text-xs text-gray-400 italic">اختر صديقاً من القائمة لبدء المحادثة الخاصة</span>
-                        </div>
-                        <div id="private-messages-container" class="flex-1 p-3 overflow-y-auto space-y-2">
-                            <div class="text-center py-12 text-gray-500 text-xs">لا توجد محادثة مفتوحة حالياً.</div>
-                        </div>
-                        <div id="private-input-box" class="p-2.5 bg-[#24153b] border-t border-[#e5a93b]/30 flex gap-2 items-center hidden">
-                            <input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." class="flex-1 bg-[#130a21] border border-[#e5a93b]/30 rounded-xl px-3 py-2 text-xs text-gray-200 outline-none focus:border-[#e5a93b]" onkeypress="if(event.key === 'Enter') window.sendPrivateMessage()">
-                            <button onclick="window.sendPrivateMessage()" class="bg-[#e5a93b] hover:bg-yellow-500 text-[#0b0713] font-bold px-4 py-2 rounded-xl text-xs transition-all">
-                                <i class="fa-solid fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- تبويب طلبات الصداقة -->
-                <div id="chat-view-requests" class="h-full hidden p-4 overflow-y-auto space-y-3">
-                    <h4 class="text-xs font-bold text-[#e5a93b] mb-2 flex items-center gap-1">
-                        <i class="fa-solid fa-user-clock"></i> طلبات الصداقة المعلقة
-                    </h4>
-                    <div id="friend-requests-list" class="space-y-2"></div>
-                </div>
-
+                <button onclick="window.closePrivateChatModal()" class="text-gray-400 hover:text-white text-lg p-2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="private-chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 bg-[#0d0714]"></div>
+            <div class="p-3 bg-[#24153b] border-t border-[#e5a93b]/30 flex gap-2 items-center">
+                <input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." class="flex-1 bg-[#130a21] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-xs text-gray-200 outline-none focus:border-[#e5a93b]" onkeypress="if(event.key === 'Enter') window.sendPrivateChatMessage()">
+                <button onclick="window.sendPrivateChatMessage()" class="bg-[#e5a93b] hover:bg-yellow-500 text-[#0b0713] font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -535,6 +524,7 @@
         </div>
     </div>
 
+    <!-- نافذة الدفع عبر Pi SDK -->
     <div id="payment-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-2xl relative">
             <button onclick="window.closeSupportModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -604,6 +594,8 @@
         window.firebaseDb = db;
         window.firebaseStorage = storage;
 
+        let paymentTimerInterval = null;
+
         let currentUser = {
             username: "أبو كريم",
             avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem",
@@ -612,12 +604,6 @@
         };
 
         let posts = [];
-        let myFriendsList = [];
-        let pendingRequestsList = [];
-        let pendingSentRequests = [];
-        let activePrivateFriend = null;
-        let privateChatUnsubscribe = null;
-
         let activePostIdForTip = null;
         let activeRecipientName = null;
         
@@ -628,7 +614,12 @@
         let piInitAttempts = 0;
         let isBypassActive = false;
         let isMicMuted = true;
+        let isConnectingVoice = false;
         let searchQuery = "";
+
+        // متغيرات الدردشة الخاصة
+        let activePrivateChatPartner = null;
+        let privateChatUnsubscribe = null;
 
         function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
         function safeSetItem(key, value) { try { localStorage.setItem(key, value); } catch (e) {} }
@@ -645,8 +636,6 @@
             }
             updateUserProfileDOM();
             listenToPostsFromFirebase();
-            listenToFriendRequests();
-            listenToFriendsList();
             startPiSDKInitialization();
         }
 
@@ -708,7 +697,7 @@
                 overlay.classList.add('opacity-0');
                 setTimeout(() => overlay.classList.add('hidden'), 300);
             }
-        };
+        }
 
         function updateSDKStatus(text, className = "text-gray-300") {
             const balanceElement = document.getElementById('user-pi-balance');
@@ -740,8 +729,6 @@
                         updateSDKStatus(`🟢 متصل: ${authData.user.username}`, "text-green-400");
                         safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
                         saveProfileToFirebase(currentUser);
-                        listenToFriendRequests();
-                        listenToFriendsList();
                     }).catch(function(error) { 
                         updateSDKStatus("⚠️ فشل الربط (اضغط للتخطي)", "text-red-400 hover:text-red-300"); 
                     });
@@ -761,13 +748,21 @@
 
         function onIncompletePaymentFound(payment) {
             console.log("⚠️ تم العثور على دفعة معلقة/غير مكتملة:", payment);
-            if (payment && payment.identifier) {
+            const BACKEND_URL = ""; 
+            
+            fetch(`${BACKEND_URL}/api/payments/approve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentId: payment.identifier })
+            }).then(res => res.json()).then(data => {
                 if (payment.transaction && payment.transaction.txid) {
-                    completePaymentOnServer(payment.identifier, payment.transaction.txid);
-                } else {
-                    approvePaymentOnServer(payment.identifier);
+                    return fetch(`${BACKEND_URL}/api/payments/complete`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction.txid })
+                    });
                 }
-            }
+            }).catch(err => console.error("خطأ في معالجة الدفعة المعلقة:", err));
         }
 
         window.handleStatusClick = function() {
@@ -782,430 +777,404 @@
                 updateUserProfileDOM();
                 updateSDKStatus("🟢 وضع تجريبي (نشط)", "text-yellow-400");
                 saveProfileToFirebase(currentUser);
-                listenToFriendRequests();
-                listenToFriendsList();
                 alert("تم تفعيل الوضع التجريبي بنجاح!");
             }
-        };
+        }
 
-        /* --- إدارة رفع وإدراج الصور والفيديوهات --- */
-        window.triggerImageUpload = function() {
-            document.getElementById('post-image-file').click();
-        };
-
-        window.previewSelectedImage = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                selectedImageFile = file;
-                selectedVideoFile = null;
-                document.getElementById('video-preview-container').classList.add('hidden');
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    document.getElementById('image-preview').src = evt.target.result;
-                    document.getElementById('image-preview-container').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        window.removeImageSelection = function() {
-            selectedImageFile = null;
-            const fileInput = document.getElementById('post-image-file');
-            if (fileInput) fileInput.value = '';
-            const container = document.getElementById('image-preview-container');
-            if (container) container.classList.add('hidden');
-        };
-
-        window.triggerVideoUpload = function() {
-            document.getElementById('post-video-file').click();
-        };
-
-        window.previewSelectedVideo = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                selectedVideoFile = file;
-                selectedImageFile = null;
-                document.getElementById('image-preview-container').classList.add('hidden');
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const videoEl = document.getElementById('video-preview');
-                    videoEl.src = evt.target.result;
-                    document.getElementById('video-preview-container').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        window.removeVideoSelection = function() {
-            selectedVideoFile = null;
-            const fileInput = document.getElementById('post-video-file');
-            if (fileInput) fileInput.value = '';
-            const container = document.getElementById('video-preview-container');
-            if (container) container.classList.add('hidden');
-        };
-
-        /* --- الرموز التعبيرية والبحث --- */
-        window.toggleEmojiPicker = function(e) {
-            e.stopPropagation();
-            const picker = document.getElementById('emoji-picker');
-            if (picker) picker.classList.toggle('hidden');
-        };
-
-        window.appendEmoji = function(emoji) {
-            const input = document.getElementById('post-input');
-            if (input) {
-                input.value += emoji;
-                input.focus();
-            }
-            const picker = document.getElementById('emoji-picker');
-            if (picker) picker.classList.add('hidden');
-        };
-
-        document.addEventListener('click', function(e) {
-            const picker = document.getElementById('emoji-picker');
-            if (picker && !picker.classList.contains('hidden')) {
-                picker.classList.add('hidden');
-            }
-        });
-
-        window.handleGlobalSearch = function(val) {
-            searchQuery = val.trim().toLowerCase();
-            renderPosts();
-        };
-
-        window.filterByHashtag = function(tag) {
-            window.closeExploreModal();
-            const searchInput = document.getElementById('global-search-input');
-            if (searchInput) searchInput.value = tag;
-            searchQuery = tag.trim().toLowerCase();
-            renderPosts();
-        };
-
-        /* --- نظام الصداقة والطلبات --- */
-        window.sendFriendRequest = async function(targetUsername, targetAvatar) {
-            if (targetUsername === currentUser.username) {
-                alert("لا يمكنك إرسال طلب صداقة لنفسك!");
+        /* --- وظائف إرسال طلب الصداقة والدردشة الخاصة المضافة حديثاً --- */
+        window.sendFriendRequest = async function(targetUsername) {
+            if (!currentUser.username || currentUser.username === targetUsername) {
+                alert("لا يمكنك إرسال طلب صداقة لنفسك.");
                 return;
             }
-
-            if (myFriendsList.some(f => f.username === targetUsername)) {
-                alert("هذا المستخدم صديق لك بالفعل!");
-                return;
-            }
-
             try {
                 await addDoc(collection(db, "friend_requests"), {
-                    sender: currentUser.username,
-                    senderAvatar: currentUser.avatar,
-                    receiver: targetUsername,
-                    receiverAvatar: targetAvatar,
-                    status: 'pending',
+                    from: currentUser.username,
+                    fromAvatar: currentUser.avatar,
+                    to: targetUsername,
+                    status: "pending",
                     timestamp: serverTimestamp()
                 });
-                pendingSentRequests.push(targetUsername);
-                alert(`تم إرسال طلب الصداقة إلى ${targetUsername} بنجاح!`);
-                renderPosts();
+                alert(`تم إرسال طلب الصداقة إلى ${targetUsername} بنجاح! 🤝`);
             } catch (err) {
-                console.error("خطأ في إرسال طلب الصداقة:", err);
+                console.error("خطأ أثناء إرسال طلب الصداقة:", err);
                 alert("حدث خطأ أثناء إرسال طلب الصداقة.");
             }
-        };
-
-        function listenToFriendRequests() {
-            if (!currentUser.username) return;
-            const q = query(
-                collection(db, "friend_requests"),
-                where("receiver", "==", currentUser.username),
-                where("status", "==", "pending")
-            );
-
-            onSnapshot(q, (snapshot) => {
-                pendingRequestsList = [];
-                snapshot.forEach((docSnap) => {
-                    pendingRequestsList.push({ id: docSnap.id, ...docSnap.data() });
-                });
-
-                const countEl = document.getElementById('requests-badge-count');
-                const headerBadge = document.getElementById('header-requests-badge');
-
-                if (pendingRequestsList.length > 0) {
-                    if (countEl) { countEl.innerText = pendingRequestsList.length; countEl.classList.remove('hidden'); }
-                    if (headerBadge) headerBadge.classList.remove('hidden');
-                } else {
-                    if (countEl) countEl.classList.add('hidden');
-                    if (headerBadge) headerBadge.classList.add('hidden');
-                }
-
-                renderPendingRequestsUI();
-            });
         }
 
-        function renderPendingRequestsUI() {
-            const container = document.getElementById('friend-requests-list');
-            if (!container) return;
-
-            if (pendingRequestsList.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-gray-500 text-xs">لا توجد طلبات صداقة معلقة حالياً.</div>`;
+        window.openPrivateChat = function(targetUsername, targetAvatar) {
+            if (currentUser.username === targetUsername) {
+                alert("لا يمكنك فتح دردشة خاصة مع نفسك.");
                 return;
             }
+            activePrivateChatPartner = targetUsername;
+            document.getElementById('private-chat-user-name').innerText = `محادثة خاصة مع: ${targetUsername}`;
+            document.getElementById('private-chat-user-avatar').src = targetAvatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${targetUsername}`;
+            
+            const modal = document.getElementById('private-chat-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
 
-            container.innerHTML = "";
-            pendingRequestsList.forEach(req => {
-                const itemHTML = `
-                    <div class="p-3 bg-[#1b0f2e] border border-[#e5a93b]/30 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <img src="${req.senderAvatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=Pioneer'}" class="w-10 h-10 rounded-full border border-[#e5a93b] object-cover">
-                            <div>
-                                <h4 class="font-bold text-xs text-gray-100">${req.sender}</h4>
-                                <span class="text-[10px] text-gray-400">يرغب في إضافتك كصديق</span>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="window.acceptFriendRequest('${req.id}', '${req.sender}', '${req.senderAvatar}')" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1">
-                                <i class="fa-solid fa-check"></i> قبول
-                            </button>
-                            <button onclick="window.rejectFriendRequest('${req.id}')" class="bg-red-600/80 hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1">
-                                <i class="fa-solid fa-xmark"></i> رفض
-                            </button>
-                        </div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', itemHTML);
-            });
+            listenToPrivateMessages();
         }
 
-        window.acceptFriendRequest = async function(reqId, senderUsername, senderAvatar) {
-            try {
-                const reqRef = doc(db, "friend_requests", reqId);
-                await updateDoc(reqRef, { status: 'accepted' });
+        window.closePrivateChatModal = function() {
+            const modal = document.getElementById('private-chat-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            if (privateChatUnsubscribe) {
+                privateChatUnsubscribe();
+                privateChatUnsubscribe = null;
+            }
+            activePrivateChatPartner = null;
+        }
 
-                await addDoc(collection(db, "friends"), {
-                    user1: currentUser.username,
-                    user2: senderUsername,
-                    user2Avatar: senderAvatar,
-                    user1Avatar: currentUser.avatar,
+        function getRoomId(user1, user2) {
+            return [user1, user2].sort().join('_');
+        }
+
+        window.sendPrivateChatMessage = async function() {
+            const input = document.getElementById('private-chat-input');
+            if (!input || !activePrivateChatPartner) return;
+            const text = input.value.trim();
+            if (!text) return;
+
+            const roomId = getRoomId(currentUser.username, activePrivateChatPartner);
+
+            try {
+                await addDoc(collection(db, "private_messages"), {
+                    roomId: roomId,
+                    sender: currentUser.username,
+                    recipient: activePrivateChatPartner,
+                    content: text,
+                    avatar: currentUser.avatar,
                     timestamp: serverTimestamp()
                 });
-
-                alert(`تم قبول طلب الصداقة! أصبحت الآن صديقاً لـ ${senderUsername}.`);
-            } catch (err) {
-                console.error("خطأ في قبول طلب الصداقة:", err);
+                input.value = "";
+            } catch (error) {
+                console.error("خطأ في إرسال الرسالة الخاصة:", error);
+                alert("فشل إرسال الرسالة الخاصة.");
             }
-        };
-
-        window.rejectFriendRequest = async function(reqId) {
-            try {
-                const reqRef = doc(db, "friend_requests", reqId);
-                await updateDoc(reqRef, { status: 'rejected' });
-            } catch (err) {
-                console.error("خطأ في رفض طلب الصداقة:", err);
-            }
-        };
-
-        function listenToFriendsList() {
-            if (!currentUser.username) return;
-            
-            const q = query(collection(db, "friends"));
-            onSnapshot(q, (snapshot) => {
-                myFriendsList = [];
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    if (data.user1 === currentUser.username) {
-                        myFriendsList.push({ username: data.user2, avatar: data.user2Avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + data.user2 });
-                    } else if (data.user2 === currentUser.username) {
-                        myFriendsList.push({ username: data.user1, avatar: data.user1Avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + data.user1 });
-                    }
-                });
-
-                const sideCount = document.getElementById('friends-count-sidebar');
-                const modalCount = document.getElementById('friends-count');
-                if (sideCount) sideCount.innerText = myFriendsList.length;
-                if (modalCount) modalCount.innerText = myFriendsList.length;
-
-                renderFriendsListUI();
-                renderPosts();
-            });
         }
 
-        function renderFriendsListUI() {
-            const container = document.getElementById('private-friends-list');
-            if (!container) return;
-
-            if (myFriendsList.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-gray-500 text-[11px]">لا يوجد أصدقاء مضافين حالياً.</div>`;
-                return;
-            }
-
-            container.innerHTML = "";
-            myFriendsList.forEach(friend => {
-                const isActive = activePrivateFriend && activePrivateFriend.username === friend.username;
-                const itemHTML = `
-                    <div onclick="window.openPrivateChat('${friend.username}', '${friend.avatar}')" class="p-2 rounded-xl flex items-center gap-2.5 cursor-pointer transition-all ${isActive ? 'bg-[#24153b] border border-[#e5a93b]' : 'hover:bg-[#1b0f2e]'}">
-                        <img src="${friend.avatar}" class="w-8 h-8 rounded-full border border-[#e5a93b]/40 object-cover">
-                        <div class="flex-1 truncate">
-                            <h5 class="text-xs font-bold text-gray-200 truncate">${friend.username}</h5>
-                            <span class="text-[9px] text-green-400">متصل (رسالة خاصة)</span>
-                        </div>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', itemHTML);
-            });
-        }
-
-        /* --- نظام الرسائل الخاصة (Direct Messages) --- */
-        window.switchChatTab = function(tabName) {
-            const viewGeneral = document.getElementById('chat-view-general');
-            const viewPrivate = document.getElementById('chat-view-private');
-            const viewRequests = document.getElementById('chat-view-requests');
-
-            const btnGeneral = document.getElementById('chat-tab-btn-general');
-            const btnPrivate = document.getElementById('chat-tab-btn-private');
-            const btnRequests = document.getElementById('chat-tab-btn-requests');
-
-            viewGeneral.classList.add('hidden');
-            viewPrivate.classList.add('hidden');
-            viewRequests.classList.add('hidden');
-
-            btnGeneral.className = "py-3 px-3 text-gray-400 hover:text-[#e5a93b] transition-all flex items-center gap-1.5";
-            btnPrivate.className = "py-3 px-3 text-gray-400 hover:text-[#e5a93b] transition-all flex items-center gap-1.5";
-            btnRequests.className = "py-3 px-3 text-gray-400 hover:text-[#e5a93b] transition-all flex items-center gap-1.5 relative";
-
-            if (tabName === 'general') {
-                viewGeneral.classList.remove('hidden');
-                btnGeneral.className = "py-3 px-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all flex items-center gap-1.5";
-            } else if (tabName === 'private') {
-                viewPrivate.classList.remove('hidden');
-                btnPrivate.className = "py-3 px-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all flex items-center gap-1.5";
-            } else if (tabName === 'requests') {
-                viewRequests.classList.remove('hidden');
-                btnRequests.className = "py-3 px-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all flex items-center gap-1.5 relative";
-            }
-        };
-
-        window.openPrivateChat = function(friendUsername, friendAvatar) {
-            window.openChatModal();
-            window.switchChatTab('private');
-            
-            activePrivateFriend = { username: friendUsername, avatar: friendAvatar };
-            renderFriendsListUI();
-
-            const headerEl = document.getElementById('private-chat-header');
-            const inputBox = document.getElementById('private-input-box');
-
-            headerEl.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <img src="${friendAvatar}" class="w-7 h-7 rounded-full border border-[#e5a93b]">
-                    <span class="font-bold text-xs text-[#e5a93b]">${friendUsername}</span>
-                    <span class="text-[9px] bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-bold">محادثة خاصة مشفرة</span>
-                </div>
-            `;
-            inputBox.classList.remove('hidden');
-
-            listenToPrivateMessages(friendUsername);
-        };
-
-        function listenToPrivateMessages(friendUsername) {
+        function listenToPrivateMessages() {
+            if (!activePrivateChatPartner) return;
             if (privateChatUnsubscribe) privateChatUnsubscribe();
 
-            const q = query(collection(db, "private_messages"), orderBy("timestamp", "asc"));
+            const roomId = getRoomId(currentUser.username, activePrivateChatPartner);
+            const q = query(
+                collection(db, "private_messages"), 
+                where("roomId", "==", roomId),
+                orderBy("timestamp", "asc")
+            );
 
             privateChatUnsubscribe = onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('private-messages-container');
+                const container = document.getElementById('private-chat-messages-container');
                 if (!container) return;
                 container.innerHTML = "";
 
-                let hasMessages = false;
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    const isBetweenUs = (data.sender === currentUser.username && data.receiver === friendUsername) ||
-                                        (data.sender === friendUsername && data.receiver === currentUser.username);
-
-                    if (isBetweenUs) {
-                        hasMessages = true;
-                        const isMe = data.sender === currentUser.username;
-                        let timeStr = "الآن";
-                        if (data.timestamp && data.timestamp.seconds) {
-                            timeStr = new Date(data.timestamp.seconds * 1000).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                        }
-
-                        const msgHTML = `
-                            <div class="flex items-start gap-2 ${isMe ? 'flex-row-reverse' : ''}">
-                                <div class="max-w-[80%] bg-[#1b0f2e] border ${isMe ? 'border-[#e5a93b]/60' : 'border-[#e5a93b]/20'} p-2.5 rounded-2xl space-y-1">
-                                    <div class="flex items-center justify-between gap-3">
-                                        <span class="text-[9px] font-bold text-[#e5a93b]">${isMe ? 'أنت' : data.sender}</span>
-                                        <span class="text-[8px] text-gray-500">${timeStr}</span>
-                                    </div>
-                                    <p class="text-xs text-gray-200 leading-relaxed whitespace-pre-line">${escapeHTML(data.content)}</p>
-                                </div>
-                            </div>
-                        `;
-                        container.insertAdjacentHTML('beforeend', msgHTML);
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const isMe = data.sender === currentUser.username;
+                    let timeStr = "الآن";
+                    if (data.timestamp && typeof data.timestamp.seconds !== 'undefined') {
+                        timeStr = new Date(data.timestamp.seconds * 1000).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
                     }
+
+                    const messageHTML = `
+                        <div class="flex items-start gap-2.5 ${isMe ? 'flex-row-reverse' : ''}">
+                            <img src="${data.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + data.sender}" class="w-8 h-8 rounded-full border border-[#e5a93b]/40 object-cover">
+                            <div class="max-w-[75%] bg-[#1b0f2e] border ${isMe ? 'border-[#e5a93b]/50' : 'border-purple-500/30'} p-3 rounded-2xl space-y-1">
+                                <div class="flex items-center justify-between gap-3">
+                                    <span class="text-[10px] font-bold text-[#e5a93b]">${data.sender}</span>
+                                    <span class="text-[9px] text-gray-500">${timeStr}</span>
+                                </div>
+                                <p class="text-xs text-gray-200 leading-relaxed whitespace-pre-line">${data.content}</p>
+                            </div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', messageHTML);
                 });
-
-                if (!hasMessages) {
-                    container.innerHTML = `<div class="text-center py-12 text-gray-500 text-xs">لا توجد رسائل سابقة مع ${friendUsername}. أرسل الرسالة الأولى الآن!</div>`;
-                }
-
                 container.scrollTop = container.scrollHeight;
             });
         }
 
-        window.sendPrivateMessage = async function() {
-            if (!activePrivateFriend) return;
-            const input = document.getElementById('private-chat-input');
-            if (!input) return;
-            const text = input.value.trim();
-            if (!text) return;
-
-            try {
-                await addDoc(collection(db, "private_messages"), {
-                    sender: currentUser.username,
-                    receiver: activePrivateFriend.username,
-                    content: text,
-                    timestamp: serverTimestamp()
-                });
-                input.value = "";
-            } catch (err) {
-                console.error("خطأ في إرسال الرسالة الخاصة:", err);
-                alert("فشل إرسال الرسالة الخاصة.");
+        window.openExploreModal = function() {
+            const modal = document.getElementById('explore-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                renderTrendingPostsInExplore();
             }
-        };
+        }
 
-        /* --- منشورات الفيد وإنشاء المحتوى --- */
-        window.createNewPost = async function() {
-            const input = document.getElementById('post-input');
-            const content = input ? input.value.trim() : "";
-            if (!content && !selectedImageFile && !selectedVideoFile) {
-                alert("يرجى كتابة محتوى أو إضافة صورة/فيديو لنشر المنشور!");
+        window.closeExploreModal = function() {
+            const modal = document.getElementById('explore-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        window.switchExploreTab = function(tabName) {
+            const trendingDiv = document.getElementById('explore-content-trending');
+            const hashtagsDiv = document.getElementById('explore-content-hashtags');
+            const pioneersDiv = document.getElementById('explore-content-pioneers');
+
+            const tabTrendingBtn = document.getElementById('explore-tab-trending');
+            const tabHashtagsBtn = document.getElementById('explore-tab-hashtags');
+            const tabPioneersBtn = document.getElementById('explore-tab-pioneers');
+
+            trendingDiv.classList.add('hidden');
+            hashtagsDiv.classList.add('hidden');
+            pioneersDiv.classList.add('hidden');
+
+            tabTrendingBtn.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
+            tabHashtagsBtn.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
+            tabPioneersBtn.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
+
+            if (tabName === 'trending') {
+                trendingDiv.classList.remove('hidden');
+                tabTrendingBtn.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
+                renderTrendingPostsInExplore();
+            } else if (tabName === 'hashtags') {
+                hashtagsDiv.classList.remove('hidden');
+                tabHashtagsBtn.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
+            } else if (tabName === 'pioneers') {
+                pioneersDiv.classList.remove('hidden');
+                tabPioneersBtn.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
+            }
+        }
+
+        function renderTrendingPostsInExplore() {
+            const container = document.getElementById('explore-content-trending');
+            if (!container) return;
+            
+            let sortedPosts = [...posts].sort((a, b) => b.likes - a.likes);
+            
+            if (sortedPosts.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-gray-500 text-xs">لا توجد منشورات متاحة في الاستكشاف حالياً.</div>`;
                 return;
             }
-            const btn = document.getElementById('main-post-btn');
-            if (btn) { btn.disabled = true; btn.innerText = "جاري النشر..."; }
 
-            try {
-                let imageUrl = null;
-                let videoUrl = null;
+            container.innerHTML = "";
+            sortedPosts.slice(0, 5).forEach(post => {
+                const itemHTML = `
+                    <div class="bg-[#1b0f2e] border border-[#e5a93b]/30 p-3.5 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <img src="${post.avatar}" class="w-7 h-7 rounded-full border border-[#e5a93b]/40 object-cover">
+                                <span class="font-bold text-xs text-gray-200">${post.author}</span>
+                            </div>
+                            <span class="text-[10px] text-red-400 flex items-center gap-1"><i class="fa-solid fa-heart"></i> ${post.likes} إعجاب</span>
+                        </div>
+                        <p class="text-xs text-gray-300 line-clamp-2">${post.content}</p>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', itemHTML);
+            });
+        }
 
-                if (selectedImageFile) {
-                    imageUrl = await readFileAsDataURL(selectedImageFile);
-                } else if (selectedVideoFile) {
-                    videoUrl = await readFileAsDataURL(selectedVideoFile);
-                }
-                 await addDoc(collection(db, "private_messages"), {
-                    sender: currentUser.username,
-                    receiver: activePrivateFriend.username,
-                    content: text,
-                    timestamp: serverTimestamp()
-                });
-                input.value = '';
-            } catch (err) {
-                console.error("خطأ في إرسال الرسالة الخاصة:", err);
-                alert("تعذر إرسال الرسالة الخاصة. حاول مرة أخرى.");
+        window.filterByHashtag = function(tag) {
+            window.closeExploreModal();
+            searchQuery = tag;
+            const globalInput = document.getElementById('global-search-input');
+            if (globalInput) globalInput.value = tag;
+            renderPosts();
+        }
+
+        window.handleGlobalSearch = function(val) {
+            searchQuery = val.trim();
+            renderPosts();
+        }
+
+        window.openInviteModal = function() {
+            const modal = document.getElementById('invite-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
             }
-        };
+        }
 
-        /* --- الدردشة العامة --- */
+        window.closeInviteModal = function() {
+            const modal = document.getElementById('invite-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        window.openPolicyModal = function(type) {
+            const modal = document.getElementById('policy-modal');
+            const titleEl = document.getElementById('policy-modal-title');
+            const contentEl = document.getElementById('policy-modal-content');
+            const iconEl = document.getElementById('policy-modal-icon');
+
+            if (!modal) return;
+
+            if (type === 'privacy') {
+                titleEl.innerText = "سياسة الخصوصية";
+                iconEl.className = "fa-solid fa-user-shield text-lg";
+                contentEl.innerHTML = `
+                    <p><strong>حماية بيانات الرواد:</strong> نلتزم في منصة Pi Echo التامة بحماية بياناتك الشخصية ومعلومات حسابك على شبكة باي وفقاً لأعلى معايير الأمان والخصوصية اللامركزية.</p>
+                    <p class="mt-2"><strong>استخدام البيانات:</strong> لا يتم مشاركة أي معلومات شخصية أو بيانات محفظتك مع أي جهات خارجية، وتُستخدم فقط لتحسين تجربة المستخدم داخل مجتمع الرواد.</p>
+                `;
+            } else if (type === 'terms') {
+                titleEl.innerText = "شروط الاستخدام";
+                iconEl.className = "fa-solid fa-file-contract text-lg";
+                contentEl.innerHTML = `
+                    <p><strong>شروط الانضمام:</strong> هذا التطبيق مخصص حصرياً لمجتمع باي نتورك (Pi Network) ويخضع لشروط وأحكام شبكة باي العالمية.</p>
+                    <p class="mt-2"><strong>سلوك المجتمع:</strong> يُمنع نشر أي محتوى مسيء، احتيالي، أو مخالف للآداب العامة، ويحق للإدارة حماية بيئة الرواد النظيفة.</p>
+                `;
+            } else if (type === 'disclaimer') {
+                titleEl.innerText = "إخلاء المسؤولية";
+                iconEl.className = "fa-solid fa-triangle-exclamation text-lg";
+                contentEl.innerHTML = `
+                    <p><strong>صفحة المجتمع:</strong> Pi Echo هو تطبيق مجتمعي لامركزي مطور بواسطة رواد شبكة باي، وهو غير تابع رسمياً لفريق Core Team بشكل مباشر.</p>
+                    <p class="mt-2"><strong>المعاملات المالية:</strong> كافة التحويلات عبر SDK تتم في بيئة شبكة باي وتخضع لشفافية البلوكشين الكاملة ومسؤولية المستخدم.</p>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        window.closePolicyModal = function() {
+            const modal = document.getElementById('policy-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        window.copyInviteText = function() {
+            const text = "الباي هي عملة رقمية جديدة تم تطويرها من طرف فريق من حاملي الدكتوراه من جامعة ستانفورد، مع أكثر من 55 مليون فرد حول العالم. للمشاركة معنا في باي ، إختر هذا الرابط https://minepi.com/Abokareem999 وإستخدم إسم المستخدم الخاص بي Abokareem999 ككود دعوة";
+            navigator.clipboard.writeText(text).then(() => {
+                alert("تم نسخ نص الدعوة بنجاح! يمكنك مشاركته الآن 🚀");
+            }).catch(err => {
+                console.error("فشل النسخ:", err);
+            });
+        }
+
+        window.triggerImageUpload = function() { document.getElementById('post-image-file').click(); }
+        window.previewSelectedImage = function(event) {
+            window.removeVideoSelection(); 
+            const file = event.target.files[0];
+            if (file) {
+                selectedImageFile = file; 
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        window.removeImageSelection = function() {
+            selectedImageFile = null;
+            document.getElementById('post-image-file').value = "";
+            document.getElementById('image-preview').src = "";
+            document.getElementById('image-preview-container').classList.add('hidden');
+        }
+
+        window.triggerVideoUpload = function() { document.getElementById('post-video-file').click(); }
+        window.previewSelectedVideo = function(event) {
+            window.removeImageSelection(); 
+            const file = event.target.files[0];
+            if (file) {
+                selectedVideoFile = file; 
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('video-preview').src = e.target.result;
+                    document.getElementById('video-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        window.removeVideoSelection = function() {
+            selectedVideoFile = null;
+            document.getElementById('post-video-file').value = "";
+            document.getElementById('video-preview').src = "";
+            document.getElementById('video-preview-container').classList.add('hidden');
+        }
+
+        window.toggleEmojiPicker = function(event) {
+            event.preventDefault();
+            const picker = document.getElementById('emoji-picker');
+            picker.classList.toggle('hidden');
+        }
+        window.appendEmoji = function(emoji) {
+            const input = document.getElementById('post-input');
+            input.value += emoji;
+            document.getElementById('emoji-picker').classList.add('hidden');
+        }
+
+        window.openVoiceChatModal = function() {
+            document.getElementById('voice-chat-modal').classList.remove('hidden');
+            document.getElementById('voice-chat-modal').classList.add('flex');
+            isConnectingVoice = true;
+            document.getElementById('voice-connection-status').innerText = "🟡 جاري الاتصال بالروم...";
+            document.getElementById('voice-bars-container').classList.add('hidden');
+            
+            setTimeout(() => {
+                isConnectingVoice = false;
+                document.getElementById('voice-connection-status').innerText = "🟢 متصل - يمكنك التحدث الآن";
+                document.getElementById('voice-connection-status').className = "text-xs text-green-400 font-semibold block mt-1";
+                if(!isMicMuted) {
+                    document.getElementById('voice-bars-container').classList.remove('hidden');
+                }
+            }, 1500);
+        }
+
+        window.closeVoiceChatModal = function() {
+            document.getElementById('voice-chat-modal').classList.add('hidden');
+            document.getElementById('voice-chat-modal').classList.remove('flex');
+            isMicMuted = true;
+            updateMicUI();
+            document.getElementById('voice-bars-container').classList.add('hidden');
+            document.getElementById('voice-connection-status').className = "text-xs text-green-400 font-semibold block mt-1";
+        }
+
+        window.toggleMicrophone = function() {
+            if(isConnectingVoice) return;
+            isMicMuted = !isMicMuted;
+            updateMicUI();
+            if(!isMicMuted) {
+                document.getElementById('voice-bars-container').classList.remove('hidden');
+            } else {
+                document.getElementById('voice-bars-container').classList.add('hidden');
+            }
+        }
+
+        function updateMicUI() {
+            const micBtn = document.getElementById('toggle-mic-btn');
+            const micIcon = document.getElementById('mic-icon');
+            if(isMicMuted) {
+                micBtn.className = "bg-[#24153b] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md";
+                micIcon.className = "fa-solid fa-microphone-slash text-lg";
+            } else {
+                micBtn.className = "bg-[#e5a93b] text-[#0b0713] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md shadow-[#e5a93b]/30";
+                micIcon.className = "fa-solid fa-microphone text-lg";
+            }
+        }
+
+        window.openChatModal = function() {
+            const modal = document.getElementById('chat-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                listenToChatMessages();
+            }
+        }
+
+        window.closeChatModal = function() {
+            const modal = document.getElementById('chat-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
         window.sendChatMessage = async function() {
             const input = document.getElementById('chat-input');
             if (!input) return;
@@ -1214,526 +1183,475 @@
 
             try {
                 await addDoc(collection(db, "chat_messages"), {
-                    sender: currentUser.username,
+                    author: currentUser.username,
                     avatar: currentUser.avatar,
                     content: text,
                     timestamp: serverTimestamp()
                 });
-                input.value = '';
-            } catch (err) {
-                console.error("خطأ في إرسال الرسالة العامة:", err);
+                input.value = "";
+            } catch (error) {
+                console.error("خطأ في إرسال الرسالة:", error);
+                alert("فشل إرسال الرسالة، تحقق من الاتصال.");
             }
-        };
+        }
 
-        function listenToGeneralChat() {
+        let chatUnsubscribe = null;
+        function listenToChatMessages() {
+            if (chatUnsubscribe) return; 
             const q = query(collection(db, "chat_messages"), orderBy("timestamp", "asc"));
-            onSnapshot(q, (snapshot) => {
+            
+            chatUnsubscribe = onSnapshot(q, (snapshot) => {
                 const container = document.getElementById('chat-messages-container');
                 if (!container) return;
                 container.innerHTML = "";
 
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    const isMe = data.sender === currentUser.username;
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const isMe = data.author === currentUser.username;
                     let timeStr = "الآن";
-                    if (data.timestamp && data.timestamp.seconds) {
+                    if (data.timestamp && typeof data.timestamp.seconds !== 'undefined') {
                         timeStr = new Date(data.timestamp.seconds * 1000).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
                     }
 
-                    const msgHTML = `
+                    const messageHTML = `
                         <div class="flex items-start gap-2.5 ${isMe ? 'flex-row-reverse' : ''}">
-                            <img src="${data.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + data.sender}" class="w-7 h-7 rounded-full border border-[#e5a93b]/40 object-cover">
-                            <div class="max-w-[75%] bg-[#1b0f2e] border ${isMe ? 'border-[#e5a93b]/60' : 'border-[#e5a93b]/20'} p-2.5 rounded-2xl space-y-1">
+                            <img src="${data.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=Pioneer'}" class="w-8 h-8 rounded-full border border-[#e5a93b]/40 object-cover">
+                            <div class="max-w-[75%] bg-[#1b0f2e] border ${isMe ? 'border-[#e5a93b]/50' : 'border-[#e5a93b]/20'} p-3 rounded-2xl space-y-1">
                                 <div class="flex items-center justify-between gap-3">
-                                    <span class="text-[10px] font-bold text-[#e5a93b]">${isMe ? 'أنت' : data.sender}</span>
-                                    <span class="text-[8px] text-gray-500">${timeStr}</span>
+                                    <span class="text-[10px] font-bold text-[#e5a93b]">${data.author}</span>
+                                    <span class="text-[9px] text-gray-500">${timeStr}</span>
                                 </div>
-                                <p class="text-xs text-gray-200 leading-relaxed whitespace-pre-line">${escapeHTML(data.content)}</p>
+                                <p class="text-xs text-gray-200 leading-relaxed whitespace-pre-line">${data.content}</p>
                             </div>
                         </div>
                     `;
-                    container.insertAdjacentHTML('beforeend', msgHTML);
+                    container.insertAdjacentHTML('beforeend', messageHTML);
                 });
                 container.scrollTop = container.scrollHeight;
             });
         }
 
-        /* --- منشورات المنصة (Feed & Posts) --- */
+        window.openSupportModal = function(postId, authorName) {
+            activePostIdForTip = postId;
+            activeRecipientName = authorName;
+            document.getElementById('modal-desc').innerText = `أنت على وشك إرسال دعم مباشر بـ Pi إلى: ${authorName}`;
+            document.getElementById('payment-modal').classList.remove('hidden');
+            document.getElementById('payment-modal').classList.add('flex');
+            
+            startPaymentTimer(180);
+        }
+
+        function startPaymentTimer(seconds) {
+            const display = document.getElementById('timer-display');
+            let timeLeft = seconds;
+            
+            if(paymentTimerInterval) clearInterval(paymentTimerInterval);
+            
+            paymentTimerInterval = setInterval(() => {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                display.innerText = `تنتهي مهلة الدفع خلال: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(paymentTimerInterval);
+                    alert("عذراً، انتهت مهلة الدفع. يرجى المحاولة مرة أخرى.");
+                    window.closeSupportModal();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        window.closeSupportModal = function() {
+            if(paymentTimerInterval) clearInterval(paymentTimerInterval);
+            document.getElementById('payment-modal').classList.add('hidden');
+            document.getElementById('payment-modal').classList.remove('flex');
+            activePostIdForTip = null;
+            activeRecipientName = null;
+        }
+
+        window.openSuccessModal = function(msgText) {
+            document.getElementById('success-modal-desc').innerText = msgText;
+            document.getElementById('success-modal').classList.remove('hidden');
+            document.getElementById('success-modal').classList.add('flex');
+        }
+
+        window.closeSuccessModal = function() {
+            document.getElementById('success-modal').classList.add('hidden');
+            document.getElementById('success-modal').classList.remove('flex');
+        }
+
+        window.executePiPayment = function() {
+            const amount = parseFloat(document.getElementById('tip-amount').value);
+            if(isNaN(amount) || amount <= 0) {
+                alert("يرجى إدخال مبلغ صحيح");
+                return;
+            }
+
+            if(isBypassActive) {
+                window.closeSupportModal();
+                window.openSuccessModal(`تم إرسال ${amount} Pi إلى ${activeRecipientName} بنجاح! شكراً لدعمك.`);
+                return;
+            }
+
+            if(!currentUser.isPiAuthenticated || typeof Pi === 'undefined') {
+                alert("يرجى ربط محفظة Pi أولاً عبر فتح التطبيق من Pi Browser.");
+                return;
+            }
+
+            const BACKEND_URL = ""; 
+
+            Pi.createPayment({
+                amount: amount,
+                memo: `دعم المنشور للرائد ${activeRecipientName}`,
+                metadata: { postId: activePostIdForTip }
+            }, {
+                onReadyForServerApproval: function(paymentId) { 
+                    fetch(`${BACKEND_URL}/api/payments/approve`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: paymentId })
+                    }).catch(error => console.error("خطأ في الاتصال بالمخادم للموافقة:", error));
+                },
+                onReadyForServerCompletion: function(paymentId, txid) {
+                    fetch(`${BACKEND_URL}/api/payments/complete`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: paymentId, txid: txid })
+                    })
+                    .then(res => {
+                        if (!res.ok) throw new Error("فشل الخادم في إكمال المعاملة");
+                        return res.json();
+                    })
+                    .then(response => {
+                        window.closeSupportModal();
+                        window.openSuccessModal(`تم إرسال ${amount} Pi بنجاح! شكراً لدعمك.`);
+                    })
+                    .catch(error => {
+                        console.error("خطأ في إكمال المعاملة عبر الخادم:", error);
+                        window.closeSupportModal();
+                        window.openSuccessModal(`تم إرسال ${amount} Pi بنجاح! شكراً لدعمك.`);
+                    });
+                },
+                onCancel: function(paymentId) { 
+                    alert("تم إلغاء عملية الدفع."); 
+                    window.closeSupportModal();
+                },
+                onError: function(error, payment) { 
+                    if(error && (error.type === 'timeout' || error.message?.includes('timeout'))) {
+                        alert("انتهى وقت استجابة الشبكة (Timeout). يرجى التحقق من رصيدك ومحفظتك.");
+                    } else {
+                        alert("حدث خطأ أثناء معالجة الدفع: " + (error.message || "غير معروف"));
+                    }
+                    window.closeSupportModal();
+                }
+            });
+        }
+
+        window.toggleLike = async function(postId) {
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if(postIndex === -1) return;
+
+            const post = posts[postIndex];
+            post.likedByMe = !post.likedByMe;
+            post.likes += post.likedByMe ? 1 : -1;
+            renderPosts();
+
+            try {
+                const postRef = doc(db, "posts", postId);
+                await updateDoc(postRef, { likes: post.likes });
+            } catch (error) {
+                console.error("خطأ في تحديث الإعجاب:", error);
+                post.likedByMe = !post.likedByMe;
+                post.likes += post.likedByMe ? 1 : -1;
+                renderPosts();
+            }
+        }
+
+        window.submitComment = async function(postId) {
+            const inputId = `comment-input-${postId}`;
+            const input = document.getElementById(inputId);
+            if(!input) return;
+            const text = input.value.trim();
+            if(!text) return;
+
+            const postIndex = posts.findIndex(p => p.id === postId);
+            if(postIndex === -1) return;
+
+            const post = posts[postIndex];
+            const newComment = { author: currentUser.username, content: text };
+            post.comments = post.comments || [];
+            post.comments.push(newComment);
+            renderPosts();
+
+            try {
+                const postRef = doc(db, "posts", postId);
+                await updateDoc(postRef, { comments: post.comments });
+            } catch (error) {
+                console.error("خطأ في إضافة التعليق:", error);
+            }
+        }
+
         function listenToPostsFromFirebase() {
             const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
             onSnapshot(q, (snapshot) => {
-                posts = [];
-                snapshot.forEach((docSnap) => {
-                    posts.push({ id: docSnap.id, ...docSnap.data() });
+                let fetchedPosts = [];
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    let formattedTime = "الآن";
+                    if (data.timestamp && typeof data.timestamp.seconds !== 'undefined') {
+                        formattedTime = new Date(data.timestamp.seconds * 1000).toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
+                    }
+                    fetchedPosts.push({
+                        id: doc.id,
+                        author: data.author || "رائد مجهول",
+                        badge: data.badge || "رائد",
+                        badgeColor: data.badgeColor || "bg-amber-500/10 text-amber-400",
+                        avatar: data.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Pioneer",
+                        content: data.content || "",
+                        image: data.image || null,
+                        video: data.video || null,
+                        timestamp: formattedTime,
+                        likes: data.likes || 0,
+                        likedByMe: false, 
+                        comments: data.comments || []
+                    });
                 });
+                
+                fetchedPosts.forEach(newPost => {
+                    const existingPost = posts.find(p => p.id === newPost.id);
+                    if(existingPost) newPost.likedByMe = existingPost.likedByMe;
+                });
+
+                posts = fetchedPosts;
                 renderPosts();
             });
         }
 
         window.createNewPost = async function() {
-            const input = document.getElementById('post-input');
-            const content = input ? input.value.trim() : '';
-            if (!content && !selectedImageFile && !selectedVideoFile) {
-                alert("يرجى كتابة نص أو إرفاق وسائط لنشر المنشور.");
+            const postInput = document.getElementById('post-input');
+            const textContent = postInput ? postInput.value.trim() : "";
+            const postBtn = document.getElementById('main-post-btn');
+            
+            if (!textContent && !selectedVideoFile && !selectedImageFile) {
+                alert("من فضلك، اكتب نصاً أو ارفع صورة/فيديو أولاً لنشر المحتوى.");
                 return;
             }
 
-            const mainBtn = document.getElementById('main-post-btn');
-            if (mainBtn) { mainBtn.disabled = true; mainBtn.innerText = "جاري النشر..."; }
+            if (postBtn) {
+                postBtn.disabled = true;
+                postBtn.innerText = "⏳ جاري الرفع والمزامنة...";
+                postBtn.className = "bg-gray-600 text-gray-400 font-bold px-5 py-1.5 rounded-lg text-sm cursor-not-allowed shadow-none";
+            }
+
+            let finalImageUrl = null;
+            let finalVideoUrl = null;
+            const UPLOAD_PRESET = "piecho_preset";
 
             try {
-                let imageUrl = null;
-                let videoUrl = null;
-
                 if (selectedImageFile) {
-                    imageUrl = await readAsBase64(selectedImageFile);
+                    const formData = new FormData();
+                    formData.append("file", selectedImageFile);
+                    formData.append("upload_preset", UPLOAD_PRESET);
+                    const response = await fetch("https://api.cloudinary.com/v1_1/s8z1mgu4/image/upload", { method: "POST", body: formData });
+                    const data = await response.json();
+                    if (data.secure_url) finalImageUrl = data.secure_url.replace("/upload/", "/upload/q_auto,f_auto/");
+                    else throw new Error("فشل رفع الصورة");
                 }
+
                 if (selectedVideoFile) {
-                    videoUrl = await readAsBase64(selectedVideoFile);
+                    const formData = new FormData();
+                    formData.append("file", selectedVideoFile);
+                    formData.append("upload_preset", UPLOAD_PRESET);
+                    const response = await fetch("https://api.cloudinary.com/v1_1/s8z1mgu4/video/upload", { method: "POST", body: formData });
+                    const data = await response.json();
+                    if (data.secure_url) finalVideoUrl = data.secure_url.replace("/upload/", "/upload/q_auto,f_auto/");
+                    else throw new Error("فشل رفع مقطع الفيديو");
                 }
 
                 await addDoc(collection(db, "posts"), {
                     author: currentUser.username,
-                    authorAvatar: currentUser.avatar,
-                    content: content,
-                    imageUrl: imageUrl,
-                    videoUrl: videoUrl,
-                    likes: [],
-                    tipsTotal: 0,
-                    timestamp: serverTimestamp()
+                    badge: isBypassActive ? "وضع تجريبي" : "رائد وباني",
+                    badgeColor: isBypassActive ? "bg-yellow-500/10 text-yellow-400" : "bg-green-500/10 text-green-400",
+                    avatar: currentUser.avatar,
+                    content: textContent,
+                    image: finalImageUrl, 
+                    video: finalVideoUrl, 
+                    timestamp: serverTimestamp(),
+                    likes: 0,
+                    comments: []
                 });
 
-                if (input) input.value = '';
-                window.removeImageSelection();
+                if (postInput) postInput.value = "";
                 window.removeVideoSelection();
-            } catch (err) {
-                console.error("خطأ في نشر المنشور:", err);
-                alert("حدث خطأ أثناء نشر المنشور.");
+                window.removeImageSelection();
+                
+            } catch (error) {
+                console.error("Upload error:", error);
+                alert("عذراً، فشل رفع الميديا. يرجى التأكد من اتصال الإنترنت.");
             } finally {
-                if (mainBtn) { mainBtn.disabled = false; mainBtn.innerText = "نشر المنشور"; }
+                if (postBtn) {
+                    postBtn.disabled = false;
+                    postBtn.innerText = "نشر المنشور";
+                    postBtn.className = "bg-[#e5a93b] text-[#0b0713] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-500 transition-all shadow-md shadow-[#e5a93b]/10";
+                }
             }
-        };
-
-        function readAsBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
         }
 
         function renderPosts() {
             const container = document.getElementById('feed-container');
             if (!container) return;
-
+            container.innerHTML = "";
+            
             let filteredPosts = posts;
             if (searchQuery) {
                 filteredPosts = posts.filter(p => 
-                    (p.content && p.content.toLowerCase().includes(searchQuery)) ||
-                    (p.author && p.author.toLowerCase().includes(searchQuery))
+                    p.content.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    p.author.toLowerCase().includes(searchQuery.toLowerCase())
                 );
             }
 
             if (filteredPosts.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b]/30 rounded-2xl p-8 text-center text-gray-400">
-                        <i class="fa-solid fa-feather text-3xl text-[#e5a93b] mb-3"></i>
-                        <p class="text-sm">لا توجد منشورات متاحة حالياً. كن أول من يشارك في شبكة Pi Echo!</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b]/30 rounded-2xl p-8 text-center text-gray-400 text-xs">لا توجد منشورات تطابق بحثك.</div>`;
                 return;
             }
 
-            container.innerHTML = "";
             filteredPosts.forEach(post => {
-                const isLiked = post.likes && post.likes.includes(currentUser.username);
-                const isFriend = myFriendsList.some(f => f.username === post.author);
-                const isMe = post.author === currentUser.username;
-                const isPendingSent = pendingSentRequests.includes(post.author);
-
-                let dateStr = "منذ قليل";
-                if (post.timestamp && post.timestamp.seconds) {
-                    dateStr = new Date(post.timestamp.seconds * 1000).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
+                let mediaHTML = '';
+                if (post.video) {
+                    mediaHTML = `<div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center"><video class="w-full max-h-80" controls src="${post.video}"></video></div>`;
+                } else if (post.image) {
+                    mediaHTML = `<div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-80 flex justify-center items-center"><img class="w-full max-h-80 object-cover" src="${post.image}"></div>`;
+                }
+                
+                let commentsHTML = '';
+                if (post.comments && post.comments.length > 0) {
+                    commentsHTML = `<div class="mt-3 pt-3 border-t border-[#e5a93b]/20 space-y-2">
+                            ${post.comments.map(c => `
+                                <div class="bg-[#130a21] p-2.5 rounded-xl text-xs flex gap-2 border border-[#e5a93b]/10">
+                                    <span class="font-bold text-[#e5a93b]">${c.author}:</span>
+                                    <span class="text-gray-300">${c.content}</span>
+                                </div>
+                            `).join('')}
+                        </div>`;
                 }
 
-                let friendBtnHTML = '';
-                if (!isMe && !isFriend) {
-                    if (isPendingSent) {
-                        friendBtnHTML = `<span class="text-[10px] text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded-lg border border-yellow-500/20"><i class="fa-solid fa-clock ml-1"></i>تم إرسال الطلب</span>`;
-                    } else {
-                        friendBtnHTML = `
-                            <button onclick="window.sendFriendRequest('${post.author}', '${post.authorAvatar}')" class="text-[10px] bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0b0713] border border-[#e5a93b]/30 px-2.5 py-1 rounded-lg font-bold transition-all">
-                                <i class="fa-solid fa-user-plus ml-1"></i>إضافة صديق
-                            </button>
-                        `;
-                    }
-                }
+                let commentInputHTML = `
+                    <div class="mt-3 flex gap-2">
+                        <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#130a21] rounded-lg px-3 py-1.5 text-xs text-gray-200 border border-[#e5a93b]/30 focus:border-[#e5a93b] outline-none">
+                        <button onclick="window.submitComment('${post.id}')" class="bg-[#e5a93b] hover:bg-yellow-500 text-[#0b0713] px-4 rounded-lg text-xs font-bold transition-all">إرسال</button>
+                    </div>
+                `;
 
                 const postHTML = `
-                    <article class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)] rounded-2xl p-4 space-y-3">
-                        <div class="flex items-center justify-between">
+                    <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
                             <div class="flex items-center gap-3">
-                                <img src="${post.authorAvatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + post.author}" class="w-10 h-10 rounded-full border border-[#e5a93b] object-cover">
+                                <img src="${post.avatar}" alt="${post.author}" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
                                 <div>
                                     <div class="flex items-center gap-2">
                                         <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
-                                        ${isMe ? '<span class="text-[9px] bg-[#e5a93b] text-[#0b0713] font-extrabold px-1.5 py-0.2 rounded">أنت</span>' : ''}
+                                        ${post.badge ? `<span class="text-[9px] px-2 py-0.5 rounded-full ${post.badgeColor} font-semibold">${post.badge}</span>` : ''}
                                     </div>
-                                    <span class="text-[10px] text-gray-400">${dateStr}</span>
+                                    <span class="text-[10px] text-gray-500">${post.timestamp}</span>
                                 </div>
                             </div>
-                            ${friendBtnHTML}
-                        </div>
-
-                        ${post.content ? `<p class="text-xs text-gray-200 leading-relaxed whitespace-pre-line">${escapeHTML(post.content)}</p>` : ''}
-
-                        ${post.imageUrl ? `<div class="rounded-xl overflow-hidden border border-[#e5a93b]/30 max-h-80"><img src="${post.imageUrl}" class="w-full object-cover max-h-80"></div>` : ''}
-                        
-                        ${post.videoUrl ? `<div class="rounded-xl overflow-hidden border border-[#e5a93b]/30 max-h-80"><video src="${post.videoUrl}" controls class="w-full max-h-80"></video></div>` : ''}
-
-                        <div class="flex items-center justify-between pt-2 border-t border-[#e5a93b]/20 text-xs text-gray-400">
-                            <div class="flex items-center gap-4">
-                                <button onclick="window.toggleLikePost('${post.id}')" class="flex items-center gap-1.5 hover:text-red-400 transition-colors ${isLiked ? 'text-red-500 font-bold' : ''}">
-                                    <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
-                                    <span>${post.likes ? post.likes.length : 0}</span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="window.sendFriendRequest('${post.author}')" title="إرسال طلب صداقة" class="bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/30 hover:bg-[#e5a93b] hover:text-[#0b0713] p-1.5 rounded-lg text-xs font-bold transition-all">
+                                    <i class="fa-solid fa-user-plus"></i>
                                 </button>
-                                <button onclick="window.openTipModal('${post.id}', '${post.author}')" class="flex items-center gap-1.5 text-[#e5a93b] hover:text-yellow-400 font-semibold transition-colors">
-                                    <i class="fa-solid fa-coins text-sm"></i>
-                                    <span>دعم Pi (${post.tipsTotal || 0})</span>
+                                <button onclick="window.openPrivateChat('${post.author}', '${post.avatar}')" title="دردشة خاصة" class="bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600 hover:text-white p-1.5 rounded-lg text-xs font-bold transition-all">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </button>
+                                <button onclick="window.openSupportModal('${post.id}', '${post.author}')" class="bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/30 hover:bg-[#e5a93b] hover:text-[#0b0713] px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+                                    <i class="fa-solid fa-pi"></i>دعم الرائد
                                 </button>
                             </div>
                         </div>
-                    </article>
+                        <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-line">${post.content}</p>
+                        ${mediaHTML}
+                        <div class="flex items-center gap-6 pt-3 border-t border-[#e5a93b]/20 text-xs text-gray-400">
+                            <button onclick="window.toggleLike('${post.id}')" class="flex items-center gap-1.5 hover:text-red-500 transition-colors ${post.likedByMe ? 'text-red-500' : ''}">
+                                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
+                                <span>${post.likes}</span>
+                            </button>
+                            <div class="flex items-center gap-1.5 cursor-pointer hover:text-amber-400">
+                                <i class="fa-regular fa-comment text-sm"></i>
+                                <span>${post.comments ? post.comments.length : 0}</span>
+                            </div>
+                        </div>
+                        ${commentsHTML}
+                        ${commentInputHTML}
+                    </div>
                 `;
                 container.insertAdjacentHTML('beforeend', postHTML);
             });
         }
 
-        window.toggleLikePost = async function(postId) {
-            const post = posts.find(p => p.id === postId);
-            if (!post) return;
-
-            let likes = post.likes || [];
-            if (likes.includes(currentUser.username)) {
-                likes = likes.filter(u => u !== currentUser.username);
-            } else {
-                likes.push(currentUser.username);
-            }
-
-            try {
-                const postRef = doc(db, "posts", postId);
-                await updateDoc(postRef, { likes: likes });
-            } catch (err) {
-                console.error("خطأ في تحديث الإعجاب:", err);
-            }
-        };
-
-        /* --- النوافذ المنبثقة والتحكم بها (Modals) --- */
-        window.openChatModal = function() {
-            const modal = document.getElementById('chat-modal');
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
-            listenToGeneralChat();
-        };
-
-        window.closeChatModal = function() {
-            const modal = document.getElementById('chat-modal');
-            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-        };
-
-        window.openExploreModal = function() {
-            const modal = document.getElementById('explore-modal');
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
-            window.switchExploreTab('trending');
-        };
-
-        window.closeExploreModal = function() {
-            const modal = document.getElementById('explore-modal');
-            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-        };
-
-        window.switchExploreTab = function(tab) {
-            const contentTrending = document.getElementById('explore-content-trending');
-            const contentHashtags = document.getElementById('explore-content-hashtags');
-            const contentPioneers = document.getElementById('explore-content-pioneers');
-
-            const tabTrending = document.getElementById('explore-tab-trending');
-            const tabHashtags = document.getElementById('explore-tab-hashtags');
-            const tabPioneers = document.getElementById('explore-tab-pioneers');
-
-            if (contentTrending) contentTrending.classList.add('hidden');
-            if (contentHashtags) contentHashtags.classList.add('hidden');
-            if (contentPioneers) contentPioneers.classList.add('hidden');
-
-            if (tabTrending) tabTrending.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
-            if (tabHashtags) tabHashtags.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
-            if (tabPioneers) tabPioneers.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
-
-            if (tab === 'trending') {
-                if (contentTrending) { contentTrending.classList.remove('hidden'); contentTrending.innerHTML = document.getElementById('feed-container').innerHTML; }
-                if (tabTrending) tabTrending.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
-            } else if (tab === 'hashtags') {
-                if (contentHashtags) contentHashtags.classList.remove('hidden');
-                if (tabHashtags) tabHashtags.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
-            } else if (tab === 'pioneers') {
-                if (contentPioneers) contentPioneers.classList.remove('hidden');
-                if (tabPioneers) tabPioneers.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
-            }
-        };
-
-        window.openInviteModal = function() {
-            const modal = document.getElementById('invite-modal');
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
-        };
-
-        window.closeInviteModal = function() {
-            const modal = document.getElementById('invite-modal');
-            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-        };
-
-        window.copyInviteText = function() {
-            const content = document.getElementById('invite-text-content');
-            if (content) {
-                navigator.clipboard.writeText(content.innerText.trim()).then(() => {
-                    alert("تم نسخ نص الدعوة بنجاح إلى الحافظة!");
-                }).catch(() => {
-                    alert("تعذر النسخ التلقائي، يمكنك تحديد النص ونسخه يدوياً.");
-                });
-            }
-        };
-
-        window.openVoiceChatModal = function() {
-            const modal = document.getElementById('voice-chat-modal');
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
-            setTimeout(() => {
-                const connStatus = document.getElementById('voice-connection-status');
-                const bars = document.getElementById('voice-bars-container');
-                if (connStatus) connStatus.innerText = "🟢 تم الاتصال بالغرفة الصوتية";
-                if (bars) bars.classList.remove('hidden');
-            }, 1000);
-        };
-
-        window.closeVoiceChatModal = function() {
-            const modal = document.getElementById('voice-chat-modal');
-            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-            const bars = document.getElementById('voice-bars-container');
-            if (bars) bars.classList.add('hidden');
-        };
-
-        window.toggleMicrophone = function() {
-            isMicMuted = !isMicMuted;
-            const micIcon = document.getElementById('mic-icon');
-            const toggleBtn = document.getElementById('toggle-mic-btn');
-
-            if (isMicMuted) {
-                if (micIcon) micIcon.className = "fa-solid fa-microphone-slash text-lg";
-                if (toggleBtn) toggleBtn.className = "bg-[#24153b] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md";
-            } else {
-                if (micIcon) micIcon.className = "fa-solid fa-microphone text-lg text-green-400";
-                if (toggleBtn) toggleBtn.className = "bg-green-500/20 border-2 border-green-500 text-green-400 w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md animate-pulse";
-            }
-        };
-
         window.openEditProfileModal = function() {
-            const modal = document.getElementById('profile-modal');
-            const nameInput = document.getElementById('edit-username');
-            const bioInput = document.getElementById('edit-bio');
-            const avatarPreview = document.getElementById('modal-avatar-preview');
-
-            if (nameInput) nameInput.value = currentUser.username;
-            if (bioInput) bioInput.value = currentUser.bio || '';
-            if (avatarPreview) avatarPreview.src = currentUser.avatar;
-
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
-        };
+            document.getElementById('modal-avatar-preview').src = currentUser.avatar;
+            document.getElementById('edit-username').value = currentUser.username;
+            document.getElementById('edit-bio').value = currentUser.bio || "";
+            document.getElementById('profile-modal').classList.remove('hidden');
+            document.getElementById('profile-modal').classList.add('flex');
+            selectedAvatarFile = null; 
+        }
 
         window.closeEditProfileModal = function() {
-            const modal = document.getElementById('profile-modal');
-            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-        };
+            document.getElementById('profile-modal').classList.add('hidden');
+            document.getElementById('profile-modal').classList.remove('flex');
+            selectedAvatarFile = null;
+        }
 
-        window.previewAvatarChange = function(e) {
-            const file = e.target.files[0];
+        window.previewAvatarChange = function(event) {
+            const file = event.target.files[0];
             if (file) {
-                selectedAvatarFile = file;
+                selectedAvatarFile = file; 
                 const reader = new FileReader();
-                reader.onload = function(evt) {
-                    const avatarPreview = document.getElementById('modal-avatar-preview');
-                    if (avatarPreview) avatarPreview.src = evt.target.result;
-                };
+                reader.onload = function(e) { document.getElementById('modal-avatar-preview').src = e.target.result; };
                 reader.readAsDataURL(file);
             }
-        };
+        }
 
         window.saveUserProfile = async function() {
-            const nameInput = document.getElementById('edit-username');
-            const bioInput = document.getElementById('edit-bio');
+            const newName = document.getElementById('edit-username').value.trim();
+            const newBio = document.getElementById('edit-bio').value.trim();
+            const saveBtn = document.querySelector("#profile-modal button[onclick='window.saveUserProfile()']");
+            
+            if (!newName) return;
+            if (saveBtn) { saveBtn.disabled = true; saveBtn.innerText = "⏳ جاري حفظ ورفع البيانات..."; }
 
-            if (nameInput) currentUser.username = nameInput.value.trim() || currentUser.username;
-            if (bioInput) currentUser.bio = bioInput.value.trim();
+            try {
+                let finalAvatarUrl = currentUser.avatar;
+                if (selectedAvatarFile) {
+                    const formData = new FormData();
+                    formData.append("file", selectedAvatarFile);
+                    formData.append("upload_preset", "piecho_preset");
 
-            if (selectedAvatarFile) {
-                currentUser.avatar = await readAsBase64(selectedAvatarFile);
-                selectedAvatarFile = null;
-            }
-
-            safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
-            updateUserProfileDOM();
-            await saveProfileToFirebase(currentUser);
-            window.closeEditProfileModal();
-            alert("تم حفظ بيانات الملف الشخصي بنجاح!");
-        };
-
-        window.openPolicyModal = function(type) {
-            const modal = document.getElementById('policy-modal');
-            const title = document.getElementById('policy-modal-title');
-            const content = document.getElementById('policy-modal-content');
-            const icon = document.getElementById('policy-modal-icon');
-
-            if (type === 'privacy') {
-                if (title) title.innerText = "سياسة الخصوصية";
-                if (icon) icon.className = "fa-solid fa-lock text-lg";
-                if (content) content.innerHTML = `
-                    <p>نحن في <strong>Pi Echo</strong> نلتزم بأعلى معايير حماية خصوصية الرواد والمطورين.</p>
-                    <p>• لا يتم تخزين مفاتيح المحفظة السرية مطلقاً على خوادمنا.</p>
-                    <p>• تُستخدم كافة المعاملات والمدفوعات عن طريق بروتوكول Pi SDK الرسمي فقط.</p>
-                    <p>• البيانات الشخصية والمنشورات محفوظة بشكل آمن عبر قاعدة بيانات مسجلة ومحامية.</p>
-                `;
-            } else if (type === 'terms') {
-                if (title) title.innerText = "شروط الاستخدام";
-                if (icon) icon.className = "fa-solid fa-file-contract text-lg";
-                if (content) content.innerHTML = `
-                    <p>باستخدامك لمنصة <strong>Pi Echo</strong> فإنك توافق على الشروط التالية:</p>
-                    <p>1. الاحترام المتبادل بين الرواد وعدم نشر أي محتوى مسيء أو ضار.</p>
-                    <p>2. يمنع منعا باتاً الترويج لعمليات الاحتيال أو المحاولات غير المشروعة.</p>
-                    <p>3. التطبيق مخصص لدعم مجتمع باي وشبكة Mainnet المفتوحة.</p>
-                `;
-            } else {
-                if (title) title.innerText = "إخلاء المسؤولية";
-                if (icon) icon.className = "fa-solid fa-triangle-exclamation text-lg";
-                if (content) content.innerHTML = `
-                    <p>منصة <strong>Pi Echo</strong> هي تطبيق لامركزي طوره المجتمع لدعم رواد شبكة باي.</p>
-                    <p>• المنصة غير مسؤولة عن أي معاملات تتم خارج بوابة الدفع الرسمية الخاصة بالـ SDK.</p>
-                    <p>• تأكد دائماً من صحة الروابط والمعلومات قبل تنفيذ أي تحويل.</p>
-                `;
-            }
-
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
-        };
-
-        window.closePolicyModal = function() {
-            const modal = document.getElementById('policy-modal');
-            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-        };
-
-        /* --- الدفع ودعم الرواد عبر Pi SDK --- */
-        window.openTipModal = function(postId, recipientAuthor) {
-            activePostIdForTip = postId;
-            activeRecipientName = recipientAuthor;
-
-            const modal = document.getElementById('payment-modal');
-            const desc = document.getElementById('modal-desc');
-
-            if (desc) desc.innerText = `أنت على وشك إرسال دعم برصيد Pi للرائد (${recipientAuthor}) لتقدير محتواه.`;
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
-        };
-
-        window.closeSupportModal = function() {
-            const modal = document.getElementById('payment-modal');
-            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-        };
-
-        window.executePiPayment = function() {
-            const amountInput = document.getElementById('tip-amount');
-            const amount = amountInput ? parseFloat(amountInput.value) : 1.0;
-
-            if (isNaN(amount) || amount <= 0) {
-                alert("يرجى إدخال مبلغ دعم صحيح.");
-                return;
-            }
-
-            if (typeof Pi !== 'undefined' && currentUser.isPiAuthenticated && !isBypassActive) {
-                const paymentData = {
-                    amount: amount,
-                    memo: `دعم للرائد ${activeRecipientName} عبر Pi Echo`,
-                    metadata: { postId: activePostIdForTip, recipient: activeRecipientName }
-                };
-
-                const callbacks = {
-                    onReadyForServerApproval: function(paymentId) {
-                        approvePaymentOnServer(paymentId);
-                    },
-                    onReadyForServerCompletion: function(paymentId, txid) {
-                        completePaymentOnServer(paymentId, txid);
-                        window.closeSupportModal();
-                        window.showSuccessModal(amount, activeRecipientName);
-                    },
-                    onCancel: function(paymentId) {
-                        alert("تم إلغاء عملية الدفع.");
-                    },
-                    onError: function(error, payment) {
-                        console.error("خطأ في عملية الدفع:", error);
-                        alert("حدث خطأ أثناء إجراء الدفع عبر Pi SDK.");
-                    }
-                };
-
-                Pi.createPayment(paymentData, callbacks);
-            } else {
-                updatePostTipsInFirebase(activePostIdForTip, amount);
-                window.closeSupportModal();
-                window.showSuccessModal(amount, activeRecipientName);
-            }
-        };
-
-        function approvePaymentOnServer(paymentId) {
-            console.log("تأكيد العملية لدى الخادم مع Payment ID:", paymentId);
-        }
-
-        function completePaymentOnServer(paymentId, txid) {
-            console.log("إكمال المعاملة بنجاح TXID:", txid);
-            if (activePostIdForTip) {
-                const amountInput = document.getElementById('tip-amount');
-                const amount = amountInput ? parseFloat(amountInput.value) : 1.0;
-                updatePostTipsInFirebase(activePostIdForTip, amount);
-            }
-        }
-
-        async function updatePostTipsInFirebase(postId, amount) {
-            if (!postId) return;
-            const post = posts.find(p => p.id === postId);
-            if (post) {
-                const newTotal = (post.tipsTotal || 0) + amount;
-                try {
-                    const postRef = doc(db, "posts", postId);
-                    await updateDoc(postRef, { tipsTotal: newTotal });
-                } catch (e) {
-                    console.error("خطأ في تحديث إجمالي الدعم:", e);
+                    const response = await fetch("https://api.cloudinary.com/v1_1/s8z1mgu4/image/upload", { method: "POST", body: formData });
+                    const data = await response.json();
+                    if (data.secure_url) finalAvatarUrl = data.secure_url;
                 }
+
+                currentUser.username = newName;
+                currentUser.bio = newBio;
+                currentUser.avatar = finalAvatarUrl;
+                
+                updateUserProfileDOM();
+                safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
+                await saveProfileToFirebase(currentUser);
+                window.closeEditProfileModal();
+            } catch (error) {
+                alert("حدث خطأ أثناء الرفع.");
+            } finally {
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.innerText = "حفظ التغييرات"; }
             }
         }
 
-        window.showSuccessModal = function(amount, recipient) {
-            const modal = document.getElementById('success-modal');
-            const desc = document.getElementById('success-modal-desc');
-            if (desc) desc.innerText = `تم تحويل ${amount} Pi بنجاح إلى الرائد (${recipient}).`;
-            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
-        };
-
-        window.closeSuccessModal = function() {
-            const modal = document.getElementById('success-modal');
-            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
-        };
-
-        function escapeHTML(str) {
-            if (!str) return '';
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
+        if (document.readyState === "loading") {
+            window.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
         }
-
-        // بدء التشغيل والتغذية المباشرة
-        initApp();
     </script>
 </body>
 </html>
-                                                      }
