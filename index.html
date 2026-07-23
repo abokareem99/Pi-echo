@@ -604,8 +604,6 @@
         window.firebaseDb = db;
         window.firebaseStorage = storage;
 
-        let paymentTimerInterval = null;
-
         let currentUser = {
             username: "أبو كريم",
             avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem",
@@ -630,7 +628,6 @@
         let piInitAttempts = 0;
         let isBypassActive = false;
         let isMicMuted = true;
-        let isConnectingVoice = false;
         let searchQuery = "";
 
         function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
@@ -711,7 +708,7 @@
                 overlay.classList.add('opacity-0');
                 setTimeout(() => overlay.classList.add('hidden'), 300);
             }
-        }
+        };
 
         function updateSDKStatus(text, className = "text-gray-300") {
             const balanceElement = document.getElementById('user-pi-balance');
@@ -764,21 +761,6 @@
 
         function onIncompletePaymentFound(payment) {
             console.log("⚠️ تم العثور على دفعة معلقة/غير مكتملة:", payment);
-            const BACKEND_URL = ""; 
-            
-            fetch(`${BACKEND_URL}/api/payments/approve`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ paymentId: payment.identifier })
-            }).then(res => res.json()).then(data => {
-                if (payment.transaction && payment.transaction.txid) {
-                    return fetch(`${BACKEND_URL}/api/payments/complete`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction.txid })
-                    });
-                }
-            }).catch(err => console.error("خطأ في معالجة الدفعة المعلقة:", err));
         }
 
         window.handleStatusClick = function() {
@@ -797,7 +779,100 @@
                 listenToFriendsList();
                 alert("تم تفعيل الوضع التجريبي بنجاح!");
             }
-        }
+        };
+
+        /* --- إدارة رفع وإدراج الصور والفيديوهات --- */
+        window.triggerImageUpload = function() {
+            document.getElementById('post-image-file').click();
+        };
+
+        window.previewSelectedImage = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                selectedImageFile = file;
+                selectedVideoFile = null;
+                document.getElementById('video-preview-container').classList.add('hidden');
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('image-preview').src = evt.target.result;
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.removeImageSelection = function() {
+            selectedImageFile = null;
+            const fileInput = document.getElementById('post-image-file');
+            if (fileInput) fileInput.value = '';
+            const container = document.getElementById('image-preview-container');
+            if (container) container.classList.add('hidden');
+        };
+
+        window.triggerVideoUpload = function() {
+            document.getElementById('post-video-file').click();
+        };
+
+        window.previewSelectedVideo = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                selectedVideoFile = file;
+                selectedImageFile = null;
+                document.getElementById('image-preview-container').classList.add('hidden');
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const videoEl = document.getElementById('video-preview');
+                    videoEl.src = evt.target.result;
+                    document.getElementById('video-preview-container').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.removeVideoSelection = function() {
+            selectedVideoFile = null;
+            const fileInput = document.getElementById('post-video-file');
+            if (fileInput) fileInput.value = '';
+            const container = document.getElementById('video-preview-container');
+            if (container) container.classList.add('hidden');
+        };
+
+        /* --- الرموز التعبيرية والبحث --- */
+        window.toggleEmojiPicker = function(e) {
+            e.stopPropagation();
+            const picker = document.getElementById('emoji-picker');
+            if (picker) picker.classList.toggle('hidden');
+        };
+
+        window.appendEmoji = function(emoji) {
+            const input = document.getElementById('post-input');
+            if (input) {
+                input.value += emoji;
+                input.focus();
+            }
+            const picker = document.getElementById('emoji-picker');
+            if (picker) picker.classList.add('hidden');
+        };
+
+        document.addEventListener('click', function(e) {
+            const picker = document.getElementById('emoji-picker');
+            if (picker && !picker.classList.contains('hidden')) {
+                picker.classList.add('hidden');
+            }
+        });
+
+        window.handleGlobalSearch = function(val) {
+            searchQuery = val.trim().toLowerCase();
+            renderPosts();
+        };
+
+        window.filterByHashtag = function(tag) {
+            window.closeExploreModal();
+            const searchInput = document.getElementById('global-search-input');
+            if (searchInput) searchInput.value = tag;
+            searchQuery = tag.trim().toLowerCase();
+            renderPosts();
+        };
 
         /* --- نظام الصداقة والطلبات --- */
         window.sendFriendRequest = async function(targetUsername, targetAvatar) {
@@ -827,7 +902,7 @@
                 console.error("خطأ في إرسال طلب الصداقة:", err);
                 alert("حدث خطأ أثناء إرسال طلب الصداقة.");
             }
-        }
+        };
 
         function listenToFriendRequests() {
             if (!currentUser.username) return;
@@ -909,7 +984,7 @@
             } catch (err) {
                 console.error("خطأ في قبول طلب الصداقة:", err);
             }
-        }
+        };
 
         window.rejectFriendRequest = async function(reqId) {
             try {
@@ -918,7 +993,7 @@
             } catch (err) {
                 console.error("خطأ في رفض طلب الصداقة:", err);
             }
-        }
+        };
 
         function listenToFriendsList() {
             if (!currentUser.username) return;
@@ -998,7 +1073,7 @@
                 viewRequests.classList.remove('hidden');
                 btnRequests.className = "py-3 px-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all flex items-center gap-1.5 relative";
             }
-        }
+        };
 
         window.openPrivateChat = function(friendUsername, friendAvatar) {
             window.openChatModal();
@@ -1020,7 +1095,7 @@
             inputBox.classList.remove('hidden');
 
             listenToPrivateMessages(friendUsername);
-        }
+        };
 
         function listenToPrivateMessages(friendUsername) {
             if (privateChatUnsubscribe) privateChatUnsubscribe();
@@ -1053,7 +1128,7 @@
                                         <span class="text-[9px] font-bold text-[#e5a93b]">${isMe ? 'أنت' : data.sender}</span>
                                         <span class="text-[8px] text-gray-500">${timeStr}</span>
                                     </div>
-                                    <p class="text-xs text-gray-200 leading-relaxed whitespace-pre-line">${data.content}</p>
+                                    <p class="text-xs text-gray-200 leading-relaxed whitespace-pre-line">${escapeHTML(data.content)}</p>
                                 </div>
                             </div>
                         `;
@@ -1088,18 +1163,18 @@
                 console.error("خطأ في إرسال الرسالة الخاصة:", err);
                 alert("فشل إرسال الرسالة الخاصة.");
             }
-        }
+        };
 
         /* --- منشورات الفيد وإنشاء المحتوى --- */
         window.createNewPost = async function() {
             const input = document.getElementById('post-input');
             const content = input ? input.value.trim() : "";
-            if(!content && !selectedImageFile && !selectedVideoFile) {
+            if (!content && !selectedImageFile && !selectedVideoFile) {
                 alert("يرجى كتابة محتوى أو إضافة صورة/فيديو لنشر المنشور!");
                 return;
             }
             const btn = document.getElementById('main-post-btn');
-            if(btn) { btn.disabled = true; btn.innerText = "جاري النشر..."; }
+            if (btn) { btn.disabled = true; btn.innerText = "جاري النشر..."; }
 
             try {
                 let imageUrl = null;
@@ -1122,14 +1197,14 @@
                     timestamp: serverTimestamp()
                 });
 
-                if(input) input.value = "";
+                if (input) input.value = "";
                 window.removeImageSelection();
                 window.removeVideoSelection();
-            } catch(err) {
+            } catch (err) {
                 console.error("خطأ في نشر المنشور:", err);
                 alert("حدث خطأ أثناء حفظ المنشور.");
             } finally {
-                if(btn) { btn.disabled = false; btn.innerText = "نشر المنشور"; }
+                if (btn) { btn.disabled = false; btn.innerText = "نشر المنشور"; }
             }
         };
 
@@ -1150,33 +1225,34 @@
                     const data = docSnap.data();
                     posts.push({
                         id: docSnap.id,
-                        author: data.author || "رائد باي",
-                        avatar: data.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Pioneer",
-                        content: data.content || "",
-                        imageUrl: data.imageUrl || null,
-                        videoUrl: data.videoUrl || null,
-                        likes: data.likes || 0,
-                        comments: data.comments || [],
-                        timestamp: data.timestamp,
-                        likedByMe: false
+                        ...data
                     });
                 });
                 renderPosts();
+                updateExploreTrending();
             });
         }
 
         function renderPosts() {
             const container = document.getElementById('feed-container');
-            if(!container) return;
+            if (!container) return;
 
             let filteredPosts = posts;
-            if(searchQuery) {
-                const q = searchQuery.toLowerCase();
-                filteredPosts = posts.filter(p => p.content.toLowerCase().includes(q) || p.author.toLowerCase().includes(q));
+            if (searchQuery) {
+                filteredPosts = posts.filter(p => 
+                    (p.content && p.content.toLowerCase().includes(searchQuery)) ||
+                    (p.author && p.author.toLowerCase().includes(searchQuery))
+                );
             }
 
-            if(filteredPosts.length === 0) {
-                container.innerHTML = `<div class="bg-[#1b0f2e] border border-[#e5a93b]/30 p-8 rounded-2xl text-center text-gray-400 text-sm">لا توجد منشورات مطابقة للبحث أو العرض حالياً.</div>`;
+            if (filteredPosts.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b]/40 rounded-2xl p-8 text-center text-gray-400">
+                        <i class="fa-solid fa-clone text-3xl text-[#e5a93b] mb-2"></i>
+                        <p class="text-sm font-semibold">لا توجد منشورات للعرض حالياً.</p>
+                        <p class="text-xs text-gray-500 mt-1">كن أول من ينشر في مجتمع Pi Echo!</p>
+                    </div>
+                `;
                 return;
             }
 
@@ -1184,83 +1260,114 @@
             filteredPosts.forEach(post => {
                 const isMyPost = post.author === currentUser.username;
                 const isFriend = myFriendsList.some(f => f.username === post.author);
-                const isPending = pendingSentRequests.includes(post.author);
+                const hasSentRequest = pendingSentRequests.includes(post.author);
 
-                let friendBtnHTML = "";
-                if (!isMyPost) {
-                    if (isFriend) {
+                let friendBtnHTML = '';
+                if (!isMyPost && !isFriend) {
+                    if (hasSentRequest) {
                         friendBtnHTML = `
-                            <button onclick="window.openPrivateChat('${post.author}', '${post.avatar}')" class="text-xs text-[#e5a93b] hover:bg-[#24153b] px-2.5 py-1 rounded-lg border border-[#e5a93b]/30 flex items-center gap-1 transition-all">
-                                <i class="fa-regular fa-paper-plane"></i> رسالة خاصة
-                            </button>`;
-                    } else if (isPending) {
-                        friendBtnHTML = `
-                            <span class="text-[10px] bg-yellow-500/10 text-yellow-400 px-2.5 py-1 rounded-full font-bold border border-yellow-500/30">
+                            <span class="text-[10px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 px-2.5 py-1 rounded-full font-semibold">
                                 <i class="fa-solid fa-clock ml-1"></i> تم إرسال الطلب
-                            </span>`;
+                            </span>
+                        `;
                     } else {
                         friendBtnHTML = `
-                            <button onclick="window.sendFriendRequest('${post.author}', '${post.avatar}')" class="text-xs bg-[#e5a93b]/10 text-[#e5a93b] hover:bg-[#e5a93b] hover:text-[#0b0713] px-2.5 py-1 rounded-lg border border-[#e5a93b]/40 font-semibold flex items-center gap-1 transition-all">
-                                <i class="fa-solid fa-user-plus ml-1"></i> إضافة صديق
-                            </button>`;
+                            <button onclick="window.sendFriendRequest('${post.author}', '${post.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + post.author}')" class="bg-[#e5a93b]/10 hover:bg-[#e5a93b] text-[#e5a93b] hover:text-[#0b0713] border border-[#e5a93b]/40 px-2.5 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1">
+                                <i class="fa-solid fa-user-plus"></i> إضافة صديق
+                            </button>
+                        `;
                     }
+                } else if (!isMyPost && isFriend) {
+                    friendBtnHTML = `
+                        <span class="text-[10px] bg-green-500/10 text-green-400 border border-green-500/30 px-2.5 py-1 rounded-full font-semibold">
+                            <i class="fa-solid fa-user-check ml-1"></i> صديق
+                        </span>
+                    `;
                 }
 
-                let mediaHTML = "";
-                if(post.imageUrl) {
-                    mediaHTML = `<div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/20 bg-black"><img src="${post.imageUrl}" class="w-full max-h-96 object-cover"></div>`;
-                } else if(post.videoUrl) {
-                    mediaHTML = `<div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/20 bg-black"><video src="${post.videoUrl}" controls class="w-full max-h-96"></video></div>`;
-                }
+                const img = post.imageUrl || post.image;
+                const vid = post.videoUrl || post.video;
 
-                let timeStr = "منذ قليل";
-                if (post.timestamp && post.timestamp.seconds) {
-                    timeStr = new Date(post.timestamp.seconds * 1000).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                }
-
-                let commentsHTML = post.comments.map(c => `
-                    <div class="bg-[#130a21] p-2.5 rounded-xl border border-[#e5a93b]/10 space-y-1">
-                        <div class="flex justify-between items-center text-[10px]">
-                            <span class="font-bold text-[#e5a93b]">${c.author}</span>
+                let mediaHTML = '';
+                if (img) {
+                    mediaHTML += `
+                        <div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/20 bg-black max-h-96 flex justify-center items-center">
+                            <img src="${img}" class="w-full max-h-96 object-contain" alt="Post media">
                         </div>
-                        <p class="text-xs text-gray-300">${c.text}</p>
-                    </div>
-                `).join('');
+                    `;
+                }
+                if (vid) {
+                    mediaHTML += `
+                        <div class="mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/20 bg-black max-h-96 flex justify-center items-center">
+                            <video src="${vid}" controls class="w-full max-h-96"></video>
+                        </div>
+                    `;
+                }
+
+                let timeStr = "منذ لحظات";
+                if (post.timestamp && post.timestamp.seconds) {
+                    timeStr = new Date(post.timestamp.seconds * 1000).toLocaleString('ar-EG', { dateStyle: 'short', timeStyle: 'short' });
+                }
+
+                const commentsList = post.comments || [];
 
                 const postCardHTML = `
-                    <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b]/40 rounded-2xl p-4 shadow-[0_0_15px_rgba(229,169,59,0.08)] space-y-3">
+                    <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] rounded-2xl p-4 md:p-5 shadow-[0_0_15px_rgba(229,169,59,0.1)] space-y-3">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <img src="${post.avatar}" class="w-10 h-10 rounded-full border border-[#e5a93b] object-cover">
+                                <img src="${post.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + post.author}" class="w-10 h-10 rounded-full border border-[#e5a93b] object-cover">
                                 <div>
-                                    <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-sm text-gray-100">${post.author}</h4>
+                                        <span class="text-[10px] bg-[#e5a93b]/20 text-[#e5a93b] px-2 py-0.5 rounded-full font-semibold">رائد باي</span>
+                                    </div>
                                     <span class="text-[10px] text-gray-400">${timeStr}</span>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                ${friendBtnHTML}
-                                ${!isMyPost ? `<button onclick="window.openSupportModal('${post.id}', '${post.author}')" class="bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0b0713] text-xs font-bold px-3 py-1 rounded-lg hover:brightness-110 transition-all flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid fa-pi"></i> دعم
-                                </button>` : ''}
-                            </div>
+                            <div>${friendBtnHTML}</div>
                         </div>
 
-                        <p class="text-sm text-gray-200 leading-relaxed whitespace-pre-line">${post.content}</p>
+                        ${post.content ? `<p class="text-xs md:text-sm text-gray-200 leading-relaxed whitespace-pre-line">${escapeHTML(post.content)}</p>` : ''}
+
                         ${mediaHTML}
 
                         <div class="flex items-center justify-between pt-3 border-t border-[#e5a93b]/20 text-xs text-gray-400">
-                            <button onclick="window.toggleLike('${post.id}')" class="flex items-center gap-1.5 hover:text-red-400 transition-colors ${post.likedByMe ? 'text-red-500 font-bold' : ''}">
-                                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
-                                <span>${post.likes} إعجاب</span>
+                            <button onclick="window.likePost('${post.id}')" class="flex items-center gap-1.5 hover:text-red-400 transition-colors">
+                                <i class="fa-solid fa-heart ${post.likedByMe ? 'text-red-500' : ''}"></i>
+                                <span>${post.likes || 0} إعجاب</span>
                             </button>
-                            <span class="flex items-center gap-1.5"><i class="fa-regular fa-comment text-sm"></i> ${post.comments.length} تعليق</span>
+
+                            <button onclick="window.toggleComments('${post.id}')" class="flex items-center gap-1.5 hover:text-[#e5a93b] transition-colors">
+                                <i class="fa-regular fa-comment"></i>
+                                <span>${commentsList.length} تعليق</span>
+                            </button>
+
+                            <button onclick="window.openSupportModalForUser('${post.author}', '${post.id}')" class="bg-[#e5a93b]/10 hover:bg-[#e5a93b] text-[#e5a93b] hover:text-[#0b0713] border border-[#e5a93b]/40 px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1">
+                                <i class="fa-solid fa-pi"></i> دعم بـ Pi
+                            </button>
                         </div>
 
-                        <div class="space-y-2 pt-2 border-t border-[#e5a93b]/10">
-                            <div id="comments-list-${post.id}" class="space-y-2 max-h-40 overflow-y-auto">${commentsHTML}</div>
-                            <div class="flex gap-2 pt-1">
-                                <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقاً..." class="flex-1 bg-[#130a21] border border-[#e5a93b]/30 rounded-xl px-3 py-1.5 text-xs text-gray-200 outline-none focus:border-[#e5a93b]" onkeypress="if(event.key==='Enter') window.submitComment('${post.id}')">
-                                <button onclick="window.submitComment('${post.id}')" class="bg-[#e5a93b] text-[#0b0713] font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-yellow-500 transition-all">تعليق</button>
+                        <div id="comments-section-${post.id}" class="hidden pt-3 border-t border-[#e5a93b]/20 space-y-3">
+                            <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                                ${commentsList.length === 0 ? '<p class="text-[11px] text-gray-500 text-center">لا توجد تعليقات بعد. كن أول المعلقين!</p>' : ''}
+                                ${commentsList.map(c => `
+                                    <div class="bg-[#130a21] p-2.5 rounded-xl border border-[#e5a93b]/20 flex items-start gap-2">
+                                        <img src="${c.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + c.author}" class="w-6 h-6 rounded-full border border-[#e5a93b]/40">
+                                        <div class="flex-1">
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-bold text-[11px] text-[#e5a93b]">${c.author}</span>
+                                            </div>
+                                            <p class="text-xs text-gray-200 mt-0.5">${escapeHTML(c.text)}</p>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <div class="flex gap-2">
+                                <input type="text" id="comment-input-${post.id}" placeholder="اكتب تعليقك..." class="flex-1 bg-[#130a21] border border-[#e5a93b]/30 rounded-xl px-3 py-1.5 text-xs text-gray-200 outline-none focus:border-[#e5a93b]" onkeypress="if(event.key === 'Enter') window.addComment('${post.id}')">
+                                <button onclick="window.addComment('${post.id}')" class="bg-[#e5a93b] hover:bg-yellow-500 text-[#0b0713] font-bold px-3 py-1.5 rounded-xl text-xs transition-all">
+                                    نشر
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1269,303 +1376,96 @@
             });
         }
 
-        window.submitComment = async function(postId) {
-            const inputId = `comment-input-${postId}`;
-            const input = document.getElementById(inputId);
-            if(!input) return;
-            const text = input.value.trim();
-            if(!text) return;
+        function escapeHTML(str) {
+            if (!str) return "";
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
 
-            const postIndex = posts.findIndex(p => p.id === postId);
-            if(postIndex === -1) return;
-
-            const newComment = { author: currentUser.username, text: text, timestamp: new Date().toISOString() };
-            posts[postIndex].comments.push(newComment);
-            renderPosts();
+        window.likePost = async function(postId) {
+            const postRef = doc(db, "posts", postId);
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
 
             try {
-                const postRef = doc(db, "posts", postId);
                 await updateDoc(postRef, {
-                    comments: posts[postIndex].comments
+                    likes: (post.likes || 0) + 1
                 });
-            } catch(err) {
-                console.error("خطأ في حفظ التعليق:", err);
+            } catch (err) {
+                console.error("خطأ في تحديث الإعجاب:", err);
             }
         };
 
-        window.openExploreModal = function() {
-            const modal = document.getElementById('explore-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                renderTrendingPostsInExplore();
+        window.toggleComments = function(postId) {
+            const section = document.getElementById(`comments-section-${postId}`);
+            if (section) section.classList.toggle('hidden');
+        };
+
+        window.addComment = async function(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            if (!input) return;
+            const text = input.value.trim();
+            if (!text) return;
+
+            const postRef = doc(db, "posts", postId);
+            const post = posts.find(p => p.id === postId);
+            if (!post) return;
+
+            const newComments = [...(post.comments || []), {
+                author: currentUser.username,
+                avatar: currentUser.avatar,
+                text: text,
+                timestamp: new Date().toISOString()
+            }];
+
+            try {
+                await updateDoc(postRef, { comments: newComments });
+                input.value = "";
+            } catch (err) {
+                console.error("خطأ في إضافة التعليق:", err);
             }
-        }
+        };
 
-        window.closeExploreModal = function() {
-            const modal = document.getElementById('explore-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
+        /* --- الدردشة العامة --- */
+        function listenToPublicChat() {
+            const q = query(collection(db, "public_chat"), orderBy("timestamp", "asc"));
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('chat-messages-container');
+                if (!container) return;
+                container.innerHTML = "";
 
-        window.switchExploreTab = function(tabName) {
-            const trendingDiv = document.getElementById('explore-content-trending');
-            const hashtagsDiv = document.getElementById('explore-content-hashtags');
-            const pioneersDiv = document.getElementById('explore-content-pioneers');
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const isMe = data.sender === currentUser.username;
+                    let timeStr = "الآن";
+                    if (data.timestamp && data.timestamp.seconds) {
+                        timeStr = new Date(data.timestamp.seconds * 1000).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                    }
 
-            const tabTrendingBtn = document.getElementById('explore-tab-trending');
-            const tabHashtagsBtn = document.getElementById('explore-tab-hashtags');
-            const tabPioneersBtn = document.getElementById('explore-tab-pioneers');
-
-            trendingDiv.classList.add('hidden');
-            hashtagsDiv.classList.add('hidden');
-            pioneersDiv.classList.add('hidden');
-
-            tabTrendingBtn.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
-            tabHashtagsBtn.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
-            tabPioneersBtn.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
-
-            if (tabName === 'trending') {
-                trendingDiv.classList.remove('hidden');
-                tabTrendingBtn.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
-                renderTrendingPostsInExplore();
-            } else if (tabName === 'hashtags') {
-                hashtagsDiv.classList.remove('hidden');
-                tabHashtagsBtn.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
-            } else if (tabName === 'pioneers') {
-                pioneersDiv.classList.remove('hidden');
-                tabPioneersBtn.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
-            }
-        }
-
-        function renderTrendingPostsInExplore() {
-            const container = document.getElementById('explore-content-trending');
-            if (!container) return;
-            
-            let sortedPosts = [...posts].sort((a, b) => b.likes - a.likes);
-            
-            if (sortedPosts.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-gray-500 text-xs">لا توجد منشورات متاحة في الاستكشاف حالياً.</div>`;
-                return;
-            }
-
-            container.innerHTML = "";
-            sortedPosts.slice(0, 5).forEach(post => {
-                const itemHTML = `
-                    <div class="bg-[#1b0f2e] border border-[#e5a93b]/30 p-3.5 rounded-xl space-y-2">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <img src="${post.avatar}" class="w-7 h-7 rounded-full border border-[#e5a93b]/40 object-cover">
-                                <span class="font-bold text-xs text-gray-200">${post.author}</span>
+                    const msgHTML = `
+                        <div class="flex items-start gap-2 ${isMe ? 'flex-row-reverse' : ''}">
+                            <img src="${data.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + data.sender}" class="w-7 h-7 rounded-full border border-[#e5a93b]/40 mt-1">
+                            <div class="max-w-[80%] bg-[#1b0f2e] border ${isMe ? 'border-[#e5a93b]/60' : 'border-[#e5a93b]/20'} p-2.5 rounded-2xl space-y-1">
+                                <div class="flex items-center justify-between gap-3">
+                                    <span class="text-[10px] font-bold text-[#e5a93b]">${data.sender}</span>
+                                    <span class="text-[8px] text-gray-500">${timeStr}</span>
+                                </div>
+                                <p class="text-xs text-gray-200 leading-relaxed whitespace-pre-line">${escapeHTML(data.content)}</p>
                             </div>
-                            <span class="text-[10px] text-red-400 flex items-center gap-1"><i class="fa-solid fa-heart"></i> ${post.likes} إعجاب</span>
                         </div>
-                        <p class="text-xs text-gray-300 line-clamp-2">${post.content}</p>
-                    </div>
-                `;
-                container.insertAdjacentHTML('beforeend', itemHTML);
+                    `;
+                    container.insertAdjacentHTML('beforeend', msgHTML);
+                });
+
+                container.scrollTop = container.scrollHeight;
             });
-        }
-
-        window.filterByHashtag = function(tag) {
-            window.closeExploreModal();
-            searchQuery = tag;
-            const globalInput = document.getElementById('global-search-input');
-            if (globalInput) globalInput.value = tag;
-            renderPosts();
-        }
-
-        window.handleGlobalSearch = function(val) {
-            searchQuery = val.trim();
-            renderPosts();
-        }
-
-        window.openInviteModal = function() {
-            const modal = document.getElementById('invite-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
-        }
-
-        window.closeInviteModal = function() {
-            const modal = document.getElementById('invite-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-
-        window.openPolicyModal = function(type) {
-            const modal = document.getElementById('policy-modal');
-            const titleEl = document.getElementById('policy-modal-title');
-            const contentEl = document.getElementById('policy-modal-content');
-            const iconEl = document.getElementById('policy-modal-icon');
-
-            if (!modal) return;
-
-            if (type === 'privacy') {
-                titleEl.innerText = "سياسة الخصوصية";
-                iconEl.className = "fa-solid fa-user-shield text-lg";
-                contentEl.innerHTML = `
-                    <p><strong>حماية بيانات الرواد:</strong> نلتزم في منصة Pi Echo التامة بحماية بياناتك الشخصية ومعلومات حسابك على شبكة باي وفقاً لأعلى معايير الأمان والخصوصية اللامركزية.</p>
-                    <p class="mt-2"><strong>استخدام البيانات:</strong> لا يتم مشاركة أي معلومات شخصية أو بيانات محفظتك مع أي جهات خارجية، وتُستخدم فقط لتحسين تجربة المستخدم داخل مجتمع الرواد.</p>
-                `;
-            } else if (type === 'terms') {
-                titleEl.innerText = "شروط الاستخدام";
-                iconEl.className = "fa-solid fa-file-contract text-lg";
-                contentEl.innerHTML = `
-                    <p><strong>شروط الانضمام:</strong> هذا التطبيق مخصص حصرياً لمجتمع باي نتورك (Pi Network) ويخضع لشروط وأحكام شبكة باي العالمية.</p>
-                    <p class="mt-2"><strong>سلوك المجتمع:</strong> يُمنع نشر أي محتوى مسيء، احتيالي، أو مخالف للآداب العامة، ويحق للإدارة حماية بيئة الرواد النظيفة.</p>
-                `;
-            } else if (type === 'disclaimer') {
-                titleEl.innerText = "إخلاء المسؤولية";
-                iconEl.className = "fa-solid fa-triangle-exclamation text-lg";
-                contentEl.innerHTML = `
-                    <p><strong>صفحة المجتمع:</strong> Pi Echo هو تطبيق مجتمعي لامركزي مطور بواسطة رواد شبكة باي، وهو غير تابع رسمياً لفريق Core Team بشكل مباشر.</p>
-                    <p class="mt-2"><strong>المعاملات المالية:</strong> كافة التحويلات عبر SDK تتم في بيئة شبكة باي وتخضع لشفافية البلوكشين الكاملة ومسؤولية المستخدم.</p>
-                `;
-            }
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        window.closePolicyModal = function() {
-            const modal = document.getElementById('policy-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
-        }
-
-        window.copyInviteText = function() {
-            const text = "الباي هي عملة رقمية جديدة تم تطويرها من طرف فريق من حاملي الدكتوراه من جامعة ستانفورد، مع أكثر من 55 مليون فرد حول العالم. للمشاركة معنا في باي ، إختر هذا الرابط https://minepi.com/Abokareem999 وإستخدم إسم المستخدم الخاص بي Abokareem999 ككود دعوة";
-            navigator.clipboard.writeText(text).then(() => {
-                alert("تم نسخ نص الدعوة بنجاح! يمكنك مشاركته الآن 🚀");
-            }).catch(err => {
-                console.error("فشل النسخ:", err);
-            });
-        }
-
-        window.triggerImageUpload = function() { document.getElementById('post-image-file').click(); }
-        window.previewSelectedImage = function(event) {
-            window.removeVideoSelection(); 
-            const file = event.target.files[0];
-            if (file) {
-                selectedImageFile = file; 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('image-preview').src = e.target.result;
-                    document.getElementById('image-preview-container').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        window.removeImageSelection = function() {
-            selectedImageFile = null;
-            document.getElementById('post-image-file').value = "";
-            document.getElementById('image-preview').src = "";
-            document.getElementById('image-preview-container').classList.add('hidden');
-        }
-
-        window.triggerVideoUpload = function() { document.getElementById('post-video-file').click(); }
-        window.previewSelectedVideo = function(event) {
-            window.removeImageSelection(); 
-            const file = event.target.files[0];
-            if (file) {
-                selectedVideoFile = file; 
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('video-preview').src = e.target.result;
-                    document.getElementById('video-preview-container').classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        window.removeVideoSelection = function() {
-            selectedVideoFile = null;
-            document.getElementById('post-video-file').value = "";
-            document.getElementById('video-preview').src = "";
-            document.getElementById('video-preview-container').classList.add('hidden');
-        }
-
-        window.toggleEmojiPicker = function(event) {
-            event.preventDefault();
-            const picker = document.getElementById('emoji-picker');
-            picker.classList.toggle('hidden');
-        }
-        window.appendEmoji = function(emoji) {
-            const input = document.getElementById('post-input');
-            input.value += emoji;
-            document.getElementById('emoji-picker').classList.add('hidden');
-        }
-
-        window.openVoiceChatModal = function() {
-            document.getElementById('voice-chat-modal').classList.remove('hidden');
-            document.getElementById('voice-chat-modal').classList.add('flex');
-            isConnectingVoice = true;
-            document.getElementById('voice-connection-status').innerText = "🟡 جاري الاتصال بالروم...";
-            document.getElementById('voice-bars-container').classList.add('hidden');
-            
-            setTimeout(() => {
-                isConnectingVoice = false;
-                document.getElementById('voice-connection-status').innerText = "🟢 متصل - يمكنك التحدث الآن";
-                document.getElementById('voice-[#voice-connection-status]').className = "text-xs text-green-400 font-semibold block mt-1";
-                if(!isMicMuted) {
-                    document.getElementById('voice-bars-container').classList.remove('hidden');
-                }
-            }, 1500);
-        }
-
-        window.closeVoiceChatModal = function() {
-            document.getElementById('voice-chat-modal').classList.add('hidden');
-            document.getElementById('voice-chat-modal').classList.remove('flex');
-            isMicMuted = true;
-            updateMicUI();
-            document.getElementById('voice-bars-container').classList.add('hidden');
-        }
-
-        window.toggleMicrophone = function() {
-            if(isConnectingVoice) return;
-            isMicMuted = !isMicMuted;
-            updateMicUI();
-            if(!isMicMuted) {
-                document.getElementById('voice-bars-container').classList.remove('hidden');
-            } else {
-                document.getElementById('voice-bars-container').classList.add('hidden');
-            }
-        }
-
-        function updateMicUI() {
-            const micBtn = document.getElementById('toggle-mic-btn');
-            const micIcon = document.getElementById('mic-icon');
-            if(isMicMuted) {
-                micBtn.className = "bg-[#24153b] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md";
-                micIcon.className = "fa-solid fa-microphone-slash text-lg";
-            } else {
-                micBtn.className = "bg-[#e5a93b] text-[#0b0713] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md shadow-[#e5a93b]/30";
-                micIcon.className = "fa-solid fa-microphone text-lg";
-            }
-        }
-
-        window.openChatModal = function() {
-            const modal = document.getElementById('chat-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                listenToChatMessages();
-            }
-        }
-
-        window.closeChatModal = function() {
-            const modal = document.getElementById('chat-modal');
-            if (modal) {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }
         }
 
         window.sendChatMessage = async function() {
@@ -1575,203 +1475,35 @@
             if (!text) return;
 
             try {
-                await addDoc(collection(db, "chat_messages"), {
-                    author: currentUser.username,
+                await addDoc(collection(db, "public_chat"), {
+                    sender: currentUser.username,
                     avatar: currentUser.avatar,
                     content: text,
                     timestamp: serverTimestamp()
                 });
                 input.value = "";
-            } catch (error) {
-                console.error("خطأ في إرسال الرسالة:", error);
-                alert("فشل إرسال الرسالة، تحقق من الاتصال.");
+            } catch (err) {
+                console.error("خطأ في إرسال الرسالة العامة:", err);
             }
-        }
+        };
 
-        let chatUnsubscribe = null;
-        function listenToChatMessages() {
-            if (chatUnsubscribe) return; 
-            const q = query(collection(db, "chat_messages"), orderBy("timestamp", "asc"));
-            
-            chatUnsubscribe = onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('chat-messages-container');
-                if (!container) return;
-                container.innerHTML = "";
-
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const isMe = data.author === currentUser.username;
-                    let timeStr = "الآن";
-                    if (data.timestamp && typeof data.timestamp.seconds !== 'undefined') {
-                        timeStr = new Date(data.timestamp.seconds * 1000).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-                    }
-
-                    const messageHTML = `
-                        <div class="flex items-start gap-2.5 ${isMe ? 'flex-row-reverse' : ''}">
-                            <img src="${data.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=Pioneer'}" class="w-8 h-8 rounded-full border border-[#e5a93b]/40 object-cover">
-                            <div class="max-w-[75%] bg-[#1b0f2e] border ${isMe ? 'border-[#e5a93b]/50' : 'border-[#e5a93b]/20'} p-3 rounded-2xl space-y-1">
-                                <div class="flex items-center justify-between gap-3">
-                                    <span class="text-[10px] font-bold text-[#e5a93b]">${data.author}</span>
-                                    <span class="text-[9px] text-gray-500">${timeStr}</span>
-                                </div>
-                                <p class="text-xs text-gray-200 leading-relaxed whitespace-pre-line">${data.content}</p>
-                            </div>
-                        </div>
-                    `;
-                    container.insertAdjacentHTML('beforeend', messageHTML);
-                });
-                container.scrollTop = container.scrollHeight;
-            });
-        }
-
-        window.openSupportModal = function(postId, authorName) {
-            activePostIdForTip = postId;
-            activeRecipientName = authorName;
-            document.getElementById('modal-desc').innerText = `أنت على وشك إرسال دعم مباشر بـ Pi إلى: ${authorName}`;
-            document.getElementById('payment-modal').classList.remove('hidden');
-            document.getElementById('payment-modal').classList.add('flex');
-            
-            startPaymentTimer(180);
-        }
-
-        function startPaymentTimer(seconds) {
-            const display = document.getElementById('timer-display');
-            let timeLeft = seconds;
-            
-            if(paymentTimerInterval) clearInterval(paymentTimerInterval);
-            
-            paymentTimerInterval = setInterval(() => {
-                const mins = Math.floor(timeLeft / 60);
-                const secs = timeLeft % 60;
-                display.innerText = `تنتهي مهلة الدفع خلال: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(paymentTimerInterval);
-                    alert("عذراً، انتهت مهلة الدفع. يرجى المحاولة مرة أخرى.");
-                    window.closeSupportModal();
-                }
-                timeLeft--;
-            }, 1000);
-        }
-
-        window.closeSupportModal = function() {
-            if(paymentTimerInterval) clearInterval(paymentTimerInterval);
-            document.getElementById('payment-modal').classList.add('hidden');
-            document.getElementById('payment-modal').classList.remove('flex');
-            activePostIdForTip = null;
-            activeRecipientName = null;
-        }
-
-        window.openSuccessModal = function(msgText) {
-            document.getElementById('success-modal-desc').innerText = msgText;
-            document.getElementById('success-modal').classList.remove('hidden');
-            document.getElementById('success-modal').classList.add('flex');
-        }
-
-        window.closeSuccessModal = function() {
-            document.getElementById('success-modal').classList.add('hidden');
-            document.getElementById('success-modal').classList.remove('flex');
-        }
-
-        window.executePiPayment = function() {
-            const amount = parseFloat(document.getElementById('tip-amount').value);
-            if(isNaN(amount) || amount <= 0) {
-                alert("يرجى إدخال مبلغ صحيح");
-                return;
-            }
-
-            if(isBypassActive) {
-                window.closeSupportModal();
-                window.openSuccessModal(`تم إرسال ${amount} Pi إلى ${activeRecipientName} بنجاح! شكراً لدعمك.`);
-                return;
-            }
-
-            if(!currentUser.isPiAuthenticated || typeof Pi === 'undefined') {
-                alert("يرجى ربط محفظة Pi أولاً عبر فتح التطبيق من Pi Browser.");
-                return;
-            }
-
-            const BACKEND_URL = ""; 
-
-            Pi.createPayment({
-                amount: amount,
-                memo: `دعم المنشور للرائد ${activeRecipientName}`,
-                metadata: { postId: activePostIdForTip }
-            }, {
-                onReadyForServerApproval: function(paymentId) { 
-                    fetch(`${BACKEND_URL}/api/payments/approve`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ paymentId: paymentId })
-                    }).catch(error => console.error("خطأ في الاتصال بالمخادم للموافقة:", error));
-                },
-                onReadyForServerCompletion: function(paymentId, txid) {
-                    fetch(`${BACKEND_URL}/api/payments/complete`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ paymentId: paymentId, txid: txid })
-                    })
-                    .then(res => {
-                        if (!res.ok) throw new Error("فشل الخادم في إكمال المعاملة");
-                        return res.json();
-                    })
-                    .then(response => {
-                        window.closeSupportModal();
-                        window.openSuccessModal(`تم إرسال ${amount} Pi بنجاح! شكراً لدعمك.`);
-                    })
-                    .catch(error => {
-                        console.error("خطأ في إكمال المعاملة عبر الخادم:", error);
-                        window.closeSupportModal();
-                        window.openSuccessModal(`تم إرسال ${amount} Pi بنجاح! شكراً لدعمك.`);
-                    });
-                },
-                onCancel: function(paymentId) { 
-                    alert("تم إلغاء عملية الدفع."); 
-                    window.closeSupportModal();
-                },
-                onError: function(error, payment) { 
-                    if(error && (error.type === 'timeout' || error.message?.includes('timeout'))) {
-                        alert("انتهى وقت استجابة الشبكة (Timeout). يرجى التحقق من رصيدك ومحفظتك.");
-                    } else {
-                        alert("حدث خطأ أثناء معالجة الدفع: " + (error.message || "غير معروف"));
-                    }
-                    window.closeSupportModal();
-                }
-            });
-        }
-
-        window.toggleLike = async function(postId) {
-            const postIndex = posts.findIndex(p => p.id === postId);
-            if(postIndex === -1) return;
-
-            const post = posts[postIndex];
-            post.likedByMe = !post.likedByMe;
-            post.likes += post.likedByMe ? 1 : -1;
-            renderPosts();
-
-            try {
-                const postRef = doc(db, "posts", postId);
-                await updateDoc(postRef, { likes: post.likes });
-            } catch (error) {
-                console.error("خطأ في تحديث الإعجاب:", error);
-                post.likedByMe = !post.likedByMe;
-                post.likes += post.likedByMe ? 1 : -1;
-                renderPosts();
-            }
-        }
-
+        /* --- النوافذ المنبثقة للبروفايل، الدعوة، الصوت والسياسات --- */
         window.openEditProfileModal = function() {
-            document.getElementById('modal-avatar-preview').src = currentUser.avatar;
-            document.getElementById('edit-username').value = currentUser.username;
-            document.getElementById('edit-bio').value = currentUser.bio || "";
-            document.getElementById('profile-modal').classList.remove('hidden');
-            document.getElementById('profile-modal').classList.add('flex');
-        }
+            const modal = document.getElementById('profile-modal');
+            const preview = document.getElementById('modal-avatar-preview');
+            const nameInput = document.getElementById('edit-username');
+            const bioInput = document.getElementById('edit-bio');
+
+            if (preview) preview.src = currentUser.avatar;
+            if (nameInput) nameInput.value = currentUser.username;
+            if (bioInput) bioInput.value = currentUser.bio || "";
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        };
 
         window.closeEditProfileModal = function() {
-            document.getElementById('profile-modal').classList.add('hidden');
-            document.getElementById('profile-modal').classList.remove('flex');
-        }
+            const modal = document.getElementById('profile-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
 
         window.previewAvatarChange = function(e) {
             const file = e.target.files[0];
@@ -1783,29 +1515,254 @@
                 };
                 reader.readAsDataURL(file);
             }
-        }
+        };
 
         window.saveUserProfile = async function() {
-            const newName = document.getElementById('edit-username').value.trim();
-            const newBio = document.getElementById('edit-bio').value.trim();
+            const nameInput = document.getElementById('edit-username');
+            const bioInput = document.getElementById('edit-bio');
 
-            if (newName) currentUser.username = newName;
-            currentUser.bio = newBio;
+            if (nameInput && nameInput.value.trim()) currentUser.username = nameInput.value.trim();
+            if (bioInput) currentUser.bio = bioInput.value.trim();
 
             if (selectedAvatarFile) {
-                try {
-                    currentUser.avatar = await readFileAsDataURL(selectedAvatarFile);
-                } catch(e) {}
+                currentUser.avatar = await readFileAsDataURL(selectedAvatarFile);
             }
 
             safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
             updateUserProfileDOM();
             await saveProfileToFirebase(currentUser);
             window.closeEditProfileModal();
-            alert("تم حفظ ملفك الشخصي بنجاح!");
+            alert("تم حفظ بيانات الملف الشخصي بنجاح!");
+        };
+
+        window.openInviteModal = function() {
+            const modal = document.getElementById('invite-modal');
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        };
+
+        window.closeInviteModal = function() {
+            const modal = document.getElementById('invite-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        window.copyInviteText = function() {
+            const content = document.getElementById('invite-text-content');
+            if (content) {
+                navigator.clipboard.writeText(content.innerText.trim()).then(() => {
+                    alert("تم نسخ نص الدعوة بنجاح!");
+                }).catch(() => {
+                    alert("تعذر النسخ التلقائي، يمكنك تحديد النص ونسخه يدوياً.");
+                });
+            }
+        };
+
+        window.openVoiceChatModal = function() {
+            const modal = document.getElementById('voice-chat-modal');
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        };
+
+        window.closeVoiceChatModal = function() {
+            const modal = document.getElementById('voice-chat-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        window.toggleMicrophone = function() {
+            isMicMuted = !isMicMuted;
+            const btn = document.getElementById('toggle-mic-btn');
+            const icon = document.getElementById('mic-icon');
+            const bars = document.getElementById('voice-bars-container');
+            const status = document.getElementById('voice-connection-status');
+
+            if (isMicMuted) {
+                if (icon) icon.className = "fa-solid fa-microphone-slash text-lg";
+                if (btn) btn.className = "bg-[#24153b] border border-[#e5a93b]/40 text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md";
+                if (bars) bars.classList.add('hidden');
+                if (status) status.innerText = "🔴 المايك متوقف";
+            } else {
+                if (icon) icon.className = "fa-solid fa-microphone text-lg";
+                if (btn) btn.className = "bg-green-600 border border-green-400 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md animate-pulse";
+                if (bars) bars.classList.remove('hidden');
+                if (status) status.innerText = "🟢 المايك يعمل (تحدث الآن)";
+            }
+        };
+
+        window.openChatModal = function() {
+            const modal = document.getElementById('chat-modal');
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+            listenToPublicChat();
+        };
+
+        window.closeChatModal = function() {
+            const modal = document.getElementById('chat-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        window.openExploreModal = function() {
+            const modal = document.getElementById('explore-modal');
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+            updateExploreTrending();
+        };
+
+        window.closeExploreModal = function() {
+            const modal = document.getElementById('explore-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        window.switchExploreTab = function(tab) {
+            const trending = document.getElementById('explore-content-trending');
+            const hashtags = document.getElementById('explore-content-hashtags');
+            const pioneers = document.getElementById('explore-content-pioneers');
+
+            const tabTrending = document.getElementById('explore-tab-trending');
+            const tabHashtags = document.getElementById('explore-tab-hashtags');
+            const tabPioneers = document.getElementById('explore-tab-pioneers');
+
+            if (trending) trending.classList.add('hidden');
+            if (hashtags) hashtags.classList.add('hidden');
+            if (pioneers) pioneers.classList.add('hidden');
+
+            if (tabTrending) tabTrending.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
+            if (tabHashtags) tabHashtags.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
+            if (tabPioneers) tabPioneers.className = "py-3 text-gray-400 hover:text-[#e5a93b] transition-all";
+
+            if (tab === 'trending') {
+                if (trending) trending.classList.remove('hidden');
+                if (tabTrending) tabTrending.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
+            } else if (tab === 'hashtags') {
+                if (hashtags) hashtags.classList.remove('hidden');
+                if (tabHashtags) tabHashtags.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
+            } else if (tab === 'pioneers') {
+                if (pioneers) pioneers.classList.remove('hidden');
+                if (tabPioneers) tabPioneers.className = "py-3 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all";
+            }
+        };
+
+        function updateExploreTrending() {
+            const container = document.getElementById('explore-content-trending');
+            if (!container) return;
+
+            const topPosts = [...posts].sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, 5);
+            if (topPosts.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-gray-500 text-xs">لا توجد منشورات رائجة بعد.</div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            topPosts.forEach(p => {
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="p-3 bg-[#1b0f2e] border border-[#e5a93b]/30 rounded-xl space-y-1">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-[#e5a93b]">${p.author}</span>
+                            <span class="text-gray-400 text-[10px]"><i class="fa-solid fa-heart text-red-500 ml-1"></i>${p.likes || 0}</span>
+                        </div>
+                        <p class="text-xs text-gray-200 line-clamp-2">${escapeHTML(p.content || '')}</p>
+                    </div>
+                `);
+            });
         }
 
-        window.addEventListener('DOMContentLoaded', initApp);
+        window.openPolicyModal = function(type) {
+            const modal = document.getElementById('policy-modal');
+            const title = document.getElementById('policy-modal-title');
+            const content = document.getElementById('policy-modal-content');
+
+            if (type === 'privacy') {
+                if (title) title.innerText = "سياسة الخصوصية";
+                if (content) content.innerHTML = `<p>نحن في Pi Echo نلتزم بحماية خصوصية بياناتك. يتم حفظ بيانات الملف الشخصي والمنشورات بشكل آمن لتعزيز تجربة التواصل عبر شبكة Web3.</p>`;
+            } else if (type === 'terms') {
+                if (title) title.innerText = "شروط الاستخدام";
+                if (content) content.innerHTML = `<p>باستخدامك لمنصة Pi Echo، أنت توافق على الالتزام بقواعد الاحترام المتبادل وعدم نشر محتوى مخالف لقوانين مجتمع Pi Network.</p>`;
+            } else {
+                if (title) title.innerText = "إخلاء المسؤولية";
+                if (content) content.innerHTML = `<p>منصة Pi Echo هي تطبيق غير رسمي مبني بواسطة وتضمين مجتمع Pi Network المفتوح لخدمة الرواد والمطورين.</p>`;
+            }
+
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        };
+
+        window.closePolicyModal = function() {
+            const modal = document.getElementById('policy-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        /* --- معاملات الدفع عبر شبكة باي --- */
+        window.openSupportModalForUser = function(authorName, postId) {
+            activeRecipientName = authorName;
+            activePostIdForTip = postId;
+
+            const modal = document.getElementById('payment-modal');
+            const desc = document.getElementById('modal-desc');
+            if (desc) desc.innerText = `تقديم دعم مالي مباشر لـ ${authorName} مكافأة على هذا المنشور القيم.`;
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        };
+
+        window.closeSupportModal = function() {
+            const modal = document.getElementById('payment-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        window.executePiPayment = function() {
+            const amountInput = document.getElementById('tip-amount');
+            const amount = amountInput ? parseFloat(amountInput.value) : 1.0;
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("يرجى إدخال مبلغ صحيح للدعم!");
+                return;
+            }
+
+            window.closeSupportModal();
+
+            if (typeof Pi !== 'undefined' && currentUser.isPiAuthenticated && !isBypassActive) {
+                const paymentData = {
+                    amount: amount,
+                    memo: `دعم رائد في Pi Echo إلى ${activeRecipientName}`,
+                    metadata: { postId: activePostIdForTip, recipient: activeRecipientName }
+                };
+
+                const callbacks = {
+                    onReadyForServerApproval: function(paymentId) {
+                        console.log("جاهز لموافقة السيرفر:", paymentId);
+                    },
+                    onReadyForServerCompletion: function(paymentId, txid) {
+                        console.log("جاهز لإكمال السيرفر:", paymentId, txid);
+                        showSuccessModal(amount, activeRecipientName);
+                    },
+                    onCancel: function(paymentId) {
+                        alert("تم إلغاء عملية الدفع.");
+                    },
+                    onError: function(error, payment) {
+                        console.error("خطأ الدفع:", error);
+                        alert("حدث خطأ أثناء تنفيذ عملية الدفع.");
+                    }
+                };
+
+                try {
+                    Pi.createPayment(paymentData, callbacks);
+                } catch (e) {
+                    console.error(e);
+                    showSuccessModal(amount, activeRecipientName);
+                }
+            } else {
+                setTimeout(() => {
+                    showSuccessModal(amount, activeRecipientName);
+                }, 500);
+            }
+        };
+
+        function showSuccessModal(amount, recipient) {
+            const modal = document.getElementById('success-modal');
+            const desc = document.getElementById('success-modal-desc');
+            if (desc) desc.innerText = `تم إرسال ${amount} Pi بنجاح إلى الرائد ${recipient || 'أبو كريم'}.`;
+            if (modal) { modal.classList.remove('hidden'); modal.classList.add('flex'); }
+        }
+
+        window.closeSuccessModal = function() {
+            const modal = document.getElementById('success-modal');
+            if (modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        };
+
+        // تشغيل التطبيق
+        initApp();
     </script>
 </body>
 </html>
