@@ -44,7 +44,7 @@
             background: linear-gradient(135deg, #1b0f2e, #130a21); border: 2px solid #e5a93b; border-radius: 20px;
             box-shadow: 0 4px 25px rgba(229, 169, 59, 0.25);
             padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
-            display: flex; justify-around; align-items: center;
+            display: flex; justify-content: space-around; align-items: center;
         }
     </style>
 </head>
@@ -52,7 +52,7 @@
 
     <header class="sticky top-0 z-40 bg-gradient-to-l from-[#1b0f2e] via-[#160d24] to-[#130a21] border-b-2 border-[#e5a93b] shadow-[0_4px_20px_rgba(229,169,59,0.15)] px-4 lg:px-8 py-3 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <button onclick="window.toggleMobileSidebar()" class="md:hidden text-[#e5a93b] hover:text-yellow-400 text-xl transition-all ml-1" title="القائمة">
+            <button onclick="window.toggleMobileSidebar()" class="md:hidden text-[#e5a93b] hover:text-yellow-400 text-xl transition-all ml-1 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#24153b]" title="القائمة">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <img src="eagle-logo.png" alt="Pi Echo Logo" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover shadow-md">
@@ -79,19 +79,23 @@
 
     <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity duration-300 opacity-0" onclick="window.toggleMobileSidebar()"></div>
     
+    <!-- القائمة المنبثقة المحدثة والأيقونات المنظمة -->
     <aside id="mobile-sidebar" class="fixed top-0 right-0 h-full w-72 bg-gradient-to-b from-[#1b0f2e] to-[#120820] border-l-2 border-[#e5a93b] z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-5 flex flex-col justify-between overflow-y-auto">
         <div>
             <div class="flex justify-between items-center pb-4 border-b border-[#e5a93b]/20 mb-4">
-                <span class="font-bold text-sm text-[#e5a93b]">Pi Echo</span>
-                <button onclick="window.toggleMobileSidebar()" class="text-gray-400 hover:text-white text-lg">
+                <span class="font-bold text-base text-[#e5a93b] flex items-center gap-2">
+                    <img src="eagle-logo.png" alt="Logo" class="w-6 h-6 rounded-full border border-[#e5a93b]">
+                    Pi Echo
+                </span>
+                <button onclick="window.toggleMobileSidebar()" class="text-gray-400 hover:text-white text-lg w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             
-            <div class="flex flex-col items-center text-center bg-[#24153b] p-4 rounded-xl border border-[#e5a93b]/30 mb-4">
+            <div class="flex flex-col items-center text-center bg-[#24153b] p-4 rounded-xl border border-[#e5a93b]/30 mb-5 shadow-inner">
                 <div class="relative">
-                    <img id="mobile-sidebar-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-16 h-16 rounded-full border-2 border-[#e5a93b] object-cover">
-                    <button onclick="window.openEditProfileModal(); window.toggleMobileSidebar();" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0b0713] rounded-full p-1.5 text-[10px] hover:bg-yellow-500">
+                    <img id="mobile-sidebar-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-16 h-16 rounded-full border-2 border-[#e5a93b] object-cover shadow-md">
+                    <button onclick="window.openEditProfileModal(); window.toggleMobileSidebar();" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0b0713] rounded-full w-6 h-6 flex items-center justify-center text-[10px] hover:bg-yellow-500 shadow-md transition-transform active:scale-90">
                         <i class="fa-solid fa-pen"></i>
                     </button>
                 </div>
@@ -99,22 +103,23 @@
                 <p id="mobile-sidebar-bio" class="text-[11px] text-gray-400 mt-1 italic line-clamp-2">مهتم بتطوير مشاريع الويب 3 ودعم مجتمع باي في الوطن العربي.</p>
             </div>
 
-            <nav class="space-y-1">
-                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-gradient-to-l from-[#664b12]/40 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
-                    <i class="fa-solid fa-house text-base"></i>
+            <nav class="space-y-2">
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#664b12]/40 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b] transition-all">
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-solid fa-house"></i></span>
                     <span>الرئيسية</span>
                 </a>
-                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); window.openExploreModal();" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all rounded-xl">
-                    <i class="fa-regular fa-compass text-base"></i>
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); window.openExploreModal();" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all rounded-xl">
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-regular fa-compass"></i></span>
                     <span>استكشف</span>
                 </a>
-                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); window.openChatModal();" class="flex items-center gap-3 px-4 py-2.5 text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all rounded-xl">
-                    <i class="fa-regular fa-message text-base"></i>
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); window.openChatModal();" class="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all rounded-xl">
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-regular fa-message"></i></span>
                     <span>الرسائل العامة</span>
                 </a>
-                <hr class="border-[#e5a93b]/20 my-3">
-                <button onclick="window.openInviteModal(); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0b0713] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs">
-                    <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
+                <hr class="border-[#e5a93b]/20 my-4">
+                <button onclick="window.openInviteModal(); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0b0713] font-bold py-3 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-xs flex items-center justify-center gap-2 active:scale-98">
+                    <i class="fa-solid fa-user-plus text-sm"></i>
+                    <span>دعوة صديق لباي</span>
                 </button>
             </nav>
         </div>
@@ -141,19 +146,23 @@
                 </div>
             </div>
 
-            <nav class="space-y-1 bg-gradient-to-b from-[#1b0f2e] to-[#130a21] p-4 rounded-2xl border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)]">
+            <nav class="space-y-1.5 bg-gradient-to-b from-[#1b0f2e] to-[#130a21] p-4 rounded-2xl border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.1)]">
                 <a href="javascript:void(0)" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#664b12]/40 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
-                    <i class="fa-solid fa-house text-lg"></i><span>الرئيسية</span>
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-solid fa-house"></i></span>
+                    <span>الرئيسية</span>
                 </a>
                 <a href="javascript:void(0)" onclick="window.openExploreModal();" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all">
-                    <i class="fa-regular fa-compass text-lg"></i><span>استكشف</span>
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-regular fa-compass"></i></span>
+                    <span>استكشف</span>
                 </a>
                 <a href="javascript:void(0)" onclick="window.openChatModal()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all">
-                    <i class="fa-regular fa-message text-lg"></i><span>الرسائل العامة</span>
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-regular fa-message"></i></span>
+                    <span>الرسائل العامة</span>
                 </a>
                 <hr class="border-[#e5a93b]/30 my-3">
-                <button onclick="window.openInviteModal()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0b0713] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-3">
-                    <i class="fa-solid fa-user-plus ml-2"></i>دعوة صديق لباي
+                <button onclick="window.openInviteModal()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0b0713] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-500 hover:to-yellow-600 transition-all text-sm mb-1 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-plus text-base"></i>
+                    <span>دعوة صديق لباي</span>
                 </button>
             </nav>
         </aside>
@@ -219,8 +228,8 @@
 
         <aside class="hidden md:block md:col-span-1 space-y-6">
             <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] p-4 rounded-2xl space-y-4">
-                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2">
-                    <i class="fa-solid fa-microphone-lines ml-2 animate-pulse"></i>الدردشة الصوتية المباشرة
+                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2 flex items-center justify-start gap-2">
+                    <i class="fa-solid fa-microphone-lines animate-pulse"></i>الدردشة الصوتية المباشرة
                 </h3>
                 <div class="p-3 bg-[#130a21] rounded-xl border border-[#e5a93b]/30 space-y-3">
                     <div class="flex items-center justify-between">
@@ -228,15 +237,15 @@
                         <span class="text-[10px] bg-red-600/20 text-red-400 px-2 py-0.5 rounded-full">نشط</span>
                     </div>
                     <p class="text-[10px] text-gray-400 leading-relaxed">انضم الآن وناقش آخر مستجدات الشبكة المفتوحة والتجارة مع الرواد بالصوت مباشر!</p>
-                    <button onclick="window.openVoiceChatModal()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0b0713] font-bold py-2 rounded-lg text-xs transition-all shadow-md">
-                        <i class="fa-solid fa-headset ml-1"></i> انضمام للروم الصوتي
+                    <button onclick="window.openVoiceChatModal()" class="w-full bg-[#e5a93b] hover:bg-yellow-500 text-[#0b0713] font-bold py-2 rounded-lg text-xs transition-all shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-headset"></i> انضمام للروم الصوتي
                     </button>
                 </div>
             </div>
             
             <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] shadow-[0_0_15px_rgba(229,169,59,0.15)] p-4 rounded-2xl space-y-4">
-                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2">
-                    <i class="fa-solid fa-circle-nodes ml-2"></i>أخبار الشبكة المفتوحة
+                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2 flex items-center justify-start gap-2">
+                    <i class="fa-solid fa-circle-nodes"></i>أخبار الشبكة المفتوحة
                 </h3>
                 <div class="space-y-3">
                     <div class="p-2.5 bg-[#130a21] rounded-xl hover:bg-[#24153b] transition-all cursor-pointer border border-transparent hover:border-[#e5a93b]/30">
@@ -307,7 +316,7 @@
                                     <i class="fa-solid fa-user-plus"></i> طلب صداقة
                                 </button>
                                 <button onclick="window.openPrivateChat('Abokareem999', 'https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem')" class="bg-purple-600/20 text-purple-300 border border-purple-500/40 hover:bg-purple-600 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
-                                    <i class="fa-solid fa-[#fa-paper-plane] fa-envelope"></i> دردشة خاصة
+                                    <i class="fa-solid fa-envelope"></i> دردشة خاصة
                                 </button>
                             </div>
                         </div>
@@ -474,7 +483,7 @@
         </div>
     </div>
 
-    <!-- نافذة الدردشة الخاصة الجديدة المضافة -->
+    <!-- نافذة الدردشة الخاصة -->
     <div id="private-chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b] rounded-3xl max-w-lg w-full h-[80vh] flex flex-col shadow-[0_0_30px_rgba(229,169,59,0.3)] relative overflow-hidden">
             <div class="p-4 bg-[#24153b] border-b border-[#e5a93b]/30 flex items-center justify-between">
@@ -617,7 +626,6 @@
         let isConnectingVoice = false;
         let searchQuery = "";
 
-        // متغيرات الدردشة الخاصة
         let activePrivateChatPartner = null;
         let privateChatUnsubscribe = null;
 
@@ -781,7 +789,6 @@
             }
         }
 
-        /* --- وظائف إرسال طلب الصداقة والدردشة الخاصة المضافة حديثاً --- */
         window.sendFriendRequest = async function(targetUsername) {
             if (!currentUser.username || currentUser.username === targetUsername) {
                 alert("لا يمكنك إرسال طلب صداقة لنفسك.");
