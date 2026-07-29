@@ -3,480 +3,914 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pi Echo - مجتمع رواد باي</title>
+    <title>Pi Echo</title>
+    <link class="rounded-full" rel="icon" type="image/png" href="eagle-logo.png">
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Google Tajawal Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Pi Network SDK -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-
+    
     <style>
         body {
-            font-family: 'Tajawal', sans-serif;
+            font-family: 'Cairo', sans-serif;
             background-color: #0b0713;
-            color: #f3f4f6;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
+        
+        /* أشرطة التمرير العامة والداخلية للنوافذ */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #11091f; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #e5a93b, #b37e1e); border-radius: 10px; }
+        
+        .modal-scroll::-webkit-scrollbar { width: 4px; }
+        .modal-scroll::-webkit-scrollbar-track { background: rgba(19, 10, 33, 0.5); }
+        .modal-scroll::-webkit-scrollbar-thumb { background: #e5a93b; border-radius: 8px; }
+
+        /* تأثيرات الحركة والظهور للنوافذ المنبثقة */
+        @keyframes modalPop {
+            0% { opacity: 0; transform: scale(0.92) translateY(12px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
-        ::-webkit-scrollbar-track {
-            background: #130a21;
+        .animate-modal-pop {
+            animation: modalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        ::-webkit-scrollbar-thumb {
-            background: #e5a93b;
-            border-radius: 4px;
+
+        .voice-wave { display: flex; align-items: center; gap: 4px; height: 32px; }
+        .voice-bar {
+            width: 4px; height: 100%; background: linear-gradient(to top, #e5a93b, #fef08a); border-radius: 10px;
+            animation: bounce 0.8s ease-in-out infinite alternate;
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #f59e0b;
+        .voice-bar:nth-child(2) { animation-delay: 0.2s; height: 60%; }
+        .voice-bar:nth-child(3) { animation-delay: 0.4s; height: 30%; }
+        .voice-bar:nth-child(4) { animation-delay: 0.1s; height: 85%; }
+        .voice-bar:nth-child(5) { animation-delay: 0.3s; height: 50%; }
+
+        @keyframes bounce {
+            0% { transform: scaleY(0.25); }
+            100% { transform: scaleY(1.15); }
+        }
+
+        .mobile-footer {
+            position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 45;
+            background: rgba(27, 15, 46, 0.92); backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(229, 169, 59, 0.6); border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(229, 169, 59, 0.2);
+            padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            display: flex; justify-content: space-around; align-items: center;
+        }
+
+        .glass-card {
+            background: linear-gradient(165deg, rgba(27, 15, 46, 0.95), rgba(15, 8, 26, 0.98));
+            backdrop-filter: blur(16px);
         }
     </style>
 </head>
-<body class="min-h-screen bg-[#0b0713] text-gray-100 flex flex-col justify-between selection:bg-[#e5a93b]/30 selection:text-[#e5a93b]">
+<body class="text-gray-100">
 
-    <!-- ================= HEADER / NAVBAR ================= -->
-    <header class="sticky top-0 z-40 bg-[#1c0f30]/90 backdrop-blur-md border-b border-[#e5a93b]/30 shadow-lg px-4 py-3">
-        <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
-            
-            <!-- Logo & Title -->
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#e5a93b] to-amber-300 flex items-center justify-center text-[#0b0713] font-black text-xl shadow-[0_0_15px_rgba(229,169,59,0.4)]">
-                    <i class="fa-solid fa-pi"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-gray-100 via-[#e5a93b] to-amber-200">
-                        Pi Echo
-                    </h1>
-                    <span class="text-[9px] text-[#e5a93b]/80 font-bold block -mt-1">صوت مجتمع الرواد</span>
-                </div>
-            </div>
+    <!-- الهيدر الرئيسي -->
+    <header class="sticky top-0 z-40 bg-gradient-to-l from-[#1b0f2e]/95 via-[#160d24]/95 to-[#130a21]/95 backdrop-blur-md border-b-2 border-[#e5a93b]/80 shadow-[0_4px_25px_rgba(229,169,59,0.18)] px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <button onclick="window.toggleMobileSidebar()" class="md:hidden text-[#e5a93b] hover:text-yellow-400 text-xl transition-all w-9 h-9 flex items-center justify-center rounded-xl hover:bg-[#24153b]" title="القائمة">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <img src="eagle-logo.png" alt="Pi Echo Logo" class="w-10 h-10 rounded-full border-2 border-[#e5a93b]/60 object-cover shadow-[0_0_12px_rgba(229,169,59,0.3)]">
+            <span class="text-xl font-black tracking-wider bg-gradient-to-r from-[#e5a93b] via-yellow-300 to-yellow-500 bg-clip-text text-transparent">Pi Echo</span>
+        </div>
 
-            <!-- Global Search Input -->
-            <div class="flex-1 max-w-md relative hidden sm:block">
-                <input type="text" id="global-search-input" onkeyup="handleGlobalSearch(this.value)" placeholder="ابحث عن منشورات، رواد، أو #هاشتاج..." class="w-full bg-[#130a21] border border-[#e5a93b]/30 rounded-xl px-4 py-2 pr-10 text-xs text-gray-200 focus:border-[#e5a93b] focus:outline-none transition-all">
-                <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-xs text-gray-400"></i>
-            </div>
+        <div class="hidden md:flex items-center bg-[#24153b]/80 rounded-full px-4 py-1.5 w-96 border border-[#e5a93b]/30 focus-within:border-[#e5a93b] focus-within:shadow-[0_0_15px_rgba(229,169,59,0.2)] transition-all">
+            <i class="fa-solid fa-magnifying-glass text-gray-400 ml-2"></i>
+            <input type="text" id="global-search-input" placeholder="ابحث عن منشورات أو رواد..." class="bg-transparent border-none outline-none text-sm w-full text-gray-200 placeholder-gray-500" oninput="window.handleGlobalSearch(this.value)">
+        </div>
 
-            <!-- Action Navigation Buttons -->
-            <div class="flex items-center gap-2">
-                <button onclick="window.openExploreModal()" title="استكشف" class="bg-[#24153b] hover:bg-[#e5a93b]/20 text-[#e5a93b] border border-[#e5a93b]/30 p-2.5 rounded-xl text-xs font-bold transition-all">
-                    <i class="fa-solid fa-compass text-sm"></i>
-                </button>
-                <button onclick="window.openVoiceChatModal()" title="الروم الصوتي" class="bg-[#24153b] hover:bg-[#e5a93b]/20 text-[#e5a93b] border border-[#e5a93b]/30 p-2.5 rounded-xl text-xs font-bold transition-all relative">
-                    <i class="fa-solid fa-microphone text-sm"></i>
-                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full animate-ping"></span>
-                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full"></span>
-                </button>
-                <button onclick="window.openChatModal()" title="الدردشة العامة" class="bg-[#24153b] hover:bg-[#e5a93b]/20 text-[#e5a93b] border border-[#e5a93b]/30 p-2.5 rounded-xl text-xs font-bold transition-all">
-                    <i class="fa-solid fa-comments text-sm"></i>
-                </button>
-                <button onclick="window.openInviteModal()" title="دعوة الأصدقاء" class="bg-[#e5a93b] hover:bg-yellow-400 text-[#0b0713] px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md shadow-[#e5a93b]/20 flex items-center gap-1.5">
-                    <i class="fa-solid fa-user-plus text-xs"></i>
-                    <span class="hidden md:inline">دعوة</span>
-                </button>
+        <div class="flex items-center gap-4">
+            <button class="relative p-2 text-gray-300 hover:text-[#e5a93b] transition-colors" onclick="alert('لا توجد إشعارات جديدة حالياً.')">
+                <i class="fa-regular fa-bell text-xl"></i>
+                <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-[#130a21]"></span>
+            </button>
+            <div id="pi-status-container" class="flex items-center gap-2 bg-[#24153b] border border-[#e5a93b]/50 rounded-full py-1.5 px-3.5 text-xs md:text-sm cursor-pointer hover:border-[#e5a93b] hover:shadow-[0_0_12px_rgba(229,169,59,0.25)] transition-all" onclick="window.handleStatusClick()">
+                <i id="pi-status-icon" class="fa-solid fa-wallet text-[#e5a93b]"></i>
+                <span id="user-pi-balance" class="text-gray-300 font-semibold">جاري تهيئة SDK...</span>
             </div>
+            <img id="navbar-user-avatar" onclick="window.openEditProfileModal()" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-9 h-9 rounded-full border-2 border-[#e5a93b] cursor-pointer hover:scale-105 hover:shadow-[0_0_12px_rgba(229,169,59,0.4)] transition-all object-cover">
         </div>
     </header>
 
-    <!-- ================= MAIN LAYOUT ================= -->
-    <main class="max-w-5xl mx-auto w-full px-4 py-6 flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- SIDEBAR: USER PROFILE & QUICK LINKS -->
-        <aside class="space-y-4">
-            <!-- User Card -->
-            <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b]/40 rounded-3xl p-5 space-y-4 shadow-xl">
-                <div class="flex flex-col items-center text-center space-y-2">
+    <!-- القائمة الجانبية للهواتف -->
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden transition-opacity duration-300 opacity-0" onclick="window.toggleMobileSidebar()"></div>
+    
+    <aside id="mobile-sidebar" class="fixed top-0 right-0 h-full w-80 glass-card border-l-2 border-[#e5a93b]/70 z-50 transform translate-x-full transition-transform duration-300 ease-in-out p-6 flex flex-col justify-between overflow-y-auto modal-scroll shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+        <div>
+            <div class="flex justify-between items-center pb-5 border-b border-[#e5a93b]/20 mb-5">
+                <span class="font-extrabold text-lg text-[#e5a93b] flex items-center gap-2.5">
+                    <img src="eagle-logo.png" alt="Logo" class="w-7 h-7 rounded-full border border-[#e5a93b]">
+                    Pi Echo
+                </span>
+                <button onclick="window.toggleMobileSidebar()" class="text-gray-400 hover:text-white text-lg w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="flex flex-col items-center text-center bg-[#24153b]/60 p-4 rounded-2xl border border-[#e5a93b]/30 mb-6 shadow-inner relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-24 h-24 bg-[#e5a93b]/10 rounded-full blur-xl pointer-events-none"></div>
+                <div class="relative">
+                    <img id="mobile-sidebar-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-16 h-16 rounded-full border-2 border-[#e5a93b] object-cover shadow-md">
+                    <button onclick="window.openEditProfileModal(); window.toggleMobileSidebar();" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0b0713] rounded-full w-6 h-6 flex items-center justify-center text-[10px] hover:bg-yellow-400 shadow-md transition-transform active:scale-90">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                </div>
+                <h3 id="mobile-sidebar-username" class="font-bold text-base text-gray-100 mt-2.5">أبو كريم</h3>
+                <p id="mobile-sidebar-bio" class="text-[11px] text-gray-400 mt-1 italic line-clamp-2 leading-relaxed">مهتم بتطوير مشاريع الويب 3 ودعم مجتمع باي في الوطن العربي.</p>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar()" class="flex items-center gap-3.5 px-4 py-3 rounded-xl bg-gradient-to-l from-[#664b12]/50 to-transparent text-[#e5a93b] font-bold border-r-4 border-[#e5a93b] transition-all">
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-solid fa-house"></i></span>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); window.openExploreModal();" class="flex items-center gap-3.5 px-4 py-3 text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all rounded-xl font-semibold">
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-regular fa-compass"></i></span>
+                    <span>استكشف</span>
+                </a>
+                <a href="javascript:void(0)" onclick="window.toggleMobileSidebar(); window.openChatModal();" class="flex items-center gap-3.5 px-4 py-3 text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all rounded-xl font-semibold">
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-regular fa-message"></i></span>
+                    <span>الرسائل العامة</span>
+                </a>
+                <hr class="border-[#e5a93b]/20 my-4">
+                <button onclick="window.openInviteModal(); window.toggleMobileSidebar();" class="w-full bg-gradient-to-r from-[#e5a93b] via-yellow-400 to-yellow-500 text-[#0b0713] font-extrabold py-3.5 px-4 rounded-xl shadow-[0_4px_15px_rgba(229,169,59,0.3)] hover:from-yellow-400 hover:to-yellow-500 transition-all text-xs flex items-center justify-center gap-2 active:scale-98">
+                    <i class="fa-solid fa-user-plus text-sm"></i>
+                    <span>دعوة صديق لباي</span>
+                </button>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 pb-28 md:pb-6 grid grid-cols-1 md:grid-cols-4 gap-6">
+
+        <aside class="hidden md:block md:col-span-1 space-y-4">
+            <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] p-5 rounded-2xl border-2 border-[#e5a93b]/70 shadow-[0_0_20px_rgba(229,169,59,0.12)] space-y-4">
+                <div class="flex flex-col items-center text-center">
                     <div class="relative group">
-                        <img id="user-avatar-display" src="https://api.dicebear.com/7.x/bottts/svg?seed=Pioneer" alt="Avatar" class="w-20 h-20 rounded-full border-2 border-[#e5a93b] object-cover shadow-md shadow-[#e5a93b]/20">
-                        <button onclick="window.openEditProfileModal()" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0b0713] p-1.5 rounded-full text-xs hover:bg-yellow-400 transition-all shadow-sm">
+                        <img id="sidebar-user-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" alt="Avatar" class="w-20 h-20 rounded-full border-2 border-[#e5a93b] shadow-md object-cover">
+                        <button onclick="window.openEditProfileModal()" class="absolute bottom-0 right-0 bg-[#e5a93b] text-[#0b0713] rounded-full p-2 text-xs hover:bg-yellow-400 transition-all shadow-md">
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </div>
-                    <div>
-                        <h3 id="user-name-display" class="font-bold text-base text-gray-100">رائد باي</h3>
-                        <p id="user-bio-display" class="text-xs text-gray-400 mt-1 leading-relaxed">رائد وباني في شبكة Pi Network 🚀</p>
-                    </div>
+                    <h3 id="sidebar-user-name" class="font-bold text-lg text-gray-100 mt-3">أبو كريم</h3>
+                    <p id="sidebar-user-bio" class="text-xs text-gray-400 mt-2 px-2 italic line-clamp-3">مهتم بتطوير مشاريع الويب 3 ودعم مجتمع باي في الوطن العربي.</p>
                 </div>
-
-                <hr class="border-[#e5a93b]/20">
-
-                <div class="space-y-2">
-                    <button onclick="window.openEditProfileModal()" class="w-full bg-[#24153b] hover:bg-[#e5a93b]/10 text-gray-200 border border-[#e5a93b]/30 py-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-user-gear text-[#e5a93b]"></i> تعديل الملف الشخصي
-                    </button>
+                <div class="pt-3 border-t border-[#e5a93b]/30 flex justify-around text-center text-xs text-gray-400">
+                    <div><span class="block font-bold text-gray-100 text-sm">١.٢ ألف</span><span>متابع</span></div>
+                    <div class="border-l border-[#e5a93b]/30"></div>
+                    <div><span class="block font-bold text-gray-100 text-sm">٣٤٠</span><span>يتابع</span></div>
                 </div>
             </div>
 
-            <!-- Quick Info / Policies Links -->
-            <div class="bg-[#1c0f30]/60 border border-[#e5a93b]/20 rounded-2xl p-4 space-y-3 text-xs text-gray-400">
-                <h4 class="font-bold text-gray-200 flex items-center gap-2">
-                    <i class="fa-solid fa-shield-halved text-[#e5a93b]"></i> روابط سريعة
-                </h4>
-                <div class="flex flex-col space-y-2">
-                    <button onclick="window.openPolicyModal('privacy')" class="text-right hover:text-[#e5a93b] transition-colors">سياسة الخصوصية</button>
-                    <button onclick="window.openPolicyModal('terms')" class="text-right hover:text-[#e5a93b] transition-colors">شروط الاستخدام</button>
-                    <button onclick="window.openPolicyModal('disclaimer')" class="text-right hover:text-[#e5a93b] transition-colors">إخلاء المسؤولية</button>
-                </div>
-                <div class="pt-2 border-t border-[#e5a93b]/10 text-[10px] text-gray-500">
-                    تطبيق مجتمعي لامركزي مطور لصالح رواد Pi Network.
-                </div>
-            </div>
+            <nav class="space-y-1.5 bg-gradient-to-b from-[#1b0f2e] to-[#130a21] p-4 rounded-2xl border-2 border-[#e5a93b]/70 shadow-[0_0_20px_rgba(229,169,59,0.12)]">
+                <a href="javascript:void(0)" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-l from-[#664b12]/40 to-transparent text-[#e5a93b] font-semibold border-r-4 border-[#e5a93b]">
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-solid fa-house"></i></span>
+                    <span>الرئيسية</span>
+                </a>
+                <a href="javascript:void(0)" onclick="window.openExploreModal();" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all">
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-regular fa-compass"></i></span>
+                    <span>استكشف</span>
+                </a>
+                <a href="javascript:void(0)" onclick="window.openChatModal()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-[#24153b] hover:text-[#e5a93b] transition-all">
+                    <span class="w-6 flex justify-center text-lg"><i class="fa-regular fa-message"></i></span>
+                    <span>الرسائل العامة</span>
+                </a>
+                <hr class="border-[#e5a93b]/30 my-3">
+                <button onclick="window.openInviteModal()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 text-[#0b0713] font-bold py-2.5 px-4 rounded-xl shadow-md hover:from-yellow-400 hover:to-yellow-500 transition-all text-sm mb-1 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-plus text-base"></i>
+                    <span>دعوة صديق لباي</span>
+                </button>
+            </nav>
         </aside>
 
-        <!-- FEED & POST CREATOR -->
-        <section class="md:col-span-2 space-y-6">
-            
-            <!-- CREATE POST BOX -->
-            <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b]/50 rounded-3xl p-4 space-y-3 shadow-xl">
-                <textarea id="post-input" rows="3" placeholder="ما الذي تشغلك به شبكة باي اليوم؟ شارك أفكارك أو تجاربك..." class="w-full bg-[#130a21] border border-[#e5a93b]/30 rounded-2xl p-3 text-xs text-gray-200 focus:border-[#e5a93b] focus:outline-none resize-none leading-relaxed"></textarea>
+        <main class="col-span-1 md:col-span-2 space-y-6">
+            <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b]/70 shadow-[0_0_20px_rgba(229,169,59,0.12)] rounded-2xl p-4">
+                <div class="flex gap-3">
+                    <img id="feed-post-avatar" src="https://api.dicebear.com/7.x/bottts?seed=AboKareem" alt="User Avatar" class="w-10 h-10 rounded-full border border-[#e5a93b]/40 object-cover">
+                    <div class="flex-1">
+                        <textarea id="post-input" placeholder="ماذا يدور في ذهنك اليوم يا رائد؟" rows="3" class="w-full bg-[#130a21] rounded-xl p-3 text-sm text-gray-200 placeholder-gray-500 border border-[#e5a93b]/30 focus:border-[#e5a93b] focus:outline-none resize-none transition-all"></textarea>
+                        
+                        <div id="image-preview-container" class="hidden relative mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-60 flex justify-center items-center">
+                            <img id="image-preview" class="max-h-60 w-full object-cover" src="">
+                            <button onclick="window.removeImageSelection()" class="absolute top-2 left-2 bg-red-600/90 text-white hover:bg-red-700 transition-colors w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
 
-                <!-- Media Previews -->
-                <div id="image-preview-container" class="hidden relative rounded-xl overflow-hidden border border-[#e5a93b]/40 max-h-48">
-                    <img id="image-preview" src="" class="w-full object-cover">
-                    <button onclick="window.removeImageSelection()" class="absolute top-2 left-2 bg-black/70 text-rose-400 p-1 rounded-full text-xs">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div id="video-preview-container" class="hidden relative rounded-xl overflow-hidden border border-[#e5a93b]/40 max-h-48">
-                    <video id="video-preview" controls class="w-full max-h-48"></video>
-                    <button onclick="window.removeVideoSelection()" class="absolute top-2 left-2 bg-black/70 text-rose-400 p-1 rounded-full text-xs">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-
-                <!-- Input File Elements -->
-                <input type="file" id="post-image-file" accept="image/*" class="hidden" onchange="window.previewSelectedImage(event)">
-                <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="window.previewSelectedVideo(event)">
-
-                <!-- Controls toolbar -->
-                <div class="flex items-center justify-between pt-2">
-                    <div class="flex items-center gap-2">
-                        <button onclick="window.triggerImageUpload()" class="bg-[#24153b] hover:bg-[#e5a93b]/20 text-[#e5a93b] p-2 rounded-xl text-xs transition-all flex items-center gap-1.5 border border-[#e5a93b]/30">
-                            <i class="fa-solid fa-image"></i>
-                            <span class="hidden sm:inline">صورة</span>
-                        </button>
-                        <button onclick="window.triggerVideoUpload()" class="bg-[#24153b] hover:bg-[#e5a93b]/20 text-[#e5a93b] p-2 rounded-xl text-xs transition-all flex items-center gap-1.5 border border-[#e5a93b]/30">
-                            <i class="fa-solid fa-video"></i>
-                            <span class="hidden sm:inline">فيديو</span>
-                        </button>
-                        <button onclick="window.toggleEmojiPicker(event)" class="bg-[#24153b] hover:bg-[#e5a93b]/20 text-[#e5a93b] p-2 rounded-xl text-xs transition-all border border-[#e5a93b]/30">
-                            <i class="fa-solid fa-face-smile"></i>
-                        </button>
+                        <div id="video-preview-container" class="hidden relative mt-3 rounded-xl overflow-hidden border border-[#e5a93b]/40 bg-black max-h-60 flex justify-center items-center">
+                            <video id="video-preview" class="max-h-60 w-full" controls></video>
+                            <button onclick="window.removeVideoSelection()" class="absolute top-2 left-2 bg-red-600/90 text-white hover:bg-red-700 transition-colors w-8 h-8 rounded-full flex items-center justify-center shadow-lg">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
                     </div>
+                </div>
+                <div class="flex items-center justify-between mt-3 pt-3 border-t border-[#e5a93b]/20 relative">
+                    <div class="flex gap-2 text-gray-400">
+                        <button onclick="window.triggerImageUpload()" class="p-2 hover:bg-[#24153b] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة صورة">
+                            <i class="fa-regular fa-image text-lg"></i>
+                        </button>
+                        <input type="file" id="post-image-file" accept="image/*" class="hidden" onchange="window.previewSelectedImage(event)">
 
-                    <button id="main-post-btn" onclick="window.createNewPost()" class="bg-[#e5a93b] text-[#0b0713] font-bold px-5 py-2 rounded-xl text-xs hover:bg-yellow-400 transition-all shadow-md shadow-[#e5a93b]/20">
+                        <button onclick="window.triggerVideoUpload()" class="p-2 hover:bg-[#24153b] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة فيديو">
+                            <i class="fa-solid fa-video text-lg"></i>
+                        </button>
+                        <input type="file" id="post-video-file" accept="video/*" class="hidden" onchange="window.previewSelectedVideo(event)">
+                        
+                        <div class="relative">
+                            <button onclick="window.toggleEmojiPicker(event)" class="p-2 hover:bg-[#24153b] hover:text-[#e5a93b] rounded-lg transition-colors" title="إضافة شعارات ورموز تعبيرية">
+                                <i class="fa-regular fa-face-smile text-lg"></i>
+                            </button>
+                            <div id="emoji-picker" class="hidden absolute right-0 top-10 z-50 bg-[#1b0f2e] border-2 border-[#e5a93b] p-3 rounded-2xl grid grid-cols-4 gap-2 shadow-2xl w-48">
+                                <button onclick="window.appendEmoji('🥧')" class="hover:bg-[#24153b] p-1.5 rounded text-lg transition-colors" title="شعار باي">🥧</button>
+                                <button onclick="window.appendEmoji('🦅')" class="hover:bg-[#24153b] p-1.5 rounded text-lg transition-colors" title="شعار التطبيق (الصقر)">🦅</button>
+                                <button onclick="window.appendEmoji('🚀')" class="hover:bg-[#24153b] p-1.5 rounded text-lg transition-colors" title="صاروخ">🚀</button>
+                                <button onclick="window.appendEmoji('💎')" class="hover:bg-[#24153b] p-1.5 rounded text-lg transition-colors" title="جوهرة">💎</button>
+                                <button onclick="window.appendEmoji('⚡')" class="hover:bg-[#24153b] p-1.5 rounded text-lg transition-colors" title="برق">⚡</button>
+                                <button onclick="window.appendEmoji('🔥')" class="hover:bg-[#24153b] p-1.5 rounded text-lg transition-colors" title="نار">🔥</button>
+                                <button onclick="window.appendEmoji('❤️')" class="hover:bg-[#24153b] p-1.5 rounded text-lg transition-colors" title="قلب">❤️</button>
+                                <button onclick="window.appendEmoji('👍')" class="hover:bg-[#24153b] p-1.5 rounded text-lg transition-colors" title="إعجاب">👍</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="main-post-btn" onclick="window.createNewPost()" class="bg-[#e5a93b] text-[#0b0713] font-bold px-5 py-1.5 rounded-lg text-sm hover:bg-yellow-400 transition-all shadow-md shadow-[#e5a93b]/10">
                         نشر المنشور
                     </button>
                 </div>
-
-                <!-- Simple Emoji Picker -->
-                <div id="emoji-picker" class="hidden flex gap-2 p-2 bg-[#130a21] border border-[#e5a93b]/30 rounded-xl text-lg">
-                    <span class="cursor-pointer hover:scale-125 transition-all" onclick="window.appendEmoji('🚀')">🚀</span>
-                    <span class="cursor-pointer hover:scale-125 transition-all" onclick="window.appendEmoji('⚡')">⚡</span>
-                    <span class="cursor-pointer hover:scale-125 transition-all" onclick="window.appendEmoji('🔥')">🔥</span>
-                    <span class="cursor-pointer hover:scale-125 transition-all" onclick="window.appendEmoji('💎')">💎</span>
-                    <span class="cursor-pointer hover:scale-125 transition-all" onclick="window.appendEmoji('🌐')">🌐</span>
-                    <span class="cursor-pointer hover:scale-125 transition-all" onclick="window.appendEmoji('❤️')">❤️</span>
-                </div>
             </div>
 
-            <!-- FEED CONTAINER -->
-            <div id="feed-container" class="space-y-4">
-                <!-- Posts will be rendered dynamically here -->
-            </div>
-        </section>
+            <div id="feed-container" class="space-y-6"></div>
+        </main>
 
-    </main>
-
-    <!-- ================= MODALS SECTION ================= -->
-
-    <!-- PRIVATE CHAT MODAL -->
-    <div id="private-chat-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-[#1b0f2e] border-2 border-[#e5a93b]/60 rounded-3xl w-full max-w-lg h-[500px] flex flex-col overflow-hidden shadow-2xl">
-            <div class="p-4 bg-[#130a21] border-b border-[#e5a93b]/30 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <img id="private-chat-user-avatar" src="" class="w-8 h-8 rounded-full border border-[#e5a93b]">
-                    <span id="private-chat-user-name" class="font-bold text-xs text-gray-100">محادثة خاصة</span>
-                </div>
-                <button onclick="window.closePrivateChatModal()" class="text-gray-400 hover:text-rose-400 text-lg">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div id="private-chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3"></div>
-            <div class="p-3 bg-[#130a21] border-t border-[#e5a93b]/30 flex gap-2">
-                <input type="text" id="private-chat-input" placeholder="اكتب رسالتك الخاصة..." class="flex-1 bg-[#1c0f30] border border-[#e5a93b]/30 rounded-xl px-3 py-2 text-xs text-gray-200 outline-none focus:border-[#e5a93b]">
-                <button onclick="window.sendPrivateChatMessage()" class="bg-[#e5a93b] text-[#0b0713] font-bold px-4 rounded-xl text-xs hover:bg-yellow-400">إرسال</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- EXPLORE MODAL -->
-    <div id="explore-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-[#1b0f2e] border-2 border-[#e5a93b]/60 rounded-3xl w-full max-w-2xl h-[550px] flex flex-col overflow-hidden shadow-2xl">
-            <div class="p-4 bg-[#130a21] border-b border-[#e5a93b]/30 flex items-center justify-between">
-                <h3 class="font-bold text-sm text-gray-100 flex items-center gap-2">
-                    <i class="fa-solid fa-compass text-[#e5a93b]"></i> استكشف منصة Pi Echo
+        <aside class="hidden md:block md:col-span-1 space-y-6">
+            <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b]/70 shadow-[0_0_20px_rgba(229,169,59,0.12)] p-4 rounded-2xl space-y-4">
+                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2 flex items-center justify-start gap-2">
+                    <i class="fa-solid fa-microphone-lines animate-pulse"></i>الدردشة الصوتية المباشرة
                 </h3>
-                <button onclick="window.closeExploreModal()" class="text-gray-400 hover:text-rose-400 text-lg">
+                <div class="p-3 bg-[#130a21] rounded-xl border border-[#e5a93b]/30 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-300 font-bold">روم رواد باي العرب 🎙️</span>
+                        <span class="text-[10px] bg-red-600/20 text-red-400 px-2 py-0.5 rounded-full">نشط</span>
+                    </div>
+                    <p class="text-[10px] text-gray-400 leading-relaxed">انضم الآن وناقش آخر مستجدات الشبكة المفتوحة والتجارة مع الرواد بالصوت مباشر!</p>
+                    <button onclick="window.openVoiceChatModal()" class="w-full bg-[#e5a93b] hover:bg-yellow-400 text-[#0b0713] font-bold py-2 rounded-lg text-xs transition-all shadow-md flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-headset"></i> انضمام للروم الصوتي
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-b from-[#1b0f2e] to-[#130a21] border-2 border-[#e5a93b]/70 shadow-[0_0_20px_rgba(229,169,59,0.12)] p-4 rounded-2xl space-y-4">
+                <h3 class="font-bold text-sm text-[#e5a93b] border-b border-[#e5a93b]/30 pb-2 flex items-center justify-start gap-2">
+                    <i class="fa-solid fa-circle-nodes"></i>أخبار الشبكة المفتوحة
+                </h3>
+                <div class="space-y-3">
+                    <div class="p-2.5 bg-[#130a21] rounded-xl hover:bg-[#24153b] transition-all cursor-pointer border border-transparent hover:border-[#e5a93b]/30">
+                        <h4 class="text-xs font-bold text-gray-200">الاستعداد للمرحلة القادمة</h4>
+                        <p class="text-[10px] text-gray-400 mt-1">تحديثات هامة لبروتوكول الـ SDK والمطورين...</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ==================== النوافذ المنبثقة الاحترافية المحدثة ==================== -->
+
+    <!-- 1. نافذة استكشف المتقدمة -->
+    <div id="explore-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-3 sm:p-4 transition-all duration-300">
+        <div class="glass-card border-2 border-[#e5a93b]/80 rounded-3xl max-w-2xl w-full h-[88vh] flex flex-col shadow-[0_0_50px_rgba(229,169,59,0.25)] relative overflow-hidden animate-modal-pop">
+            
+            <div class="p-4 sm:p-5 bg-gradient-to-r from-[#24153b] to-[#1a0e2e] border-b border-[#e5a93b]/30 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 bg-gradient-to-tr from-[#e5a93b] via-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center text-[#0b0713] font-bold shadow-[0_0_15px_rgba(229,169,59,0.4)]">
+                        <i class="fa-regular fa-compass text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-base text-[#e5a93b]">استكشف مجتمع باي 🧭</h3>
+                        <span class="text-[11px] text-gray-400 block mt-0.5">المنشورات الرائجة، الهاشتاجات، وأبرز الرواد والمطورين</span>
+                    </div>
+                </div>
+                <button onclick="window.closeExploreModal()" class="text-gray-400 hover:text-white text-lg w-9 h-9 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="flex border-b border-[#e5a93b]/20 bg-[#130a21] px-4 gap-4 text-xs font-bold">
-                <button id="explore-tab-trending" onclick="window.switchExploreTab('trending')" class="py-3 text-[#e5a93b] border-b-2 border-[#e5a93b]">الأكثر تداولاً</button>
-                <button id="explore-tab-hashtags" onclick="window.switchExploreTab('hashtags')" class="py-3 text-gray-400 hover:text-[#e5a93b]"># الهاشتاجات</button>
-                <button id="explore-tab-pioneers" onclick="window.switchExploreTab('pioneers')" class="py-3 text-gray-400 hover:text-[#e5a93b]">الرواد البارزون</button>
+
+            <div class="flex border-b border-[#e5a93b]/20 bg-[#140b24] px-4 gap-6 text-xs font-bold overflow-x-auto">
+                <button onclick="window.switchExploreTab('trending')" id="explore-tab-trending" class="py-3.5 text-[#e5a93b] border-b-2 border-[#e5a93b] transition-all whitespace-nowrap flex items-center gap-1.5">🔥 المنشورات الرائجة</button>
+                <button onclick="window.switchExploreTab('hashtags')" id="explore-tab-hashtags" class="py-3.5 text-gray-400 hover:text-[#e5a93b] transition-all whitespace-nowrap flex items-center gap-1.5">🏷️ الوسوم والهاشتاجات</button>
+                <button onclick="window.switchExploreTab('pioneers')" id="explore-tab-pioneers" class="py-3.5 text-gray-400 hover:text-[#e5a93b] transition-all whitespace-nowrap flex items-center gap-1.5">🦅 أبرز الرواد والمطورين</button>
             </div>
-            <div class="flex-1 p-4 overflow-y-auto">
+
+            <div class="flex-1 p-4 sm:p-5 overflow-y-auto modal-scroll space-y-4 bg-[#0a0512]">
                 <div id="explore-content-trending" class="space-y-3"></div>
-                <div id="explore-content-hashtags" class="hidden space-y-2">
-                    <button onclick="window.filterByHashtag('#PiNetwork')" class="w-full text-right p-3 bg-[#130a21] rounded-xl border border-[#e5a93b]/20 hover:border-[#e5a93b] text-xs font-bold text-[#e5a93b]">#PiNetwork - أخبار الشبكة اللامركزية</button>
-                    <button onclick="window.filterByHashtag('#PiHackathon')" class="w-full text-right p-3 bg-[#130a21] rounded-xl border border-[#e5a93b]/20 hover:border-[#e5a93b] text-xs font-bold text-[#e5a93b]">#PiHackathon - تطبيقات الرواد المبتكرة</button>
+                
+                <div id="explore-content-hashtags" class="space-y-3 hidden">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div onclick="window.filterByHashtag('#PiNetwork')" class="p-4 bg-[#1b0f2e]/80 border border-[#e5a93b]/30 hover:border-[#e5a93b] rounded-2xl cursor-pointer hover:scale-[1.02] transition-all shadow-md group">
+                            <span class="font-extrabold text-[#e5a93b] text-sm group-hover:text-yellow-300">#PiNetwork</span>
+                            <p class="text-[11px] text-gray-400 mt-1.5">الشبكة العالمية وأخبار العملة الرقمية والتجارة</p>
+                        </div>
+                        <div onclick="window.filterByHashtag('#OpenMainnet')" class="p-4 bg-[#1b0f2e]/80 border border-[#e5a93b]/30 hover:border-[#e5a93b] rounded-2xl cursor-pointer hover:scale-[1.02] transition-all shadow-md group">
+                            <span class="font-extrabold text-[#e5a93b] text-sm group-hover:text-yellow-300">#OpenMainnet</span>
+                            <p class="text-[11px] text-gray-400 mt-1.5">تحديثات الشبكة المفتوحة والتجارة المباشرة</p>
+                        </div>
+                        <div onclick="window.filterByHashtag('#PiEcho')" class="p-4 bg-[#1b0f2e]/80 border border-[#e5a93b]/30 hover:border-[#e5a93b] rounded-2xl cursor-pointer hover:scale-[1.02] transition-all shadow-md group">
+                            <span class="font-extrabold text-[#e5a93b] text-sm group-hover:text-yellow-300">#PiEcho</span>
+                            <p class="text-[11px] text-gray-400 mt-1.5">منصة الرواد والمطورين اللامركزية التفاعلية</p>
+                        </div>
+                        <div onclick="window.filterByHashtag('#Web3')" class="p-4 bg-[#1b0f2e]/80 border border-[#e5a93b]/30 hover:border-[#e5a93b] rounded-2xl cursor-pointer hover:scale-[1.02] transition-all shadow-md group">
+                            <span class="font-extrabold text-[#e5a93b] text-sm group-hover:text-yellow-300">#Web3</span>
+                            <p class="text-[11px] text-gray-400 mt-1.5">تطبيقات البلوكشين الذكية والعقود اللامركزية</p>
+                        </div>
+                    </div>
                 </div>
-                <div id="explore-content-pioneers" class="hidden text-center text-xs text-gray-400 py-10">قائمة الرواد النشطين قيد التحديث...</div>
+
+                <div id="explore-content-pioneers" class="space-y-3 hidden">
+                    <div class="space-y-3">
+                        <div class="p-4 bg-[#1b0f2e]/90 border border-[#e5a93b]/30 rounded-2xl flex items-center justify-between flex-wrap gap-3 hover:border-[#e5a93b]/60 transition-all">
+                            <div class="flex items-center gap-3">
+                                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" class="w-11 h-11 rounded-full border-2 border-[#e5a93b] object-cover shadow-md">
+                                <div>
+                                    <h4 class="font-bold text-xs sm:text-sm text-gray-100">أبو كريم (Abokareem999)</h4>
+                                    <p class="text-[11px] text-gray-400 mt-0.5">مطور تطبيقات ويب 3 ومؤسس منصة Pi Echo</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="window.sendFriendRequest('Abokareem999')" class="flex-1 sm:flex-none bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/40 hover:bg-[#e5a93b] hover:text-[#0b0713] px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-user-plus"></i> طلب صداقة
+                                </button>
+                                <button onclick="window.openPrivateChat('Abokareem999', 'https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem')" class="flex-1 sm:flex-none bg-purple-600/20 text-purple-300 border border-purple-500/40 hover:bg-purple-600 hover:text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-envelope"></i> خاص
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-[#1b0f2e]/90 border border-[#e5a93b]/30 rounded-2xl flex items-center justify-between flex-wrap gap-3 hover:border-[#e5a93b]/60 transition-all">
+                            <div class="flex items-center gap-3">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed" class="w-11 h-11 rounded-full border border-[#e5a93b]/40 shadow-md">
+                                <div>
+                                    <h4 class="font-bold text-xs sm:text-sm text-gray-100">أحمد السوداني</h4>
+                                    <p class="text-[11px] text-gray-400 mt-0.5">مستثمر ومحلل عملات رقمية وسوق باي</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="window.sendFriendRequest('أحمد السوداني')" class="flex-1 sm:flex-none bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/40 hover:bg-[#e5a93b] hover:text-[#0b0713] px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-user-plus"></i> طلب صداقة
+                                </button>
+                                <button onclick="window.openPrivateChat('أحمد السوداني', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed')" class="flex-1 sm:flex-none bg-purple-600/20 text-purple-300 border border-purple-500/40 hover:bg-purple-600 hover:text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-envelope"></i> خاص
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-[#1b0f2e]/90 border border-[#e5a93b]/30 rounded-2xl flex items-center justify-between flex-wrap gap-3 hover:border-[#e5a93b]/60 transition-all">
+                            <div class="flex items-center gap-3">
+                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" class="w-11 h-11 rounded-full border border-[#e5a93b]/40 shadow-md">
+                                <div>
+                                    <h4 class="font-bold text-xs sm:text-sm text-gray-100">سارة محمد</h4>
+                                    <p class="text-[11px] text-gray-400 mt-0.5">مطورة واجهات وتصميم ثلاثي الأبعاد</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="window.sendFriendRequest('سارة محمد')" class="flex-1 sm:flex-none bg-[#e5a93b]/10 text-[#e5a93b] border border-[#e5a93b]/40 hover:bg-[#e5a93b] hover:text-[#0b0713] px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-user-plus"></i> طلب صداقة
+                                </button>
+                                <button onclick="window.openPrivateChat('سارة محمد', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah')" class="flex-1 sm:flex-none bg-purple-600/20 text-purple-300 border border-purple-500/40 hover:bg-purple-600 hover:text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-envelope"></i> خاص
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- INVITE MODAL -->
-    <div id="invite-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-[#1b0f2e] border-2 border-[#e5a93b]/60 rounded-3xl w-full max-w-md p-6 space-y-4 text-center shadow-2xl">
-            <div class="w-12 h-12 rounded-2xl bg-[#e5a93b]/10 border border-[#e5a93b]/30 flex items-center justify-center mx-auto text-[#e5a93b] text-xl">
-                <i class="fa-solid fa-paper-plane"></i>
-            </div>
-            <h3 class="font-bold text-base text-gray-100">دعوة أصدقائك لانضمام لشبكة باي</h3>
-            <p class="text-xs text-gray-300 leading-relaxed">انسخ رسالة الدعوة الخاصة بك وشاركها مع أصدقائك لبناء ودعم دائرة الأمان الخاصة بك.</p>
-            <button onclick="window.copyInviteText()" class="w-full bg-[#e5a93b] hover:bg-yellow-400 text-[#0b0713] font-bold py-2.5 rounded-xl text-xs transition-all flex items-center justify-center gap-2">
-                <i class="fa-solid fa-copy"></i> نسخ نص الدعوة
+    <!-- 2. نافذة السياسات والاتفاقيات -->
+    <div id="policy-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4 transition-all">
+        <div class="glass-card border-2 border-[#e5a93b]/80 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-[0_0_40px_rgba(229,169,59,0.25)] relative animate-modal-pop">
+            <button onclick="window.closePolicyModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark"></i>
             </button>
-            <button onclick="window.closeInviteModal()" class="w-full bg-[#24153b] text-gray-400 py-2 rounded-xl text-xs">إغلاق</button>
-        </div>
-    </div>
-
-    <!-- POLICY MODAL -->
-    <div id="policy-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-[#1b0f2e] border-2 border-[#e5a93b]/60 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl">
-            <div class="flex items-center gap-3 border-b border-[#e5a93b]/20 pb-3">
-                <i id="policy-modal-icon" class="fa-solid fa-shield-halved text-[#e5a93b] text-xl"></i>
-                <h3 id="policy-modal-title" class="font-bold text-sm text-gray-100"></h3>
+            <div class="flex items-center gap-3.5 pb-4 border-b border-[#e5a93b]/30">
+                <div class="w-12 h-12 bg-gradient-to-tr from-[#e5a93b] to-yellow-500 rounded-2xl flex items-center justify-center text-[#0b0713] font-bold shadow-md">
+                    <i id="policy-modal-icon" class="fa-solid fa-shield-halved text-xl"></i>
+                </div>
+                <div>
+                    <h3 id="policy-modal-title" class="text-lg font-black text-[#e5a93b]">سياسة التطبيق</h3>
+                    <span class="text-[10px] text-gray-400">شروط وأحكام شبكة Pi Echo اللامركزية</span>
+                </div>
             </div>
-            <div id="policy-modal-content" class="text-xs text-gray-300 leading-relaxed space-y-2 max-h-60 overflow-y-auto"></div>
-            <button onclick="window.closePolicyModal()" class="w-full bg-[#e5a93b] text-[#0b0713] font-bold py-2 rounded-xl text-xs">حسناً</button>
+            <div id="policy-modal-content" class="text-xs text-gray-300 leading-relaxed max-h-64 overflow-y-auto modal-scroll space-y-3 p-4 bg-[#120822]/90 rounded-2xl border border-[#e5a93b]/20"></div>
+            <button onclick="window.closePolicyModal()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 hover:from-yellow-400 hover:to-yellow-500 text-[#0b0713] font-extrabold py-3 rounded-2xl transition-all shadow-[0_4px_15px_rgba(229,169,59,0.3)] text-xs active:scale-98">
+                إغلاق وفهم البنود
+            </button>
         </div>
     </div>
 
-    <!-- VOICE CHAT MODAL -->
-    <div id="voice-chat-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-[#1b0f2e] border-2 border-[#e5a93b]/60 rounded-3xl w-full max-w-sm p-6 text-center space-y-5 shadow-2xl">
-            <h3 class="font-bold text-sm text-gray-100 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-microphone text-[#e5a93b]"></i> الروم الصوتي للرواد
-            </h3>
-            <span id="voice-connection-status" class="text-xs text-yellow-400 font-semibold block animate-pulse">🟡 جاري الاتصال بالروم...</span>
+    <!-- 3. نافذة دعوة صديق -->
+    <div id="invite-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4 transition-all">
+        <div class="glass-card border-2 border-[#e5a93b]/80 rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-[0_0_40px_rgba(229,169,59,0.25)] relative animate-modal-pop">
+            <button onclick="window.closeInviteModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
             
-            <div id="voice-bars-container" class="hidden flex justify-center items-center gap-1.5 h-10">
-                <div class="w-1.5 h-6 bg-[#e5a93b] rounded-full animate-bounce"></div>
-                <div class="w-1.5 h-10 bg-[#e5a93b] rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                <div class="w-1.5 h-4 bg-[#e5a93b] rounded-full animate-bounce [animation-delay:0.4s]"></div>
+            <div class="w-16 h-16 bg-gradient-to-tr from-[#e5a93b] via-yellow-400 to-yellow-500 rounded-2xl flex items-center justify-center mx-auto shadow-[0_0_20px_rgba(229,169,59,0.4)] rotate-3">
+                <i class="fa-solid fa-user-plus text-[#0b0713] text-2xl"></i>
+            </div>
+            <div>
+                <h3 class="text-xl font-black text-[#e5a93b]">دعوة صديق إلى شبكة باي 🥧</h3>
+                <p class="text-xs text-gray-400 mt-1">شارك رسالة الدعوة الخاصة بك لبناء فريق التعدين الخاص بك</p>
+            </div>
+            <div class="bg-[#120822]/90 p-4 rounded-2xl border border-[#e5a93b]/30 text-xs text-gray-200 text-right leading-relaxed select-all shadow-inner relative group" id="invite-text-content">
+                الباي هي عملة رقمية جديدة تم تطويرها من طرف فريق من حاملي الدكتوراه من جامعة ستانفورد، مع أكثر من 55 مليون فرد حول العالم. للمشاركة معنا في باي ، إختر هذا الرابط https://minepi.com/Abokareem999 وإستخدم إسم المستخدم الخاص بي Abokareem999 ككود دعوة
+            </div>
+            <div class="flex gap-2.5">
+                <button onclick="window.copyInviteText()" class="flex-1 bg-gradient-to-r from-[#e5a93b] to-yellow-500 hover:from-yellow-400 hover:to-yellow-500 text-[#0b0713] font-extrabold py-3.5 rounded-2xl transition-all shadow-[0_4px_15px_rgba(229,169,59,0.3)] text-xs flex items-center justify-center gap-2 active:scale-98">
+                    <i class="fa-solid fa-copy text-sm"></i> نسخ النص بالكامل
+                </button>
+                <button onclick="window.closeInviteModal()" class="bg-[#24153b] border border-[#e5a93b]/30 hover:border-[#e5a93b] text-gray-300 font-semibold px-5 py-3.5 rounded-2xl text-xs transition-all">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. نافذة الدردشة الصوتية المباشرة -->
+    <div id="voice-chat-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4 transition-all">
+        <div class="glass-card border-2 border-[#e5a93b]/80 rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-[0_0_50px_rgba(229,169,59,0.3)] relative animate-modal-pop">
+            <button onclick="window.closeVoiceChatModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="relative w-20 h-20 mx-auto">
+                <div class="absolute inset-0 bg-[#e5a93b]/20 rounded-full animate-ping"></div>
+                <div class="w-20 h-20 bg-gradient-to-tr from-[#e5a93b] via-yellow-400 to-yellow-500 rounded-full flex items-center justify-center relative z-10 shadow-[0_0_25px_rgba(229,169,59,0.5)]">
+                    <i class="fa-solid fa-microphone text-[#0b0713] text-3xl"></i>
+                </div>
             </div>
 
-            <div class="flex justify-center gap-4">
-                <button id="toggle-mic-btn" onclick="window.toggleMicrophone()" class="bg-[#24153b] border border-[#e5a93b]/40 text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center shadow-md">
+            <div>
+                <h3 class="text-xl font-black text-[#e5a93b]">روم رواد باي العرب 🎙️</h3>
+                <span id="voice-connection-status" class="text-xs text-yellow-400 font-semibold block mt-1.5 animate-pulse">🟡 جاري الاتصال بالروم...</span>
+            </div>
+
+            <div class="flex justify-center items-center py-2 h-10">
+                <div id="voice-bars-container" class="voice-wave hidden">
+                    <div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div><div class="voice-bar"></div>
+                </div>
+            </div>
+
+            <div class="space-y-2.5">
+                <h4 class="text-xs text-gray-400 text-right font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-users text-[#e5a93b]"></i> الرواد النشطين بالصوت (3):
+                </h4>
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-[#120822]/90 p-2.5 rounded-2xl border border-[#e5a93b]/30 flex flex-col items-center">
+                        <img id="voice-modal-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem" class="w-10 h-10 rounded-full border-2 border-[#e5a93b] shadow-sm">
+                        <span id="voice-modal-username" class="text-[10px] font-bold text-gray-200 mt-1.5 truncate w-full">أبو كريم (أنت)</span>
+                    </div>
+                    <div class="bg-[#120822]/90 p-2.5 rounded-2xl border border-purple-900/50 flex flex-col items-center relative">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed" class="w-10 h-10 rounded-full">
+                        <span class="text-[10px] font-bold text-gray-300 mt-1.5 truncate w-full">أحمد السوداني</span>
+                        <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-green-500 rounded-full border border-black"></span>
+                    </div>
+                    <div class="bg-[#120822]/90 p-2.5 rounded-2xl border border-purple-900/50 flex flex-col items-center relative">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah" class="w-10 h-10 rounded-full">
+                        <span class="text-[10px] font-bold text-gray-300 mt-1.5 truncate w-full">سارة محمد</span>
+                        <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-green-500 rounded-full border border-black"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center items-center gap-4 pt-4 border-t border-[#e5a93b]/20">
+                <button id="toggle-mic-btn" onclick="window.toggleMicrophone()" class="bg-[#24153b] border border-[#e5a93b]/40 hover:border-[#e5a93b] text-[#e5a93b] w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md active:scale-95">
                     <i id="mic-icon" class="fa-solid fa-microphone-slash text-lg"></i>
                 </button>
-                <button onclick="window.closeVoiceChatModal()" class="bg-rose-600/20 text-rose-400 border border-rose-500/40 w-12 h-12 rounded-full flex items-center justify-center shadow-md">
-                    <i class="fa-solid fa-phone-slash text-lg"></i>
-                </button>
+                <button onclick="window.closeVoiceChatModal()" class="bg-red-600/90 hover:bg-red-600 text-white font-bold px-6 py-3 rounded-full text-xs transition-all shadow-md active:scale-95">مغادرة الغرفة</button>
             </div>
         </div>
     </div>
 
-    <!-- PUBLIC CHAT MODAL -->
-    <div id="chat-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-[#1b0f2e] border-2 border-[#e5a93b]/60 rounded-3xl w-full max-w-lg h-[520px] flex flex-col overflow-hidden shadow-2xl">
-            <div class="p-4 bg-[#130a21] border-b border-[#e5a93b]/30 flex items-center justify-between">
-                <h3 class="font-bold text-xs text-gray-100 flex items-center gap-2">
-                    <i class="fa-solid fa-comments text-[#e5a93b]"></i> الدردشة العامة لمجتمع Pi Echo
-                </h3>
-                <button onclick="window.closeChatModal()" class="text-gray-400 hover:text-rose-400 text-lg">
+    <!-- 5. نافذة الدردشة العامة -->
+    <div id="chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-3 sm:p-4 transition-all">
+        <div class="glass-card border-2 border-[#e5a93b]/80 rounded-3xl max-w-lg w-full h-[82vh] flex flex-col shadow-[0_0_40px_rgba(229,169,59,0.25)] relative overflow-hidden animate-modal-pop">
+            
+            <div class="p-4 bg-gradient-to-r from-[#24153b] to-[#1a0e2e] border-b border-[#e5a93b]/30 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-tr from-[#e5a93b] to-yellow-500 rounded-2xl flex items-center justify-center text-[#0b0713] font-bold shadow-md">
+                        <i class="fa-regular fa-message text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-[#e5a93b]">الدردشة العامة للرواد 💬</h3>
+                        <span class="text-[10px] text-green-400 font-semibold flex items-center gap-1 mt-0.5">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> متصل الآن
+                        </span>
+                    </div>
+                </div>
+                <button onclick="window.closeChatModal()" class="text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3"></div>
-            <div class="p-3 bg-[#130a21] border-t border-[#e5a93b]/30 flex gap-2">
-                <input type="text" id="chat-input" placeholder="اكتب رسالة عامة للرواد..." class="flex-1 bg-[#1c0f30] border border-[#e5a93b]/30 rounded-xl px-3 py-2 text-xs text-gray-200 outline-none focus:border-[#e5a93b]">
-                <button onclick="window.sendChatMessage()" class="bg-[#e5a93b] text-[#0b0713] font-bold px-4 rounded-xl text-xs hover:bg-yellow-400">إرسال</button>
+
+            <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto modal-scroll space-y-3 bg-[#0a0512]"></div>
+
+            <div class="p-3 bg-[#180d2c] border-t border-[#e5a93b]/30 flex gap-2 items-center">
+                <input type="text" id="chat-input" placeholder="اكتب رسالتك إلى الرواد..." class="flex-1 bg-[#0f071c] border border-[#e5a93b]/30 rounded-xl px-4 py-3 text-xs text-gray-200 outline-none focus:border-[#e5a93b] transition-all" onkeypress="if(event.key === 'Enter') window.sendChatMessage()">
+                <button onclick="window.sendChatMessage()" class="bg-gradient-to-r from-[#e5a93b] to-yellow-500 hover:from-yellow-400 hover:to-yellow-500 text-[#0b0713] font-extrabold px-5 py-3 rounded-xl text-xs transition-all shadow-md active:scale-95">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- SUPPORT / PAYMENT MODAL -->
-    <div id="payment-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-[#1b0f2e] border-2 border-[#e5a93b]/60 rounded-3xl w-full max-w-sm p-6 text-center space-y-4 shadow-2xl">
-            <div class="w-12 h-12 rounded-2xl bg-[#e5a93b]/10 border border-[#e5a93b]/30 flex items-center justify-center mx-auto text-[#e5a93b] text-xl">
-                <i class="fa-solid fa-pi"></i>
+    <!-- 6. نافذة الدردشة الخاصة -->
+    <div id="private-chat-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-3 sm:p-4 transition-all">
+        <div class="glass-card border-2 border-[#e5a93b]/80 rounded-3xl max-w-lg w-full h-[82vh] flex flex-col shadow-[0_0_40px_rgba(229,169,59,0.25)] relative overflow-hidden animate-modal-pop">
+            
+            <div class="p-4 bg-gradient-to-r from-[#24153b] to-[#1a0e2e] border-b border-[#e5a93b]/30 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img id="private-chat-user-avatar" src="" class="w-10 h-10 rounded-full border-2 border-[#e5a93b] object-cover shadow-md">
+                    <div>
+                        <h3 id="private-chat-user-name" class="font-bold text-sm text-[#e5a93b]">محادثة خاصة</h3>
+                        <span class="text-[10px] text-green-400 font-semibold flex items-center gap-1 mt-0.5">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> اتصال مباشر وآمن
+                        </span>
+                    </div>
+                </div>
+                <button onclick="window.closePrivateChatModal()" class="text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-            <h3 class="font-bold text-sm text-gray-100">دعم الرائد بـ Pi</h3>
-            <p id="modal-desc" class="text-xs text-gray-300 leading-relaxed"></p>
-            <input type="number" id="tip-amount" placeholder="المبلغ بـ Pi (مثال: 1.0)" step="0.1" class="w-full bg-[#130a21] border border-[#e5a93b]/40 rounded-xl px-3 py-2 text-xs text-gray-200 text-center focus:border-[#e5a93b] outline-none">
-            <span id="timer-display" class="text-[10px] text-amber-400 font-semibold block"></span>
-            <div class="flex gap-2">
-                <button onclick="window.executePiPayment()" class="flex-1 bg-[#e5a93b] hover:bg-yellow-400 text-[#0b0713] font-bold py-2 rounded-xl text-xs">تأكيد الدفع</button>
-                <button onclick="window.closeSupportModal()" class="flex-1 bg-[#24153b] text-gray-400 py-2 rounded-xl text-xs">إلغاء</button>
+
+            <div id="private-chat-messages-container" class="flex-1 p-4 overflow-y-auto modal-scroll space-y-3 bg-[#0a0512]"></div>
+
+            <div class="p-3 bg-[#180d2c] border-t border-[#e5a93b]/30 flex gap-2 items-center">
+                <input type="text" id="private-chat-input" placeholder="اكتب رسالة خاصة..." class="flex-1 bg-[#0f071c] border border-[#e5a93b]/30 rounded-xl px-4 py-3 text-xs text-gray-200 outline-none focus:border-[#e5a93b] transition-all" onkeypress="if(event.key === 'Enter') window.sendPrivateChatMessage()">
+                <button onclick="window.sendPrivateChatMessage()" class="bg-gradient-to-r from-[#e5a93b] to-yellow-500 hover:from-yellow-400 hover:to-yellow-500 text-[#0b0713] font-extrabold px-5 py-3 rounded-xl text-xs transition-all shadow-md active:scale-95">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- SUCCESS MODAL -->
-    <div id="success-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-[#1b0f2e] border-2 border-emerald-500/60 rounded-3xl w-full max-w-sm p-6 text-center space-y-4 shadow-2xl">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400 text-xl">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
-            <h3 class="font-bold text-sm text-emerald-400">نجحت العملية!</h3>
-            <p id="success-modal-desc" class="text-xs text-gray-300 leading-relaxed"></p>
-            <button onclick="window.closeSuccessModal()" class="w-full bg-emerald-500 text-[#0b0713] font-bold py-2 rounded-xl text-xs">رائع</button>
-        </div>
-    </div>
-
-    <!-- EDIT PROFILE MODAL -->
-    <div id="profile-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
-        <div class="bg-[#1b0f2e] border-2 border-[#e5a93b]/60 rounded-3xl w-full max-w-sm p-6 space-y-4 shadow-2xl">
-            <h3 class="font-bold text-sm text-gray-100 flex items-center gap-2">
-                <i class="fa-solid fa-user-pen text-[#e5a93b]"></i> تعديل الملف الشخصي
+    <!-- 7. نافذة تعديل الملف الشخصي -->
+    <div id="profile-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4 transition-all">
+        <div class="glass-card border-2 border-[#e5a93b]/80 rounded-3xl max-w-md w-full p-6 space-y-5 shadow-[0_0_40px_rgba(229,169,59,0.25)] relative animate-modal-pop">
+            <button onclick="window.closeEditProfileModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <h3 class="text-lg font-black text-[#e5a93b] text-center flex items-center justify-center gap-2">
+                <i class="fa-solid fa-user-gear text-xl"></i> تعديل الملف الشخصي
             </h3>
-            <div class="flex flex-col items-center gap-2">
-                <img id="modal-avatar-preview" src="" class="w-16 h-16 rounded-full border border-[#e5a93b] object-cover">
-                <label class="cursor-pointer text-[10px] text-[#e5a93b] border border-[#e5a93b]/30 bg-[#24153b] px-3 py-1 rounded-lg">
-                    تغيير الصورة
-                    <input type="file" accept="image/*" class="hidden" onchange="window.previewAvatarChange(event)">
-                </label>
-            </div>
-            <div class="space-y-3 text-xs">
-                <div>
-                    <label class="block text-gray-400 mb-1">اسم المستخدم:</label>
-                    <input type="text" id="edit-username" class="w-full bg-[#130a21] border border-[#e5a93b]/30 rounded-xl px-3 py-2 text-gray-200 outline-none focus:border-[#e5a93b]">
+
+            <div class="space-y-4">
+                <div class="flex flex-col items-center">
+                    <div class="relative group">
+                        <img id="modal-avatar-preview" src="" class="w-24 h-24 rounded-full border-2 border-[#e5a93b] object-cover mb-2 shadow-lg">
+                        <label class="absolute bottom-1 right-0 bg-[#e5a93b] text-[#0b0713] p-2 rounded-full cursor-pointer shadow-md hover:bg-yellow-400 transition-transform active:scale-90">
+                            <i class="fa-solid fa-camera text-xs"></i>
+                            <input type="file" id="avatar-upload" accept="image/*" class="hidden" onchange="window.previewAvatarChange(event)">
+                        </label>
+                    </div>
+                    <span class="text-[11px] text-gray-400 mt-1">اضغط على الأيقونة لتغيير الصورة</span>
                 </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">النبذة الشخصية (Bio):</label>
-                    <textarea id="edit-bio" rows="2" class="w-full bg-[#130a21] border border-[#e5a93b]/30 rounded-xl px-3 py-2 text-gray-200 outline-none focus:border-[#e5a93b] resize-none"></textarea>
+
+                <div class="space-y-1.5">
+                    <label class="text-xs text-gray-300 font-bold block">الاسم الشخصي (الرائد)</label>
+                    <input type="text" id="edit-username" class="w-full bg-[#120822] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-xs text-gray-200 outline-none focus:border-[#e5a93b] transition-all">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-xs text-gray-300 font-bold block">الوصف الشخصي (البايو)</label>
+                    <textarea id="edit-bio" rows="3" class="w-full bg-[#120822] border border-[#e5a93b]/30 rounded-xl px-4 py-2.5 text-xs text-gray-200 outline-none focus:border-[#e5a93b] resize-none transition-all"></textarea>
                 </div>
             </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="window.saveUserProfile()" class="flex-1 bg-[#e5a93b] hover:bg-yellow-400 text-[#0b0713] font-bold py-2 rounded-xl text-xs">حفظ التغييرات</button>
-                <button onclick="window.closeEditProfileModal()" class="flex-1 bg-[#24153b] text-gray-400 py-2 rounded-xl text-xs">إلغاء</button>
-            </div>
+
+            <button onclick="window.saveUserProfile()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 hover:from-yellow-400 hover:to-yellow-500 text-[#0b0713] font-extrabold py-3.5 rounded-2xl transition-all shadow-[0_4px_15px_rgba(229,169,59,0.3)] text-xs active:scale-98">
+                حفظ التغييرات
+            </button>
         </div>
     </div>
 
-    <!-- ================= JAVASCRIPT LOGIC (PART 1) ================= -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getFirestore, collection, addDoc, getDocs, onSnapshot, 
-            query, orderBy, where, doc, updateDoc, serverTimestamp 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <!-- 8. نافذة الدفع عبر Pi SDK -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-50 p-4 transition-all">
+        <div class="glass-card border-2 border-[#e5a93b]/80 rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-[0_0_40px_rgba(229,169,59,0.25)] relative animate-modal-pop">
+            <button onclick="window.closeSupportModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="w-16 h-16 bg-gradient-to-tr from-[#664b12] via-[#e5a93b] to-yellow-400 rounded-2xl flex items-center justify-center mx-auto shadow-[0_0_20px_rgba(229,169,59,0.4)]">
+                <i class="fa-solid fa-pi text-white text-3xl animate-pulse"></i>
+            </div>
 
-        // Firebase Configurations
+            <div>
+                <h3 class="text-xl font-black text-[#e5a93b]">بوابة دفع Pi Network</h3>
+                <p id="modal-desc" class="text-xs text-gray-300 mt-2 leading-relaxed"></p>
+                <div id="timer-display" class="mt-3 text-red-400 font-bold text-xs bg-red-950/40 border border-red-500/20 py-1.5 px-3 rounded-xl inline-block"></div>
+            </div>
+
+            <div id="amount-container" class="space-y-2 bg-[#120822] p-3.5 rounded-2xl border border-[#e5a93b]/20">
+                <label class="text-xs text-gray-400 block font-semibold">حدد قيمة الدعم بـ Pi:</label>
+                <input type="number" id="tip-amount" value="1.0" min="0.1" step="0.1" class="bg-[#0a0512] border border-[#e5a93b]/40 rounded-xl px-4 py-2 text-center text-[#e5a93b] font-black text-xl focus:outline-none focus:border-[#e5a93b] w-36 mx-auto block shadow-inner">
+            </div>
+
+            <div class="bg-[#120822] p-3 rounded-xl border border-[#e5a93b]/20 text-[11px] text-amber-300 leading-relaxed text-right">
+                💡 <strong>اتصال الويب 3 نشط:</strong> هذه العملية ستستدعي دالة الدفع الآمنة لتوقيع المعاملة ببصمة إصبعك أو عبارة المرور.
+            </div>
+
+            <button onclick="window.executePiPayment()" class="w-full bg-gradient-to-r from-[#e5a93b] to-yellow-500 hover:from-yellow-400 hover:to-yellow-500 text-[#0b0713] font-extrabold py-3.5 rounded-2xl transition-all shadow-[0_4px_15px_rgba(229,169,59,0.3)] text-xs active:scale-98">
+                تأكيد وإرسال عبر Pi SDK
+            </button>
+        </div>
+    </div>
+
+    <!-- 9. نافذة النجاح والتأكيد -->
+    <div id="success-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4 transition-all">
+        <div class="glass-card border-2 border-green-500/80 rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-[0_0_50px_rgba(34,197,94,0.3)] relative animate-modal-pop">
+            <button onclick="window.closeSuccessModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="w-20 h-20 bg-gradient-to-tr from-green-600 via-emerald-500 to-teal-400 rounded-full flex items-center justify-center mx-auto shadow-[0_0_25px_rgba(34,197,94,0.4)]">
+                <i class="fa-solid fa-check text-[#0b0713] text-4xl font-black"></i>
+            </div>
+
+            <div>
+                <div class="flex items-center justify-center gap-2 text-green-400 font-black text-xl mb-1">
+                    <i class="fa-solid fa-pi text-2xl"></i>
+                    <span>تم الدعم بنجاح!</span>
+                </div>
+                <p id="success-modal-desc" class="text-xs text-gray-300 mt-2 leading-relaxed"></p>
+            </div>
+
+            <div class="bg-green-950/40 border border-green-500/30 p-3 rounded-xl text-xs text-green-300">
+                ✨ شكراً لك على دعم الرواد وإثراء مجتمع Pi Echo!
+            </div>
+
+            <button onclick="window.closeSuccessModal()" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-[#0b0713] font-extrabold py-3.5 rounded-2xl transition-all shadow-[0_4px_15px_rgba(34,197,94,0.3)] text-xs active:scale-98">
+                حسناً، شكراً لك
+            </button>
+        </div>
+    </div>
+
+    <!-- الفوتر السفلي -->
+    <footer class="w-full bg-gradient-to-r from-[#160d24] via-[#1b0f2e] to-[#160d24] border-t-2 border-[#e5a93b]/40 py-6 px-4 mt-auto text-center text-xs text-gray-400 space-y-3">
+        <div class="flex flex-wrap justify-center gap-6 text-[#e5a93b] font-semibold">
+            <a href="javascript:void(0)" onclick="window.openPolicyModal('privacy')" class="hover:underline">سياسة الخصوصية</a>
+            <a href="javascript:void(0)" onclick="window.openPolicyModal('terms')" class="hover:underline">شروط الاستخدام</a>
+            <a href="javascript:void(0)" onclick="window.openPolicyModal('disclaimer')" class="hover:underline">إخلاء المسؤولية</a>
+        </div>
+        <p class="text-gray-500">© 2026 Pi Echo. All rights reserved. Built for the Pi Network Community.</p>
+    </footer>
+
+    <!-- الفوتر العائم للهواتف -->
+    <footer class="md:hidden mobile-footer text-gray-400 text-xl">
+        <a href="javascript:void(0)" class="text-[#e5a93b]"><i class="fa-solid fa-house"></i></a>
+        <a href="javascript:void(0)" onclick="window.openVoiceChatModal()" class="hover:text-[#e5a93b]"><i class="fa-solid fa-microphone-lines"></i></a>
+        <a href="javascript:void(0)" class="hover:text-[#e5a93b]" onclick="window.openEditProfileModal()"><i class="fa-regular fa-user"></i></a>
+        <a href="javascript:void(0)" class="hover:text-[#e5a93b]" onclick="window.openChatModal()"><i class="fa-regular fa-message"></i></a>
+    </footer>
+
+    <!-- السكريبت البرمجي للخدمات والخادم البرمجي -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, setDoc, getDoc, where } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+
         const firebaseConfig = {
-            apiKey: "AIzaSyDummyKeyForPiEchoCommunity",
-            authDomain: "piecho-app.firebaseapp.com",
-            projectId: "piecho-app",
-            storageBucket: "piecho-app.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef123456"
+          apiKey: "AIzaSyCyDmlRaqGY2C-PfKAKxL8GoYgg1qKiqDY",
+          authDomain: "echopi-1a87c.firebaseapp.com",
+          projectId: "echopi-1a87c",
+          storageBucket: "echopi-1a87c.firebasestorage.app",
+          messagingSenderId: "93575678453",
+          appId: "1:93575678453:web:95891b9d64a4abade5b8bc"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        if (window.__piEchoAppInitialized === undefined) window.__piEchoAppInitialized = false;
+        if (window.__piEchoSDKInitializing === undefined) window.__piEchoSDKInitializing = false;
 
-        // App Global State Variables
+        const firebaseApp = initializeApp(firebaseConfig);
+        const auth = getAuth(firebaseApp);
+        const db = getFirestore(firebaseApp);
+        const storage = getStorage(firebaseApp);
+
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseStorage = storage;
+
+        let paymentTimerInterval = null;
+
         let currentUser = {
-            username: "رائد باي",
-            avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Pioneer",
-            bio: "رائد وباني في شبكة Pi Network 🚀",
+            username: "أبو كريم",
+            avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AboKareem",
+            bio: "مهتم بتطوير مشاريع الويب 3 ودعم مجتمع باي في الوطن العربي.",
             isPiAuthenticated: false
         };
 
         let posts = [];
-        let activePrivateChatPartner = null;
-        let privateChatUnsubscribe = null;
+        let activePostIdForTip = null;
+        let activeRecipientName = null;
+        
         let selectedImageFile = null;
         let selectedVideoFile = null;
         let selectedAvatarFile = null;
-        let searchQuery = "";
-        let isBypassActive = true; 
-        let paymentTimerInterval = null;
-        let activePostIdForTip = null;
-        let activeRecipientName = null;
+        
+        let piInitAttempts = 0;
+        let isBypassActive = false;
         let isMicMuted = true;
         let isConnectingVoice = false;
+        let searchQuery = "";
 
-        function safeSetItem(key, val) {
-            try { localStorage.setItem(key, val); } catch(e){}
-        }
-        function safeGetItem(key) {
-            try { return localStorage.getItem(key); } catch(e){ return null; }
-        }
+        let activePrivateChatPartner = null;
+        let privateChatUnsubscribe = null;
 
-        async function initApp() {
+        function safeGetItem(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
+        function safeSetItem(key, value) { try { localStorage.setItem(key, value); } catch (e) {} }
+
+        function initApp() {
+            if (window.__piEchoAppInitialized) return;
+            window.__piEchoAppInitialized = true;
+
+            signInAnonymously(auth).catch(e => console.error("Firebase auth crash:", e));
+
             const savedUser = safeGetItem('piecho_user_v2');
             if (savedUser) {
-                try { currentUser = JSON.parse(savedUser); } catch(e){}
+                try { currentUser = JSON.parse(savedUser); } catch(e) {}
             }
-
             updateUserProfileDOM();
-            
-            if (typeof Pi !== 'undefined') {
-                try {
-                    const auth = await Pi.authenticate(['username', 'payments'], onIncompletePaymentFound);
-                    if(auth && auth.user) {
-                        currentUser.username = auth.user.username;
-                        currentUser.isPiAuthenticated = true;
-                        currentUser.avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${currentUser.username}`;
-                        updateUserProfileDOM();
-                        safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
-                    }
-                } catch(e) {
-                    console.log("العمل في الوضع المحلي / وضع المطورين");
-                }
-            }
-
             listenToPostsFromFirebase();
+            startPiSDKInitialization();
         }
 
-        function onIncompletePaymentFound(payment) {
-            console.log("Found incomplete payment:", payment);
+        async function saveProfileToFirebase(userObj) {
+            try {
+                const userRef = doc(db, "users", userObj.username);
+                await setDoc(userRef, {
+                    username: userObj.username,
+                    avatar: userObj.avatar,
+                    bio: userObj.bio,
+                    lastUpdated: serverTimestamp()
+                }, { merge: true });
+            } catch (err) {
+                console.error("Error saving profile to Firestore:", err);
+            }
         }
 
         function updateUserProfileDOM() {
-            const nameEl = document.getElementById('user-name-display');
-            const bioEl = document.getElementById('user-bio-display');
-            const avatarEl = document.getElementById('user-avatar-display');
+            const elements = {
+                navAvatar: document.getElementById('navbar-user-avatar'),
+                feedAvatar: document.getElementById('feed-post-avatar'),
+                sideAvatar: document.getElementById('sidebar-user-avatar'),
+                mobAvatar: document.getElementById('mobile-sidebar-avatar'),
+                voiceAvatar: document.getElementById('voice-modal-avatar'),
+                sideName: document.getElementById('sidebar-user-name'),
+                mobName: document.getElementById('mobile-sidebar-username'),
+                voiceName: document.getElementById('voice-modal-username'),
+                sideBio: document.getElementById('sidebar-user-bio'),
+                mobBio: document.getElementById('mobile-sidebar-bio')
+            };
 
-            if(nameEl) nameEl.innerText = currentUser.username;
-            if(bioEl) bioEl.innerText = currentUser.bio || "رائد وباني في شبكة Pi Network 🚀";
-            if(avatarEl) avatarEl.src = currentUser.avatar;
+            if (elements.navAvatar) elements.navAvatar.src = currentUser.avatar;
+            if (elements.feedAvatar) elements.feedAvatar.src = currentUser.avatar;
+            if (elements.sideAvatar) elements.sideAvatar.src = currentUser.avatar;
+            if (elements.mobAvatar) elements.mobAvatar.src = currentUser.avatar;
+            if (elements.voiceAvatar) elements.voiceAvatar.src = currentUser.avatar;
+            
+            if (elements.sideName) elements.sideName.innerText = currentUser.username;
+            if (elements.mobName) elements.mobName.innerText = currentUser.username;
+            if (elements.voiceName) elements.voiceName.innerText = currentUser.username + " (أنت)";
+            if (elements.sideBio) elements.sideBio.innerText = currentUser.bio || "لا يوجد بايو محدد.";
+            if (elements.mobBio) elements.mobBio.innerText = currentUser.bio || "لا يوجد بايو محدد.";
         }
 
-        async function saveProfileToFirebase(user) {
-            try {
-                await addDoc(collection(db, "profiles"), {
-                    username: user.username,
-                    bio: user.bio,
-                    avatar: user.avatar,
-                    updatedAt: serverTimestamp()
-                });
-            } catch(e) {
-                console.error("Firebase profile save error:", e);
+        window.toggleMobileSidebar = function() {
+            const sidebar = document.getElementById('mobile-sidebar');
+            const overlay = document.getElementById('mobile-sidebar-overlay');
+            if (!sidebar || !overlay) return;
+
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
+                sidebar.classList.add('translate-x-0');
+                overlay.classList.remove('hidden');
+                setTimeout(() => { overlay.classList.remove('opacity-0'); overlay.classList.add('opacity-100'); }, 10);
+            } else {
+                sidebar.classList.add('translate-x-full');
+                sidebar.classList.remove('translate-x-0');
+                overlay.classList.remove('opacity-100');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
             }
         }
-        // ================= ================= =================
+
+        function updateSDKStatus(text, className = "text-gray-300") {
+            const balanceElement = document.getElementById('user-pi-balance');
+            if (balanceElement) {
+                balanceElement.innerText = text;
+                balanceElement.className = `font-semibold text-[10px] md:text-xs ${className}`;
+            }
+        }
+
+        function startPiSDKInitialization() {
+            if (window.__piEchoSDKInitializing) return;
+            window.__piEchoSDKInitializing = true;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            let useSandbox = urlParams.has('sandbox') ? urlParams.get('sandbox') === 'true' : (window.self !== window.top || !navigator.userAgent.includes("Pi"));
+
+            updateSDKStatus(`⚙️ تهيئة (${useSandbox ? 'Sandbox' : 'رسمي'})...`, "text-yellow-500 animate-pulse");
+            
+            if (typeof Pi !== 'undefined') {
+                try {
+                    Pi.init({ version: "2.0", sandbox: useSandbox });
+                    updateSDKStatus("🔑 جاري المصادقة...", "text-amber-400");
+                    Pi.authenticate(['username', 'payments'], onIncompletePaymentFound)
+                    .then(function(authData) {
+                        currentUser.username = authData.user.username;
+                        currentUser.avatar = currentUser.avatar.includes('dicebear.com') ? `https://api.dicebear.com/7.x/bottts/svg?seed=${authData.user.username}` : currentUser.avatar;
+                        currentUser.isPiAuthenticated = true;
+                        updateUserProfileDOM();
+                        updateSDKStatus(`🟢 متصل: ${authData.user.username}`, "text-green-400");
+                        safeSetItem('piecho_user_v2', JSON.stringify(currentUser));
+                        saveProfileToFirebase(currentUser);
+                    }).catch(function(error) { 
+                        updateSDKStatus("⚠️ فشل الربط (اضغط للتخطي)", "text-red-400 hover:text-red-300"); 
+                    });
+                } catch (err) { 
+                    updateSDKStatus("⚠️ فشل الربط (اضغط للتخطي)", "text-red-400 hover:text-red-300"); 
+                }
+            } else {
+                piInitAttempts++;
+                if (piInitAttempts < 10) {
+                    window.__piEchoSDKInitializing = false;
+                    setTimeout(startPiSDKInitialization, 500);
+                } else {
+                    updateSDKStatus("⚠️ فشل الربط (اضغط للتخطي)", "text-red-400 hover:text-red-300");
+                }
+            }
+        }
+
+        function onIncompletePaymentFound(payment) {
+            console.log("⚠️ تم العثور على دفعة معلقة/غير مكتملة:", payment);
+            const BACKEND_URL = ""; 
+            
+            fetch(`${BACKEND_URL}/api/payments/approve`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentId: payment.identifier })
+            }).then(res => res.json()).then(data => {
+                if (payment.transaction && payment.transaction.txid) {
+                    return fetch(`${BACKEND_URL}/api/payments/complete`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction.txid })
+                    });
+                }
+            }).catch(err => console.error("خطأ في معالجة الدفعة المعلقة:", err));
+        }
+
+        window.handleStatusClick = function() {
+            if (currentUser.isPiAuthenticated || isBypassActive) {
+                alert(`أنت مسجل الدخول كـ: ${currentUser.username}`);
+                return;
+            }
+            if (confirm(`فشل ربط الحساب. هل ترغب في تفعيل "الوضع التجريبي" لتجربة التصفح بالكامل؟`)) {
+                isBypassActive = true;
+                currentUser.username = "رائد تجريبي (أبو كريم)";
+                currentUser.isPiAuthenticated = true; 
+                updateUserProfileDOM();
+                updateSDKStatus("🟢 وضع تجريبي (نشط)", "text-yellow-400");
+                saveProfileToFirebase(currentUser);
+                alert("تم تفعيل الوضع التجريبي بنجاح!");
+            }
+        }
+
+        window.sendFriendRequest = async function(targetUsername) {
+            if (!currentUser.username || currentUser.username === targetUsername) {
+                alert("لا يمكنك إرسال طلب صداقة لنفسك.");
+                return;
+            }
+            try {
+                await addDoc(collection(db, "friend_requests"), {
+                    from: currentUser.username,
+                    fromAvatar: currentUser.avatar,
+                    to: targetUsername,
+                    status: "pending",
+                    timestamp: serverTimestamp()
+                });
+                alert(`تم إرسال طلب الصداقة إلى ${targetUsername} بنجاح! 🤝`);
+            } catch (err) {
+                console.error("خطأ أثناء إرسال طلب الصداقة:", err);
+                alert("حدث خطأ أثناء إرسال
+                     // ================= ================= =================
         //  نظام التنبيهات المخصص (CUSTOM TOAST & ALERT SYSTEM)
         // ================= ================= =================
 
@@ -1450,3 +1884,4 @@
     </script>
 </body>
 </html>
+         
